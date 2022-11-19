@@ -1,0 +1,68 @@
+.DS_Store
+
+application/cache/*
+!application/cache/index.html
+
+application/logs/*
+!application/logs/index.html
+
+!application/*/.htaccess
+
+# Remove generated encryption key file.
+#-------------------------
+application/config/development/config_app.php
+application/config/development/encryption_key.php
+application/config/production/*
+
+# Ignore packages files.
+#-------------------------
+application/packages/*
+!application/packages/index.html
+
+# Ignore themes files.
+#-------------------------
+application/themes/*
+!application/themes/default
+!application/themes/index.html
+!application/themes/theme-blank.png
+
+# Ignore uploads files.
+#-------------------------
+application/uploads/*
+!application/uploads/index.html
+!application/uploads/default.png
+
+# Ignore vendor files.
+#-------------------------
+application/vendor/
+application/composer.lock
+
+# Public files.
+#-------------------------
+public/assets/yarn.lock
+public/cache/*
+!public/cache/index.html
+public/captcha/*
+!public/captcha/index.html
+
+composer.lock
+
+user_guide_src/build/*
+user_guide_src/cilexer/build/*
+user_guide_src/cilexer/dist/*
+user_guide_src/cilexer/pycilexer.egg-info/*
+/vendor/
+
+# IDE Files
+#-------------------------
+/nbproject/
+.idea/*
+
+## Sublime Text cache files
+*.tmlanguage.cache
+*.tmPreferences.cache
+*.stTheme.cache
+*.sublime-workspace
+*.sublime-project
+/tests/tests/
+/tests/results/

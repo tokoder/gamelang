@@ -1,0 +1,52 @@
+<IfModule mod_rewrite.c>
+
+    RewriteEngine On
+
+    # Make sure directory listing is disabled
+	Options +FollowSymLinks -Indexes
+
+	# To rewrite "www.domain.com -> domain.com".
+	RewriteCond %{HTTPS} !=on
+	RewriteCond %{HTTP_HOST} ^www\.(.+)$ [NC]
+	RewriteRule ^(.*)$ https://%1/$1 [R=301,L]
+
+    # make HTTP Basic Authentication work on php-fcgi installs
+    <IfModule mod_fcgid.c>
+        RewriteCond %{HTTP:Authorization} .
+        RewriteRule .* - [E=HTTP_AUTHORIZATION:%{HTTP:Authorization}]
+    </IfModule>
+
+	# Send request via index.php if not a real file or directory
+    RewriteCond %{REQUEST_FILENAME} !-f
+    RewriteCond %{REQUEST_FILENAME} !-d
+
+	# deal with php-fcgi first
+	<IfModule mod_fcgid.c>
+        RewriteRule ^(.*)$ index.php?/$1 [QSA,L]
+	</IfModule>
+
+	# no php-fcgi, check for sapi and fpm
+	<IfModule !mod_fcgid.c>
+
+		# for PHP5 sapi installations
+		<IfModule mod_php5.c>
+			RewriteRule ^(.*)$ index.php/$1 [L]
+		</IfModule>
+
+		<IfModule !mod_php5.c>
+
+			# for PHP7 sapi installations
+			<IfModule mod_php7.c>
+				RewriteRule ^(.*)$ index.php/$1 [L]
+			</IfModule>
+
+			# for fpm installations
+			<IfModule !mod_php7.c>
+				RewriteRule ^(.*)$ index.php?/$1 [QSA,L]
+			</IfModule>
+
+		</IfModule>
+
+	</IfModule>
+
+</IfModule>

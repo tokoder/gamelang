@@ -1,0 +1,9 @@
+<?php
+defined('BASEPATH') OR exit('No direct script access allowed');
+
+/*
+| -------------------------------------------------------------------------
+| encryption key
+| -------------------------------------------------------------------------
+*/
+$config['encryption_key'] = hex2bin('{KEY}');

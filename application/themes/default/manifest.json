@@ -1,0 +1,11 @@
+{
+    "name": "Default",
+    "description": "The default theme that comes with the CodeIgniter Gamelang.",
+    "version": "1.0.0",
+    "license": "MIT",
+    "license_uri": "https://opensource.org/licenses/MIT",
+    "author": "Tokoder Team",
+    "author_uri": "https://github.com/tokoder",
+    "author_email": "tokodercom@gmail.com",
+    "tags": "codeigniter3, bootstrap5"
+}

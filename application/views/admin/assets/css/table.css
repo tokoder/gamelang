@@ -1,0 +1,33 @@
+
+/* table */
+.table th,
+.table td {
+	vertical-align: middle;
+}
+
+.table th {
+	padding: 0.75rem;
+}
+
+.table td {
+	padding: 0.2rem;
+}
+
+.table-responsive .table thead>tr>th:last-of-type,
+.table-responsive .table thead>tr>td:last-of-type,
+.table-responsive .table tfoot>tr>th:last-of-type,
+.table-responsive .table tfoot>tr>td:last-of-type,
+.table-responsive .table tbody>tr>th:last-of-type,
+.table-responsive .table tbody>tr>td:last-of-type {
+	padding-right: 1rem !important;
+	text-align: right;
+}
+
+.table-responsive .table thead>tr>th:first-of-type,
+.table-responsive .table thead>tr>td:first-of-type,
+.table-responsive .table tfoot>tr>th:first-of-type,
+.table-responsive .table tfoot>tr>td:first-of-type,
+.table-responsive .table tbody>tr>th:first-of-type,
+.table-responsive .table tbody>tr>td:first-of-type {
+	padding-left: 1rem !important;
+}

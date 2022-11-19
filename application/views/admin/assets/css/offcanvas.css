@@ -1,0 +1,56 @@
+body {
+  padding-top: 56px;
+}
+
+@media (max-width: 991.98px) {
+  .offcanvas-collapse {
+    position: fixed;
+    top: 56px; /* Height of navbar */
+    bottom: 0;
+    left: 100%;
+    width: 100%;
+    padding-right: 1rem;
+    padding-left: 1rem;
+    overflow-y: auto;
+    visibility: hidden;
+    background-color: #343a40;
+    transition: transform .3s ease-in-out, visibility .3s ease-in-out;
+  }
+  .offcanvas-collapse.open {
+    visibility: visible;
+    transform: translateX(-100%);
+  }
+}
+.icon-link > .fas {
+  margin-left: .125rem;
+  fill: currentcolor;
+  transition: transform .25s ease-in-out;
+}
+.icon-link:hover > .fas {
+  transform: translate(.25rem);
+}
+.bi {
+  vertical-align: -.125em;
+  fill: currentColor;
+}
+
+.bg-purple {
+  background-color: #712cf9;
+}
+
+.form-control-dark {
+  border-color: var(--bs-gray);
+}
+
+.form-control-dark:focus {
+  border-color: #fff;
+  box-shadow: 0 0 0 .25rem rgba(255, 255, 255, .25);
+}
+
+.text-small {
+  font-size: 85%;
+}
+
+.dropdown-toggle {
+  outline: 0;
+}
