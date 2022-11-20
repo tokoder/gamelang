@@ -282,33 +282,18 @@ defined('BASEPATH') OR exit('No direct script access allowed');
 				// 3. User dropdown.
 				echo '<li class="nav-item dropdown user-menu">',
 
-				html_tag('a', array(
-					'href' => '#',
-					'class' => 'nav-link dropdown-toggle',
-					'data-bs-toggle' => 'dropdown',
-				), fa_icon('user')),
+					html_tag('a', array(
+						'href' => '#',
+						'class' => 'nav-link dropdown-toggle',
+						'data-bs-toggle' => 'dropdown',
+					), fa_icon('user'));
 
-				'<div class="dropdown-menu dropdown-menu-lg dropdown-menu-end text-small shadow">',
-
-					// View profile anchor.
-					anchor(
-						$c_user->username,
-						__('lang_view_profile'),
-						'class="dropdown-item"'
-					),
-
-					// Edit account anchor.
-					admin_anchor(
-						'users/edit/'.$c_user->id,
-						__('lang_edit_profile'),
-						'class="dropdown-item"'
-					),
-
-					'<div class="dropdown-divider"></div>',
-
-					// Logout anchor.
-					anchor('logout', __('lang_logout'), 'class="dropdown-item"'),
-				'</div>';
+					$this->menus->set_items(apply_filters('users_menu', []));
+					echo $this->menus->render([
+						'nav_tag_open'=>'<ul class="dropdown-menu dropdown-menu-lg dropdown-menu-end">',
+						'item_tag_open' => '<li>',
+						'item_anchor' => '<a href="%s" class="dropdown-item">%s</a>'
+					], ['logout'], '<li class="dropdown-divider"></li>');
 
 				echo '</li>';
 				// Closing tag (right menu).

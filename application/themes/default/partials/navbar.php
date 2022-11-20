@@ -39,12 +39,14 @@
                         <?php echo $c_user->full_name; ?>
                         <?php echo user_avatar(24, $c_user->id, 'class="img-circle"'); ?>
                     </a>
-                    <ul class="dropdown-menu">
-                        <li><?php echo anchor($c_user->username, __('lang_view_profile'), 'class="dropdown-item"') ?></li>
-                        <li><?php echo anchor('settings', __('lang_settings'), 'class="dropdown-item"') ?></li>
-                        <li class="dropdown-divider"></li>
-                        <li><?php echo anchor('logout', __('lang_LOGOUT'), 'class="dropdown-item"') ?></li>
-                    </ul>
+                    <?php
+                    $this->menus->set_items(apply_filters('users_menu', []));
+                    echo $this->menus->render([
+                        'nav_tag_open'=>'<ul class="dropdown-menu dropdown-menu-lg dropdown-menu-end">',
+                        'item_tag_open' => '<li>',
+                        'item_anchor' => '<a href="%s" class="dropdown-item">%s</a>'
+                    ], ['logout'], '<li class="dropdown-divider"></li>');
+                    ?>
                 </li>
                 <?php endif; ?>
             </ul>

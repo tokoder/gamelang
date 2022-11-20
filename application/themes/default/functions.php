@@ -71,12 +71,12 @@ class Default_theme {
 	public function set_views_paths() {
 		// Layouts files.
 		add_filter( 'theme_layouts_path', function () {
-			return get_theme_path( 'templates/layouts/' );
+			return get_theme_path( 'layouts/' );
 		} );
 
 		// Partials files.
 		add_filter( 'theme_partials_path', function () {
-			return get_theme_path( 'templates/partials/' );
+			return get_theme_path( 'partials/' );
 		});
 
 		// Views files.
@@ -190,7 +190,7 @@ class Default_theme {
 			$layout = 'clean';
 		}
 		// In case of admin area.
-		elseif ( is_controller( 'admin' ) ) {
+		elseif ( is_controller( CG_ADMIN ) ) {
 			return 'admin';
 		}
 

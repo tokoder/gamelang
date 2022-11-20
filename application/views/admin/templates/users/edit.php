@@ -17,7 +17,7 @@ echo '<div class="row">',
 '<div class="col-xs-12 col-sm-8 col-md-6">',
 
 // Form opening tag and nonce.
-form_open('admin/users/edit/'.$user->id, 'role="form" id="edit-user"'),
+form_open(admin_url('users/edit/'.$user->id), 'role="form" id="edit-user"'),
 form_nonce('edit-user_'.$user->id);
 
 // Display inputs.
@@ -36,6 +36,14 @@ form_checkbox('enabled', 1, (1 == $user->enabled), 'id="enabled"'),
 html_tag('label', array(
 	'for' => 'enabled',
 ), __('lang_active')),
+
+// Account type.
+'<span class="float-end">',
+form_checkbox('admin', 1, (1 == $user->admin), 'id="admin"'),
+html_tag('label', array(
+	'for' => 'admin',
+), __('lang_role_admin')),
+'</span>',
 '</div>',
 
 // Submit button and cancel.

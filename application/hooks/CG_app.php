@@ -111,6 +111,7 @@ class CG_app
 	{
 		// We define useful constants first.
 		defined('CG_VERSION')    		OR define('CG_VERSION', '1.0.0');
+		defined('CG_ADMIN')          	OR define('CG_ADMIN', 'admin');
 
 		// Constants useful for expressing human-readable data sizes
 		defined('KB_IN_BYTES')   		OR define('KB_IN_BYTES', 1024);

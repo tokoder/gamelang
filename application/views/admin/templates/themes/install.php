@@ -20,7 +20,7 @@ defined('BASEPATH') OR exit('No direct script access allowed');
 			<div class="card-body text-center">
 				<?php
 				echo form_open_multipart(
-					'admin/themes/upload',
+					admin_url('themes/upload'),
 					'class="row row-cols-lg-auto g-3 align-items-center '.(form_error('themezip') ? ' has-error' : '').'" id="theme-upload"'
 				),
 				form_nonce('upload-theme'),

@@ -602,7 +602,7 @@ class Gamelang_validation extends CI_Driver
 		/**
 		 * Filters are ignored on the dashboard.
 		 */
-		if ('admin' !== $this->ci->uri->segment(1))
+		if (CG_ADMIN !== $this->ci->uri->segment(1))
 		{
 			$jqv_submitHandler       =  apply_filters('jquery_validate_submitHandler'.$filter, $jqv_submitHandler);
 			$jqv_invalidHandler      =  apply_filters('jquery_validate_invalidHandler'.$filter, $jqv_invalidHandler);

@@ -129,7 +129,7 @@ class Settings extends CG_Controller_Admin
 		// Prepare form action.
 		$action = '';
 		('general' !== $tab) && $action .= '?tab='.$tab;
-		$this->data['action'] = 'admin/settings'.$action;
+		$this->data['action'] = admin_url('settings'.$action);
 
 		if ($this->form_validation->run() == false)
 		{
@@ -140,7 +140,7 @@ class Settings extends CG_Controller_Admin
 		else
 		{
 			$this->_save_settings($this->data['inputs'], $tab);
-			redirect('admin/settings'.$action, 'refresh');
+			redirect(admin_url('settings'.$action), 'refresh');
 			exit;
 		}
 

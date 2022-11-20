@@ -267,7 +267,42 @@ class Gamelang_menus extends CI_Driver {
 	public function initialize()
 	{
 		log_message('info', 'Gamelang_menus Class Initialized');
+
+		// users_menu
+        add_filter('users_menu', array( $this, 'users_menu' ));
 	}
+
+	// -----------------------------------------------------------------------------
+
+    public function users_menu($final)
+    {
+		$c_user = $this->_parent->auth->user();
+
+		$user_menu[] = array(
+			'parent' => NULL,
+			'id'     => 'profile',
+			'slug'   => $c_user->admin ? CG_ADMIN : $c_user->username,
+			'name'   => __('my_profile'),
+		);
+		if ( $c_user->privacy !== 0) :
+		$user_menu[] = array(
+			'parent' => NULL,
+			'id'     => 'settings',
+			'slug'  => $c_user->admin ? admin_url('settings') : site_url('settings'),
+			'name' => __('lang_settings'),
+		);
+		endif;
+		$user_menu[] = array(
+			'parent' => NULL,
+			'id'     => 'logout',
+			'slug'   => 'logout',
+			'name'   => __('lang_logout'),
+		);
+
+		return array_merge($final, $user_menu);
+    }
+
+	// ----------------------------------------------------------------------------
 
 	/**
 	 * Specify what items would be divided
@@ -284,6 +319,8 @@ class Gamelang_menus extends CI_Driver {
 			$this->divided_items_list_count = count($this->divided_items_list);
 		}
 	}
+
+	// ----------------------------------------------------------------------------
 
 	/**
      * Render the menu
@@ -322,6 +359,8 @@ class Gamelang_menus extends CI_Driver {
         return $html;
     }
 
+	// ----------------------------------------------------------------------------
+
     /**
      * Set array data
      *
@@ -331,6 +370,8 @@ class Gamelang_menus extends CI_Driver {
     {
 		$this->items = $items;
     }
+
+	// ----------------------------------------------------------------------------
 
     /**
      * Prepare item before render
@@ -359,6 +400,8 @@ class Gamelang_menus extends CI_Driver {
 		return $items;
     }
 
+	// ----------------------------------------------------------------------------
+
     /**
      * Sort array by order
      *
@@ -373,6 +416,8 @@ class Gamelang_menus extends CI_Driver {
 		}
 		return $a[$this->menu_order] - $b[$this->menu_order];
     }
+
+	// ----------------------------------------------------------------------------
 
     /**
      * Render data into menu items
@@ -489,6 +534,8 @@ class Gamelang_menus extends CI_Driver {
 		}
 	}
 
+	// ----------------------------------------------------------------------------
+
 	/**
 	 * Inject item to menu
 	 * Call this method before render method call
@@ -507,6 +554,8 @@ class Gamelang_menus extends CI_Driver {
 
 		return $this;
 	}
+
+	// ----------------------------------------------------------------------------
 
 	/**
 	 * Set active item
