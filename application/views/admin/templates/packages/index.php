@@ -16,7 +16,7 @@ defined('BASEPATH') OR exit('No direct script access allowed');
 add_script('packages.js');
 
 // Form opening tag.
-echo form_open('admin/packages', 'class="form-inline card"'),
+echo form_open(admin_url('packages'), 'class="form-inline card"'),
 
 // Form nonce field.
 form_nonce('bulk-update-packages'),

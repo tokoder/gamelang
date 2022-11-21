@@ -1905,8 +1905,7 @@ class CG_User
 		 * Allow package or themes define the role used as
 		 * the admin role.
 		 */
-		$admin_role = apply_filters('users_admin_role', 'admin');
-		empty($admin_role) && $admin_role = 'admin';
+		$admin_role = apply_filters('users_admin_role', 'administrator');
 
 		// Whether the user is an admin or not.
 		$this->data->admin = ($admin_role === $user->subtype);

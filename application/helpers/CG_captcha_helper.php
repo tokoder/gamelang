@@ -48,7 +48,7 @@ if ( ! function_exists('generate_captcha'))
 		}
 
 		// First, we delete old captcha
-		get_instance()->variables->delete_by(array(
+		delete_var_by(array(
 			'name'         => 'captcha',
 			'created_at <' => time() - (MINUTE_IN_SECONDS * 5),
 		));
@@ -63,33 +63,15 @@ if ( ! function_exists('generate_captcha'))
 			exit;
 		}
 
-		// Insert catpcha details into database if not found.
-		$var = get_instance()->variables->get_by(array(
-			'guid'   => $guid,
-			'name'   => 'captcha',
-			'params' => get_instance()->input->ip_address(),
-		));
+		// Create a variable OR update it if it exists.
+		set_var(
+			$guid,
+			'captcha',
+			strtolower($cap['word']),
+			get_instance()->input->ip_address()
+		);
 
-		// If not found, create it.
-		if ( ! $var)
-		{
-			get_instance()->variables->add_var(
-				$guid,
-				'captcha',
-				$cap['word'],
-				get_instance()->input->ip_address()
-			);
-		}
-		// Found? Update it.
-		else
-		{
-			get_instance()->variables->update($var->id, array(
-				'value'      => $cap['word'],
-				'created_at' => time(),
-				'params'     => get_instance()->input->ip_address(),
-			));
-		}
-
+		// return
 		$captcha = array(
 			'filename' => $cap['filename'],
 			'image'    => $cap['image'],
@@ -97,7 +79,7 @@ if ( ! function_exists('generate_captcha'))
 				'type'        => 'text',
 				'name'        => 'captcha',
 				'id'          => 'captcha-input',
-				'placeholder' => 'Type the text you see on the image',
+				'placeholder' => __('Type the text you see'),
 				'maxlength'   => get_instance()->config->item('word_length', 'captcha'),
 				'required' 	  => '',
 			),

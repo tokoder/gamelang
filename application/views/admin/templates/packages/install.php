@@ -20,7 +20,7 @@ defined('BASEPATH') OR exit('No direct script access allowed');
 			<div class="card-body text-center">
 				<?php
 				echo form_open_multipart(
-					'admin/packages/upload',
+					admin_url('packages/upload'),
 					'class="row row-cols-lg-auto g-3 align-items-center '.(form_error('packagezip') ? ' has-error' : '').'" id="package-upload"'
 				),
 				form_nonce('upload-package'),

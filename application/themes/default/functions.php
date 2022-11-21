@@ -58,6 +58,10 @@ class Default_theme {
 
 		// pagination
 		add_filter( 'pagination', array( $this, 'pagination' ) );
+
+		// class
+		add_filter( 'html_class', array( $this, 'html_class' ) );
+		add_filter( 'body_class', array( $this, 'body_class' ) );
 	}
 
 	// ------------------------------------------------------------------------
@@ -71,12 +75,12 @@ class Default_theme {
 	public function set_views_paths() {
 		// Layouts files.
 		add_filter( 'theme_layouts_path', function () {
-			return get_theme_path( 'templates/layouts/' );
+			return get_theme_path( 'layouts/' );
 		} );
 
 		// Partials files.
 		add_filter( 'theme_partials_path', function () {
-			return get_theme_path( 'templates/partials/' );
+			return get_theme_path( 'partials/' );
 		});
 
 		// Views files.
@@ -132,13 +136,16 @@ class Default_theme {
 	 * This method is triggered after theme was installed.
 	 * @access 	public
 	 */
-	public function after_theme_setup() {
+	public function after_theme_setup()
+	{
 		add_styles('assets/node_modules/bootstrap/dist/css/bootstrap.min.css');
 		add_styles('assets/fontawesome-free/css/font-awesome.min.css');
+		add_styles('assets/node_modules/summernote/dist/summernote-bs5.css');
 		add_styles(get_theme_path('style.css'));
 
-		add_script('assets/node_modules/jquery/dist/jquery.js');
+		add_script('assets/node_modules/jquery/dist/jquery.min.js');
 		add_script('assets/node_modules/bootstrap/dist/js/bootstrap.bundle.min.js');
+		add_script('assets/node_modules/summernote/dist/summernote-bs5.min.js');
 
 		$output = '<script>';
 		$output .= 'var site_url = "'.site_url().'";';
@@ -172,7 +179,7 @@ class Default_theme {
 	 * @access 	public
 	 */
 	public function enqueue_partials() {
-		add_partial( 'navbar' );
+		add_partial( 'header' );
 		add_partial( 'sidebar' );
 		add_partial( 'footer' );
 	}
@@ -183,19 +190,38 @@ class Default_theme {
 	 * @param 	string 	$layout 	The layout to use.
 	 * @return 	string 	The layout to be used.
 	 */
-
 	public function theme_layout( $layout ) {
 		// Change layout of Auth controller.
 		if ( is_package( 'users' ) ) {
 			$layout = 'clean';
 		}
 		// In case of admin area.
-		elseif ( is_controller( 'admin' ) ) {
+		elseif ( is_controller( CG_ADMIN ) ) {
 			return 'admin';
 		}
 
 		// Always return the layout.
 		return $layout;
+	}
+
+	/**
+	 * Handle our body class
+	 * @access 	public
+	 */
+	public function body_class( $class ) {
+		$class[] = 'd-flex flex-column h-100';
+		// Always return the layout.
+		return $class;
+	}
+
+	/**
+	 * Handle our html class
+	 * @access 	public
+	 */
+	public function html_class( $class ) {
+		$class[] = 'h-100';
+		// Always return the layout.
+		return $class;
 	}
 
 	// ------------------------------------------------------------------------

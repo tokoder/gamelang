@@ -17,7 +17,7 @@ echo '<div class="row">',
 '<div class="col-xs-12 col-sm-8 col-md-6">',
 
 // Form opening tag and nonce.
-form_open('admin/users/add', 'role="form" id="add-user"'),
+form_open(admin_url('users/add'), 'role="form" id="add-user"'),
 form_nonce('add-user');
 
 // Display inputs.

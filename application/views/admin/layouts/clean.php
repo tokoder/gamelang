@@ -23,22 +23,8 @@ echo '<main class="wrapper container my-3" role="main">';
     // Display the alert.
     the_alert();
 
-    echo '<div id="wrapper">';
-
-        /**
-         * Fires at the top of page content.
-         */
-        do_action('admin_page_header');
-
-        // Display the page content.
-        the_content();
-
-        /**
-         * Fires at the end of page content.
-         */
-        do_action('admin_page_footer');
-
-    echo '</div>';
+    // Display the page content.
+    the_content();
 
 echo '</main>';
 

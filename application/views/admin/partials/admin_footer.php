@@ -14,7 +14,7 @@
 defined('BASEPATH') OR exit('No direct script access allowed');
 ?>
 
-<footer class="footer mt-auto py-3 bg-light">
+<footer class="footer navbar mt-auto py-0 bg-light">
     <div class="container-fluid">
         <?php
 		/**
@@ -31,7 +31,7 @@ defined('BASEPATH') OR exit('No direct script access allowed');
 		if ( ! empty($thankyou))
 		{
 			echo html_tag('span', array(
-				'class' => 'text-muted',
+				'class' => 'navbar-text',
 				'id'    => 'footer-thankyou',
 			), $thankyou);
 		}
@@ -45,7 +45,7 @@ defined('BASEPATH') OR exit('No direct script access allowed');
 		if ( ! empty($version))
 		{
 			echo html_tag('span', array(
-				'class' => 'text-muted float-end',
+				'class' => 'navbar-text',
 				'id'    => 'footer-upgrade',
 			), $version);
 		}

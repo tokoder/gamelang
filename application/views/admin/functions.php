@@ -32,11 +32,72 @@ class Admin_theme
 		add_filter('admin_head', array($this, 'globals'), 0);
 		add_filter('admin_head', array($this, 'admin_head'), 99);
 
-		// Views files.
-		add_filter( 'admin_views_path', function () {
-			return get_theme_path( 'templates/' );
-		} );
+		if ( ! get_instance()->input->is_ajax_request())
+		{
+			// Enqueue our assets.
+			add_action( 'after_theme_setup', array( $this, 'after_theme_setup' ), 0 );
+
+			// Partials enqueue for caching purpose.
+			add_action('enqueue_admin_partials', array( $this, 'enqueue_admin_partials' ) );
+
+			// Views files.
+			add_filter( 'admin_views_path', function () {
+				return get_theme_path( 'templates/' );
+			} );
+
+			// Partials files.
+			add_filter( 'admin_partials_path', function () {
+				return get_theme_path( 'partials/' );
+			});
+
+			// Views files.
+			add_filter( 'admin_views_path', function () {
+				return get_theme_path( 'templates/' );
+			} );
+
+			// body_class.
+			add_filter('admin_body_class', function ($args) {
+				return array_clean(array_merge($args, ['d-flex flex-column min-vh-100']));
+			} );
+		}
     }
+
+	// ----------------------------------------------------------------------------
+	/**
+	 * This method is triggered after theme was installed.
+	 * @access 	public
+	 */
+	public function after_theme_setup()
+	{
+		add_styles('assets/node_modules/bootstrap/dist/css/bootstrap.css');
+		add_styles('assets/node_modules/sweetalert2/dist/sweetalert2.css');
+		add_styles('assets/node_modules/summernote/dist/summernote-bs5.css');
+		add_styles('assets/node_modules/bootstrap-tagsinput/dist/bootstrap-tagsinput.css');
+		add_styles('assets/fontawesome-free/css/all.min.css');
+		add_styles('offcanvas.css');
+
+		add_script('assets/node_modules/jquery/dist/jquery.js');
+		add_script('assets/node_modules/bootstrap/dist/js/bootstrap.bundle.js');
+		add_script('assets/node_modules/sweetalert2/dist/sweetalert2.js');
+		add_script('assets/node_modules/js-cookie/dist/js.cookie.js');
+		add_script('assets/node_modules/bootbox/dist/bootbox.min.js');
+		add_script('assets/node_modules/summernote/dist/summernote-bs5.min.js');
+		add_script('assets/node_modules/bootstrap-tagsinput/dist/bootstrap-tagsinput.js');
+		add_script('admin.js');
+	}
+
+	// ----------------------------------------------------------------------------
+
+	/**
+	 * We enqueue our partial views so they get cached.
+	 * @access 	public
+	 */
+	public function enqueue_admin_partials() {
+		add_partial( 'admin_header' );
+		add_partial( 'admin_footer' );
+	}
+
+	// ----------------------------------------------------------------------------
 
 	/**
 	 * globals
@@ -101,7 +162,6 @@ class Admin_theme
 		add_ie9_support($output, (ENVIRONMENT !== 'development'));
 		return $output;
 	}
-
 }
 
 // ------------------------------------------------------------------------
