@@ -158,6 +158,7 @@ $config['description'] = array(
 	'type'        => 'textarea',
 	'name'        => 'description',
 	'id'          => 'description',
+	'rows' 		  => '5',
 	'placeholder' => 'lang:lang_description',
 );
 
