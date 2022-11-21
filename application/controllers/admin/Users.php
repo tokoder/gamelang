@@ -196,7 +196,7 @@ class Users extends CG_Controller_Admin {
 			if (true !== check_nonce('add-user'))
 			{
 				set_alert(__('error_csrf'), 'error');
-				redirect('admin/users/add', 'refresh');
+				redirect(admin_url('users/add'), 'refresh');
 				exit;
 			}
 
@@ -214,12 +214,12 @@ class Users extends CG_Controller_Admin {
 			if (false !== ($guid = $this->users->create($data)))
 			{
 				set_alert(__('lang_SUCCESS_ADD'), 'success');
-				redirect('admin/users', 'refresh');
+				redirect(admin_url('users'), 'refresh');
 			}
 			// Something went wrong?
 			else {
 				set_alert(__('lang_ERROR_ADD'), 'error');
-				redirect('admin/users/add', 'refresh');
+				redirect(admin_url('users/add'), 'refresh');
 			}
 			exit;
 		}
@@ -380,7 +380,7 @@ class Users extends CG_Controller_Admin {
 			if (true !== check_nonce('edit-user_'.$id))
 			{
 				set_alert(__('error_csrf'), 'error');
-				redirect('admin/users/edit/'.$id, 'refresh');
+				redirect(admin_url('users/edit/'.$id), 'refresh');
 				exit;
 			}
 
@@ -434,13 +434,13 @@ class Users extends CG_Controller_Admin {
 			{
 				// Log the activity.
 				set_alert(__('lang_SUCCESS_EDIT'), 'success');
-				redirect('admin/users', 'refresh');
+				redirect(admin_url('users'), 'refresh');
 			}
 			// Something went wrong?
 			else
 			{
 				set_alert(__('lang_ERROR_EDIT'), 'error');
-				redirect('admin/users/edit/'.$this->data['user']->id, 'refresh');
+				redirect(admin_url('users/edit/'.$this->data['user']->id), 'refresh');
 			}
 			exit;
 		}

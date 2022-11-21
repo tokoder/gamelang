@@ -223,7 +223,7 @@ class Languages extends CG_Controller_Admin
 		if ('indonesia' === $folder)
 		{
 			set_alert(__('lang_ERROR_ENGLISH_REQUIRED'), 'error');
-			redirect('admin/languages');
+			redirect(admin_url('languages'));
 			exit;
 		}
 
@@ -235,7 +235,7 @@ class Languages extends CG_Controller_Admin
 		if (in_array($folder, $languages))
 		{
 			set_alert(__('lang_ALREADY_ENABLE'), 'error');
-			redirect('admin/languages');
+			redirect(admin_url('languages'));
 			exit;
 		}
 
@@ -248,12 +248,12 @@ class Languages extends CG_Controller_Admin
 		if (false !== $this->options->set_item('languages', $languages))
 		{
 			set_alert(__('lang_SUCCESS_ENABLE'), 'success');
-			redirect('admin/languages');
+			redirect(admin_url('languages'));
 			exit;
 		}
 
 		set_alert(__('lang_ERROR_ENABLE'), 'error');
-		redirect('admin/languages');
+		redirect(admin_url('languages'));
 		exit;
 	}
 
@@ -275,7 +275,7 @@ class Languages extends CG_Controller_Admin
 		if ('indonesia' === $folder)
 		{
 			set_alert(__('lang_ERROR_ENGLISH_REQUIRED'), 'error');
-			redirect('admin/languages');
+			redirect(admin_url('languages'));
 			exit;
 		}
 
@@ -287,7 +287,7 @@ class Languages extends CG_Controller_Admin
 		if ( ! in_array($folder, $languages))
 		{
 			set_alert(__('lang_ALREADY_DISABLE'), 'error');
-			redirect('admin/languages');
+			redirect(admin_url('languages'));
 			exit;
 		}
 
@@ -316,12 +316,12 @@ class Languages extends CG_Controller_Admin
 			}
 
 			set_alert(__('lang_SUCCESS_DISABLE'), 'success');
-			redirect('admin/languages');
+			redirect(admin_url('languages'));
 			exit;
 		}
 
 		set_alert(__('lang_ERROR_DISABLE'), 'error');
-		redirect('admin/languages');
+		redirect(admin_url('languages'));
 		exit;
 	}
 
@@ -352,7 +352,7 @@ class Languages extends CG_Controller_Admin
 			if (false === $this->options->set_item('languages', $languages))
 			{
 				set_alert(__('lang_ERROR_DEFAULT'), 'error');
-				redirect('admin/languages');
+				redirect(admin_url('languages'));
 				exit;
 			}
 		}
@@ -368,12 +368,12 @@ class Languages extends CG_Controller_Admin
 			$user->update('language', $folder);
 
 			set_alert(__('lang_success_default'), 'success');
-			redirect('admin/languages');
+			redirect(admin_url('languages'));
 			exit;
 		}
 
 		set_alert(__('lang_ERROR_DEFAULT'), 'error');
-		redirect('admin/languages');
+		redirect(admin_url('languages'));
 		exit;
 	}
 

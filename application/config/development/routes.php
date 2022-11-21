@@ -40,16 +40,16 @@ Route::any('register', 'auth/register', array('as' => 'register'), function() {
 | The application has a built-in administration panel.
 | Each package can have context controllers.
 */
-Route::prefix('admin', function()
+Route::prefix(CG_ADMIN, function()
 {
 	// reserved routes system information
-	Route::any('settings/sysinfo', 'admin/settings/sysinfo');
+	Route::any('settings/sysinfo', CG_ADMIN.'/settings/sysinfo');
 
 	// back-end contexts.
 	global $back_contexts;
 	$contexts_routes = implode('|', $back_contexts);
-	Route::context("({$contexts_routes})", 'admin/$1', array(
-		'home'   => 'admin/$1/index',
+	Route::context("({$contexts_routes})", CG_ADMIN.'/$1', array(
+		'home'   => CG_ADMIN.'/$1/index',
 		'offset' => 1,
 	));
 });

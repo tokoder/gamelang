@@ -46,8 +46,8 @@ class Gamelang_objects extends CI_Driver implements Gamelang_crud_interface
      */
     public function select($select = '*', $escape = null)
     {
-    	$this->ci->db->select($select, $escape);
-    	return $this;
+		$this->ci->db->select($select, $escape);
+		return $this;
     }
 
 	// ------------------------------------------------------------------------

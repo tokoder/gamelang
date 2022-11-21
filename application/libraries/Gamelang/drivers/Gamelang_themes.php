@@ -1921,7 +1921,7 @@ class Gamelang_themes extends CI_Driver
 		 * We make sure the method remembers the status to reduce each time we use it.
 		 * @var boolean
 		 */
-		$is_admin = ($this->ci->uri->segment(1) === 'admin')
+		$is_admin = ($this->ci->uri->segment(1) === CG_ADMIN)
 			? true
 			: false;
 

@@ -46,6 +46,18 @@ class Welcome extends CG_Controller_Admin
 			->render($this->data);
 	}
 
+    // -----------------------------------------------------------------------------
+
+	/**
+	 * Index Page for this controller.
+	 */
+	public function page_mising()
+	{
+		$this->themes
+			->set_view('welcome/404')
+			->render();
+	}
+
 	// ------------------------------------------------------------------------
 
 	/**
@@ -118,5 +130,4 @@ class Welcome extends CG_Controller_Admin
 		$output .= '</div>';
 		echo $output;
 	}
-
 }

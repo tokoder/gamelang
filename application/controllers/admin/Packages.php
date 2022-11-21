@@ -66,7 +66,7 @@ class Packages extends CG_Controller_Admin {
 			if (true !== check_nonce('bulk-update-packages'))
 			{
 				set_alert(__('error_nonce_url'), 'error');
-				redirect('admin/packages');
+				redirect(admin_url('packages'));
 				exit;
 			}
 
@@ -76,19 +76,19 @@ class Packages extends CG_Controller_Admin {
 			if (empty($selected))
 			{
 				set_alert(__('error_bulk'.$action), 'error');
-				redirect('admin/packages');
+				redirect(admin_url('packages'));
 				exit;
 			}
 
 			if (false !== $this->packages->{$action}($selected))
 			{
 				set_alert(__('success_bulk'.$action), 'success');
-				redirect('admin/packages');
+				redirect(admin_url('packages'));
 				exit;
 			}
 
 			set_alert(__('error_bulk'.$action), 'error');
-			redirect('admin/packages');
+			redirect(admin_url('packages'));
 			exit;
 		}
 
@@ -266,7 +266,7 @@ class Packages extends CG_Controller_Admin {
 		if ( ! check_nonce('upload-package'))
 		{
 			set_alert(__('error_nonce_url'), 'error');
-			redirect('admin/packages/install');
+			redirect(admin_url('packages/install'));
 			exit;
 		}
 
@@ -274,7 +274,7 @@ class Packages extends CG_Controller_Admin {
 		if (empty($_FILES['packagezip']['name']))
 		{
 			set_alert(__('error_upload'), 'error');
-			redirect('admin/packages/install');
+			redirect(admin_url('packages/install'));
 			exit;
 		}
 
@@ -283,7 +283,7 @@ class Packages extends CG_Controller_Admin {
 		if ( ! function_exists('unzip_file'))
 		{
 			set_alert(__('error_upload'), 'error');
-			redirect('admin/packages/install');
+			redirect(admin_url('packages/install'));
 			exit;
 		}
 
@@ -298,7 +298,7 @@ class Packages extends CG_Controller_Admin {
 			OR ! class_exists('ZipArchive', false))
 		{
 			set_alert(__('error_upload'), 'error');
-			redirect('admin/packages/install');
+			redirect(admin_url('packages/install'));
 			exit;
 		}
 
@@ -313,13 +313,13 @@ class Packages extends CG_Controller_Admin {
 		if (true === $status)
 		{
 			set_alert(__('success_upload'), 'success');
-			redirect('admin/packages');
+			redirect(admin_url('packages'));
 			exit;
 		}
 
 		// Otherwise, the theme could not be installed.
 		set_alert(__('error_upload'), 'error');
-		redirect('admin/packages/install');
+		redirect(admin_url('packages/install'));
 		exit;
 	}
 
@@ -342,12 +342,12 @@ class Packages extends CG_Controller_Admin {
 		if (false !== $this->packages->activate($folder))
 		{
 			set_alert(sprintf(__('lang_success_activate'), $name), 'success');
-			redirect('admin/packages');
+			redirect(admin_url('packages'));
 			exit;
 		}
 
 		set_alert(sprintf(__('lang_error_activate'), $name), 'error');
-		redirect('admin/packages');
+		redirect(admin_url('packages'));
 		exit;
 	}
 
@@ -368,12 +368,12 @@ class Packages extends CG_Controller_Admin {
 		if (package_is_active($folder) && $this->packages->deactivate($folder))
 		{
 			set_alert(sprintf(__('lang_success_deactivate'), $name), 'success');
-			redirect('admin/packages');
+			redirect(admin_url('packages'));
 			exit;
 		}
 
 		set_alert(sprintf(__('lang_error_deactivate'), $name), 'error');
-		redirect('admin/packages');
+		redirect(admin_url('packages'));
 		exit;
 	}
 
@@ -394,7 +394,7 @@ class Packages extends CG_Controller_Admin {
 		if (package_is_active($folder))
 		{
 			set_alert(sprintf(__('lang_error_delete_active'), $name), 'error');
-			redirect('admin/packages');
+			redirect(admin_url('packages'));
 			exit;
 		}
 
@@ -403,12 +403,12 @@ class Packages extends CG_Controller_Admin {
 		if (false !== directory_delete($details['full_path']))
 		{
 			set_alert(sprintf(__('lang_success_delete'), $name), 'success');
-			redirect('admin/packages');
+			redirect(admin_url('packages'));
 			exit;
 		}
 
 		set_alert(sprintf(__('lang_error_delete'), $name), 'error');
-		redirect('admin/packages');
+		redirect(admin_url('packages'));
 		exit;
 	}
 

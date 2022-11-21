@@ -89,7 +89,7 @@ class CG_Controller extends CI_Controller
 			if (false === stripos($this->uri->uri_string(), $this->router->default_controller))
 			{
 				set_alert(__('error_component_disabled'), 'error');
-				redirect(($this->auth->is_admin() ? 'admin' : ''));
+				redirect(($this->auth->is_admin() ? CG_ADMIN : ''));
 				exit;
 			}
 
@@ -261,28 +261,6 @@ class CG_Controller_Admin extends CG_Controller
 			return parent::_remap($method, $params);
 		}
 
-        // body_class.
-		add_filter('admin_body_class', function ($args) {
-			return array_clean(array_merge($args, ['d-flex flex-column min-vh-100']));
-		} );
-
-		// Enqueue our assets.
-		add_action( 'after_theme_setup', function () {
-			add_styles('assets/node_modules/bootstrap/dist/css/bootstrap.css');
-			add_styles('assets/node_modules/sweetalert2/dist/sweetalert2.css');
-			add_styles('assets/node_modules/summernote/dist/summernote-bs5.css');
-			add_styles('assets/fontawesome-free/css/all.min.css');
-			add_styles('offcanvas.css');
-
-			add_script('assets/node_modules/jquery/dist/jquery.js');
-			add_script('assets/node_modules/bootstrap/dist/js/bootstrap.bundle.js');
-			add_script('assets/node_modules/sweetalert2/dist/sweetalert2.js');
-			add_script('assets/node_modules/js-cookie/dist/js.cookie.js');
-			add_script('assets/node_modules/bootbox/dist/bootbox.min.js');
-			add_script('assets/node_modules/summernote/dist/summernote-bs5.min.js');
-			add_script('admin.js');
-		});
-
 		/**
 		 * Admin menu is called only of method that load views.
 		 */
@@ -302,28 +280,6 @@ class CG_Controller_Admin extends CG_Controller
 				$this->load->vars($key, $val);
 			}
 		}
-
-		// Layouts files.
-		add_filter( 'admin_layouts_path', function () {
-			return get_theme_path( 'layouts/' );
-		} );
-
-		// Partials files.
-		add_filter( 'admin_partials_path', function () {
-			return get_theme_path( 'partials/' );
-		});
-
-		// Views files.
-		add_filter( 'admin_views_path', function () {
-			return get_theme_path( 'templates/' );
-		} );
-
-		/**
-		 * Separated dashboard header and footer to allow different layouts.
-		 */
-		$this->themes
-			->add_partial('admin_header')
-			->add_partial('admin_footer');
 
 		// We call the method.
 		return call_user_func_array(array($this, $method), $params);

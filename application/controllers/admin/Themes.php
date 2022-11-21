@@ -227,7 +227,7 @@ class Themes extends CG_Controller_Admin {
 		if (true !== check_nonce('upload-theme'))
 		{
 			set_alert(__('error_csrf'), 'error');
-			redirect('admin/themes/install');
+			redirect(admin_url('themes/install'));
 			exit;
 		}
 
@@ -235,7 +235,7 @@ class Themes extends CG_Controller_Admin {
 		if (empty($_FILES['themezip']['name']))
 		{
 			set_alert(__('lang_ERROR_UPLOAD'), 'error');
-			redirect('admin/themes/install');
+			redirect(admin_url('themes/install'));
 			exit;
 		}
 
@@ -244,7 +244,7 @@ class Themes extends CG_Controller_Admin {
 		if ( ! function_exists('unzip_file'))
 		{
 			set_alert(__('lang_ERROR_UPLOAD'), 'error');
-			redirect('admin/themes/install');
+			redirect(admin_url('themes/install'));
 			exit;
 		}
 
@@ -259,7 +259,7 @@ class Themes extends CG_Controller_Admin {
 			OR ! class_exists('ZipArchive', false))
 		{
 			set_alert(__('lang_ERROR_UPLOAD'), 'warning');
-			redirect('admin/themes/install');
+			redirect(admin_url('themes/install'));
 			exit;
 		}
 
@@ -274,13 +274,13 @@ class Themes extends CG_Controller_Admin {
 		if (true === $status)
 		{
 			set_alert(__('lang_SUCCESS_UPLOAD'), 'success');
-			redirect('admin/themes');
+			redirect(admin_url('themes'));
 			exit;
 		}
 
 		// Otherwise, the theme could not be installed.
 		set_alert(__('lang_ERROR_UPLOAD'), 'error');
-		redirect('admin/themes/install');
+		redirect(admin_url('themes/install'));
 		exit;
 	}
 
@@ -315,12 +315,12 @@ class Themes extends CG_Controller_Admin {
 			}
 
 			set_alert(sprintf(__('lang_success_activate'), $theme), 'success');
-			redirect('admin/themes');
+			redirect(admin_url('themes'));
 			exit;
 		}
 
 		set_alert(sprintf(__('lang_error_activate'), $theme), 'error');
-		redirect('admin/themes');
+		redirect(admin_url('themes'));
 		exit;
 	}
 
@@ -342,7 +342,7 @@ class Themes extends CG_Controller_Admin {
 		if ($folder === $db_theme->value)
 		{
 			set_alert(__('lang_error_delete_active'), 'error');
-			redirect('admin/themes');
+			redirect(admin_url('themes'));
 			return;
 		}
 
@@ -358,12 +358,12 @@ class Themes extends CG_Controller_Admin {
 			delete_option('theme_menus_'.$folder);
 
 			set_alert(sprintf(__('lang_success_delete'), $theme['name']), 'success');
-			redirect('admin/themes');
+			redirect(admin_url('themes'));
 			exit;
 		}
 
 		set_alert(sprintf(__('lang_error_delete'), $theme['name']), 'error');
-		redirect('admin/themes');
+		redirect(admin_url('themes'));
 		exit;
 	}
 
