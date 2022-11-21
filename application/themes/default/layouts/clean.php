@@ -1,8 +1,10 @@
-<?= get_partial('navbar'); ?>
+<?= get_partial('header'); ?>
 
-<div class="container mt-3">
-	<?php the_alert(); ?>
-	<?php the_content(); ?>
-</div>
+<main class="my-5 pt-5">
+	<div class="container">
+		<?php the_alert(); ?>
+		<?php the_content(); ?>
+	</div>
+</main>
 
-<?php echo get_partial('footer'); ?>
+<?= get_partial('footer'); ?>
