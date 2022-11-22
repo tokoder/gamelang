@@ -64,26 +64,8 @@ class CG_Controller extends CI_Controller
 		$package = $this->router->fetch_package();
 		empty($package) OR $package = $this->router->package_details($package);
 
-		/**
-		 * If the "manifest.json" file is missing or badly formatted,
-		 * $package will be set to "FALSE". So we have two options:
-		 * 1. Redirect the user to homepage.
-		 * 2. Show error, this is in case the package is used as the
-		 * default controller.
-		 */
-		if (false === $package)
-		{
-			if (false === stripos($this->uri->uri_string(), $this->router->default_controller))
-			{
-				set_alert(__('error_manifest_missing'), 'error');
-				redirect('');
-				exit;
-			}
-
-			show_error(__('error_manifest_missing'));
-		}
 		// In case the package is disabled.
-		elseif (null !== $package
+		if (null !== $package
 			&& ( ! isset($package['enabled']) OR true !== $package['enabled']))
 		{
 			if (false === stripos($this->uri->uri_string(), $this->router->default_controller))
@@ -94,6 +76,24 @@ class CG_Controller extends CI_Controller
 			}
 
 			show_error(__('error_component_disabled'));
+		}
+		/**
+		 * If the "manifest.json" file is missing or badly formatted,
+		 * $package will be set to "FALSE". So we have two options:
+		 * 1. Redirect the user to homepage.
+		 * 2. Show error, this is in case the package is used as the
+		 * default controller.
+		 */
+		elseif (false === $package)
+		{
+			if (false === stripos($this->uri->uri_string(), $this->router->default_controller))
+			{
+				set_alert(__('error_manifest_missing'), 'error');
+				redirect('');
+				exit;
+			}
+
+			show_error(__('error_manifest_missing'));
 		}
 		$this->themes->set('package', $package, true);
 
