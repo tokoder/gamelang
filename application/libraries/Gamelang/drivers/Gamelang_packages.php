@@ -361,7 +361,7 @@ if ( ! function_exists('get_package_path'))
 	 */
 	function get_package_path($name = null)
 	{
-		return get_instance()->package->package_path($name);
+		return get_instance()->packages->package_path($name);
 	}
 }
 

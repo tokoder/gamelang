@@ -3,7 +3,7 @@
 /*!40101 SET @OLD_CHARACTER_SET_CLIENT=@@CHARACTER_SET_CLIENT */;
 /*!40101 SET @OLD_CHARACTER_SET_RESULTS=@@CHARACTER_SET_RESULTS */;
 /*!40101 SET @OLD_COLLATION_CONNECTION=@@COLLATION_CONNECTION */;
-/*!40101 SET NAMES utf8 */;
+/*!50503 SET NAMES utf8mb4 */;
 /*!40103 SET @OLD_TIME_ZONE=@@TIME_ZONE */;
 /*!40103 SET TIME_ZONE='+00:00' */;
 /*!40014 SET @OLD_UNIQUE_CHECKS=@@UNIQUE_CHECKS, UNIQUE_CHECKS=0 */;
@@ -17,16 +17,16 @@
 
 DROP TABLE IF EXISTS `activities`;
 /*!40101 SET @saved_cs_client     = @@character_set_client */;
-/*!40101 SET character_set_client = utf8 */;
+/*!50503 SET character_set_client = utf8mb4 */;
 CREATE TABLE `activities` (
   `id` bigint(20) unsigned NOT NULL AUTO_INCREMENT,
-  `user_id` bigint(20) unsigned NOT NULL DEFAULT 0,
+  `user_id` bigint(20) unsigned NOT NULL DEFAULT '0',
   `package` varchar(100) DEFAULT NULL,
   `controller` varchar(100) DEFAULT NULL,
   `method` varchar(100) DEFAULT NULL,
   `activity` varchar(255) DEFAULT NULL,
   `ip_address` varchar(50) DEFAULT NULL,
-  `created_at` int(11) unsigned NOT NULL DEFAULT 0,
+  `created_at` int(11) unsigned NOT NULL DEFAULT '0',
   PRIMARY KEY (`id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
 /*!40101 SET character_set_client = @saved_cs_client */;
@@ -46,21 +46,21 @@ UNLOCK TABLES;
 
 DROP TABLE IF EXISTS `entities`;
 /*!40101 SET @saved_cs_client     = @@character_set_client */;
-/*!40101 SET character_set_client = utf8 */;
+/*!50503 SET character_set_client = utf8mb4 */;
 CREATE TABLE `entities` (
   `id` bigint(20) unsigned NOT NULL AUTO_INCREMENT,
-  `parent_id` bigint(20) unsigned NOT NULL DEFAULT 0,
-  `owner_id` bigint(20) unsigned NOT NULL DEFAULT 0,
+  `parent_id` bigint(20) unsigned NOT NULL DEFAULT '0',
+  `owner_id` bigint(20) unsigned NOT NULL DEFAULT '0',
   `type` enum('user','group','object') NOT NULL,
   `subtype` varchar(50) NOT NULL,
   `username` varchar(100) DEFAULT NULL,
   `language` varchar(50) DEFAULT NULL,
-  `privacy` tinyint(1) NOT NULL DEFAULT 2,
-  `enabled` tinyint(1) NOT NULL DEFAULT 1,
-  `deleted` tinyint(1) unsigned NOT NULL DEFAULT 0,
-  `created_at` int(11) unsigned NOT NULL DEFAULT 0,
-  `updated_at` int(11) unsigned NOT NULL DEFAULT 0,
-  `deleted_at` int(11) unsigned NOT NULL DEFAULT 0,
+  `privacy` tinyint(1) NOT NULL DEFAULT '2',
+  `enabled` tinyint(1) NOT NULL DEFAULT '1',
+  `deleted` tinyint(1) unsigned NOT NULL DEFAULT '0',
+  `created_at` int(11) unsigned NOT NULL DEFAULT '0',
+  `updated_at` int(11) unsigned NOT NULL DEFAULT '0',
+  `deleted_at` int(11) unsigned NOT NULL DEFAULT '0',
   PRIMARY KEY (`id`),
   UNIQUE KEY `unique_username` (`username`)
 ) ENGINE=InnoDB AUTO_INCREMENT=2 DEFAULT CHARSET=utf8mb4;
@@ -72,7 +72,7 @@ CREATE TABLE `entities` (
 
 LOCK TABLES `entities` WRITE;
 /*!40000 ALTER TABLE `entities` DISABLE KEYS */;
-INSERT INTO `entities` VALUES (1,0,0,'user','admin','admin','indonesia',2,1,0,1526871009,0,0);
+INSERT INTO `entities` VALUES (1,0,0,'user','administrator','admin','indonesia',2,1,0,1526871009,0,0);
 /*!40000 ALTER TABLE `entities` ENABLE KEYS */;
 UNLOCK TABLES;
 
@@ -82,11 +82,11 @@ UNLOCK TABLES;
 
 DROP TABLE IF EXISTS `groups`;
 /*!40101 SET @saved_cs_client     = @@character_set_client */;
-/*!40101 SET character_set_client = utf8 */;
+/*!50503 SET character_set_client = utf8mb4 */;
 CREATE TABLE `groups` (
   `guid` bigint(20) unsigned NOT NULL,
   `name` varchar(100) NOT NULL,
-  `description` longtext DEFAULT NULL,
+  `description` longtext,
   PRIMARY KEY (`guid`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
 /*!40101 SET character_set_client = @saved_cs_client */;
@@ -106,12 +106,12 @@ UNLOCK TABLES;
 
 DROP TABLE IF EXISTS `metadata`;
 /*!40101 SET @saved_cs_client     = @@character_set_client */;
-/*!40101 SET character_set_client = utf8 */;
+/*!50503 SET character_set_client = utf8mb4 */;
 CREATE TABLE `metadata` (
   `id` bigint(20) unsigned NOT NULL AUTO_INCREMENT,
-  `guid` bigint(20) unsigned NOT NULL DEFAULT 0,
+  `guid` bigint(20) unsigned NOT NULL DEFAULT '0',
   `name` varchar(100) NOT NULL DEFAULT '',
-  `value` longtext DEFAULT NULL,
+  `value` longtext,
   PRIMARY KEY (`id`),
   UNIQUE KEY `unique_values` (`guid`,`name`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
@@ -132,12 +132,12 @@ UNLOCK TABLES;
 
 DROP TABLE IF EXISTS `objects`;
 /*!40101 SET @saved_cs_client     = @@character_set_client */;
-/*!40101 SET character_set_client = utf8 */;
+/*!50503 SET character_set_client = utf8mb4 */;
 CREATE TABLE `objects` (
   `guid` bigint(20) unsigned NOT NULL,
   `name` varchar(100) NOT NULL,
-  `description` longtext DEFAULT NULL,
-  `content` longtext DEFAULT NULL,
+  `description` longtext,
+  `content` longtext,
   PRIMARY KEY (`guid`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
 /*!40101 SET character_set_client = @saved_cs_client */;
@@ -157,14 +157,14 @@ UNLOCK TABLES;
 
 DROP TABLE IF EXISTS `options`;
 /*!40101 SET @saved_cs_client     = @@character_set_client */;
-/*!40101 SET character_set_client = utf8 */;
+/*!50503 SET character_set_client = utf8mb4 */;
 CREATE TABLE `options` (
   `name` varchar(100) NOT NULL,
   `value` longtext NOT NULL,
   `tab` varchar(50) NOT NULL DEFAULT '',
   `field_type` varchar(50) NOT NULL DEFAULT 'text',
   `options` varchar(255) NOT NULL DEFAULT '',
-  `required` tinyint(1) unsigned NOT NULL DEFAULT 1,
+  `required` tinyint(1) unsigned NOT NULL DEFAULT '1',
   PRIMARY KEY (`name`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
 /*!40101 SET character_set_client = @saved_cs_client */;
@@ -185,14 +185,14 @@ UNLOCK TABLES;
 
 DROP TABLE IF EXISTS `relations`;
 /*!40101 SET @saved_cs_client     = @@character_set_client */;
-/*!40101 SET character_set_client = utf8 */;
+/*!50503 SET character_set_client = utf8mb4 */;
 CREATE TABLE `relations` (
   `id` bigint(20) unsigned NOT NULL AUTO_INCREMENT,
-  `guid_from` bigint(20) unsigned NOT NULL DEFAULT 0,
-  `guid_to` bigint(20) unsigned NOT NULL DEFAULT 0,
+  `guid_from` bigint(20) unsigned NOT NULL DEFAULT '0',
+  `guid_to` bigint(20) unsigned NOT NULL DEFAULT '0',
   `relation` varchar(100) NOT NULL,
-  `created_at` int(11) unsigned NOT NULL DEFAULT 0,
-  `updated_at` int(11) unsigned NOT NULL DEFAULT 0,
+  `created_at` int(11) unsigned NOT NULL DEFAULT '0',
+  `updated_at` int(11) unsigned NOT NULL DEFAULT '0',
   PRIMARY KEY (`id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
 /*!40101 SET character_set_client = @saved_cs_client */;
@@ -212,11 +212,11 @@ UNLOCK TABLES;
 
 DROP TABLE IF EXISTS `sessions`;
 /*!40101 SET @saved_cs_client     = @@character_set_client */;
-/*!40101 SET character_set_client = utf8 */;
+/*!50503 SET character_set_client = utf8mb4 */;
 CREATE TABLE `sessions` (
   `id` varchar(128) NOT NULL,
   `ip_address` varchar(45) NOT NULL,
-  `timestamp` int(11) unsigned NOT NULL DEFAULT 0,
+  `timestamp` int(11) unsigned NOT NULL DEFAULT '0',
   `data` blob NOT NULL,
   KEY `ci_sessions_timestamp` (`timestamp`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
@@ -237,15 +237,15 @@ UNLOCK TABLES;
 
 DROP TABLE IF EXISTS `users`;
 /*!40101 SET @saved_cs_client     = @@character_set_client */;
-/*!40101 SET character_set_client = utf8 */;
+/*!50503 SET character_set_client = utf8mb4 */;
 CREATE TABLE `users` (
-  `guid` bigint(20) unsigned NOT NULL DEFAULT 0,
+  `guid` bigint(20) unsigned NOT NULL DEFAULT '0',
   `email` varchar(100) NOT NULL,
   `password` varchar(100) NOT NULL,
   `first_name` varchar(32) NOT NULL,
   `last_name` varchar(32) NOT NULL,
   `gender` enum('unspecified','male','female') NOT NULL DEFAULT 'unspecified',
-  `online` tinyint(1) unsigned NOT NULL DEFAULT 0,
+  `online` tinyint(1) unsigned NOT NULL DEFAULT '0',
   PRIMARY KEY (`guid`),
   UNIQUE KEY `unique_email` (`email`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
@@ -267,15 +267,15 @@ UNLOCK TABLES;
 
 DROP TABLE IF EXISTS `variables`;
 /*!40101 SET @saved_cs_client     = @@character_set_client */;
-/*!40101 SET character_set_client = utf8 */;
+/*!50503 SET character_set_client = utf8mb4 */;
 CREATE TABLE `variables` (
   `id` bigint(20) unsigned NOT NULL AUTO_INCREMENT,
-  `guid` bigint(20) unsigned NOT NULL DEFAULT 0,
+  `guid` bigint(20) unsigned NOT NULL DEFAULT '0',
   `name` varchar(100) NOT NULL,
-  `value` longtext DEFAULT NULL,
-  `params` longtext DEFAULT NULL,
-  `created_at` int(11) unsigned NOT NULL DEFAULT 0,
-  `updated_at` int(11) unsigned NOT NULL DEFAULT 0,
+  `value` longtext,
+  `params` longtext,
+  `created_at` int(11) unsigned NOT NULL DEFAULT '0',
+  `updated_at` int(11) unsigned NOT NULL DEFAULT '0',
   PRIMARY KEY (`id`),
   UNIQUE KEY `unique_values` (`guid`,`name`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;

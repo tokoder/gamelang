@@ -15,3 +15,5 @@
 
     <p class="footer"><?php echo  (ENVIRONMENT === 'development') ?  'CodeIgniter Version <strong>' . CI_VERSION . '</strong>' : '' ?></p>
 </div>
+
+<?php do_action('package_homepage'); ?>
