@@ -267,9 +267,6 @@ class Gamelang_menus extends CI_Driver {
 	public function initialize()
 	{
 		log_message('info', 'Gamelang_menus Class Initialized');
-
-		// users_menu
-        add_filter('users_menu', array( $this, 'users_menu' ));
 	}
 
 	// ----------------------------------------------------------------------------
