@@ -40,26 +40,26 @@ class Admin_theme
 			// Partials enqueue for caching purpose.
 			add_action('enqueue_admin_partials', array( $this, 'enqueue_admin_partials' ) );
 
-			// Views files.
-			add_filter( 'admin_views_path', function () {
-				return get_theme_path( 'templates/' );
-			} );
-
-			// Partials files.
-			add_filter( 'admin_partials_path', function () {
-				return get_theme_path( 'partials/' );
-			});
-
-			// Views files.
-			add_filter( 'admin_views_path', function () {
-				return get_theme_path( 'templates/' );
-			} );
-
 			// body_class.
 			add_filter('admin_body_class', function ($args) {
 				return array_clean(array_merge($args, ['d-flex flex-column min-vh-100']));
 			} );
 		}
+
+		// Views files.
+		add_filter( 'admin_views_path', function () {
+			return get_theme_path( 'templates/' );
+		} );
+
+		// Partials files.
+		add_filter( 'admin_partials_path', function () {
+			return get_theme_path( 'partials/' );
+		} );
+
+		// Views files.
+		add_filter( 'admin_views_path', function () {
+			return get_theme_path( 'templates/' );
+		} );
     }
 
 	// ----------------------------------------------------------------------------
