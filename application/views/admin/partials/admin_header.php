@@ -288,7 +288,19 @@ defined('BASEPATH') OR exit('No direct script access allowed');
 						'data-bs-toggle' => 'dropdown',
 					), fa_icon('user'));
 
-					$this->menus->set_items(apply_filters('users_menu', []));
+					$user_menu[] = array(
+						'parent' => NULL,
+						'id'     => 'settings',
+						'slug'  => admin_url('users/edit/'.$c_user->id),
+						'name' => __('lang_settings'),
+					);
+					$user_menu[] = array(
+						'parent' => NULL,
+						'id'     => 'logout',
+						'slug'   => 'logout',
+						'name'   => __('lang_logout'),
+					);
+					$this->menus->set_items(apply_filters('users_menu', $user_menu));
 					echo $this->menus->render([
 						'nav_tag_open'=>'<ul class="dropdown-menu dropdown-menu-lg dropdown-menu-end">',
 						'item_tag_open' => '<li>',

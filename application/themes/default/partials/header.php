@@ -41,7 +41,27 @@
                             <?php echo user_avatar(24, $c_user->id, 'class="img-circle"'); ?>
                         </a>
                         <?php
-                        $this->menus->set_items(apply_filters('users_menu', []));
+                        $user_menu[] = array(
+                            'parent' => NULL,
+                            'id'     => 'profile',
+                            'slug'   => $c_user->admin ? CG_ADMIN : 'u/'.$c_user->username,
+                            'name'   => __('my_profile'),
+                        );
+                        if ( $c_user->admin == false) :
+                        $user_menu[] = array(
+                            'parent' => NULL,
+                            'id'     => 'settings',
+                            'slug'  => site_url('settings'),
+                            'name' => __('lang_settings'),
+                        );
+                        endif;
+                        $user_menu[] = array(
+                            'parent' => NULL,
+                            'id'     => 'logout',
+                            'slug'   => 'logout',
+                            'name'   => __('lang_logout'),
+                        );
+                        $this->menus->set_items(apply_filters('users_menu', $user_menu));
                         echo $this->menus->render([
                             'nav_tag_open'=>'<ul class="dropdown-menu dropdown-menu-lg dropdown-menu-end">',
                             'item_tag_open' => '<li>',

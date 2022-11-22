@@ -40,7 +40,7 @@ class CG_Loader extends CI_Loader
 	{
 		// See if it's inside a package!
 		if (isset($_ci_data['_ci_view']) &&
-			list($package, $class) = get_instance()->package->_is_valid($_ci_data['_ci_view']))
+			list($package, $class) = get_instance()->packages->_is_valid($_ci_data['_ci_view']))
 		{
 			// package already loaded?
 			$_ci_data['_ci_path'] = get_instance()->router->packages_dir($package).'/views/'.$class.'.php';

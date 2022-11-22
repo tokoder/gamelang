@@ -272,36 +272,6 @@ class Gamelang_menus extends CI_Driver {
         add_filter('users_menu', array( $this, 'users_menu' ));
 	}
 
-	// -----------------------------------------------------------------------------
-
-    public function users_menu($final)
-    {
-		$c_user = $this->_parent->auth->user();
-
-		$user_menu[] = array(
-			'parent' => NULL,
-			'id'     => 'profile',
-			'slug'   => $c_user->admin ? CG_ADMIN : $c_user->username,
-			'name'   => __('my_profile'),
-		);
-		if ( $c_user->privacy !== 0) :
-		$user_menu[] = array(
-			'parent' => NULL,
-			'id'     => 'settings',
-			'slug'  => $c_user->admin ? admin_url('settings') : site_url('settings'),
-			'name' => __('lang_settings'),
-		);
-		endif;
-		$user_menu[] = array(
-			'parent' => NULL,
-			'id'     => 'logout',
-			'slug'   => 'logout',
-			'name'   => __('lang_logout'),
-		);
-
-		return array_merge($final, $user_menu);
-    }
-
 	// ----------------------------------------------------------------------------
 
 	/**
