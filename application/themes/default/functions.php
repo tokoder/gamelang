@@ -42,7 +42,7 @@ class Default_theme {
 		add_action( 'theme_images', array( $this, 'theme_images' ) );
 
 		// Enqueue our assets.
-		add_action( 'after_theme_setup', array( $this, 'after_theme_setup' ) );
+		add_action( 'after_theme_setup', array( $this, 'after_theme_setup' ), 0);
 
 		// Add some meta tags.
 		add_action( 'enqueue_meta', array( $this, 'enqueue_meta' ) );
@@ -141,11 +141,13 @@ class Default_theme {
 		add_styles('assets/node_modules/bootstrap/dist/css/bootstrap.min.css');
 		add_styles('assets/fontawesome-free/css/font-awesome.min.css');
 		add_styles('assets/node_modules/summernote/dist/summernote-bs5.css');
+		add_styles('assets/node_modules/bootstrap-tagsinput/dist/bootstrap-tagsinput.css');
 		add_styles(get_theme_path('style.css'));
 
 		add_script('assets/node_modules/jquery/dist/jquery.min.js');
 		add_script('assets/node_modules/bootstrap/dist/js/bootstrap.bundle.min.js');
 		add_script('assets/node_modules/summernote/dist/summernote-bs5.min.js');
+		add_script('assets/node_modules/bootstrap-tagsinput/dist/bootstrap-tagsinput.js');
 
 		$output = '<script>';
 		$output .= 'var site_url = "'.site_url().'";';
