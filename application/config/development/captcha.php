@@ -12,7 +12,7 @@ $config['img_path']    = FCPATH.'captcha/';
 $config['img_url']     = base_url('captcha');
 
 // Catpcha font path, font size, word length and characters used.
-$config['font_path']   = apply_filters('captcha_font_path', './assets/fonts/edmunds.ttf');
+$config['font_path']   = apply_filters('captcha_font_path', FCPATH.'assets/fonts/edmunds.ttf');
 $config['font_size']   = apply_filters('captcha_font_size', 20);
 $config['word_length'] = apply_filters('captcha_word_length', 3);
 $config['pool']        = apply_filters('captcha_pool', '0123456789abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ');

@@ -23,6 +23,13 @@ defined('BASEPATH') or exit('No direct script access allowed');
  */
 class CG_Loader extends CI_Loader
 {
+	/**
+	 * Class constructor
+	 *
+	 * Sets component load paths, gets the initial output buffering level.
+	 *
+	 * @return	void
+	 */
 	function __construct()
 	{
 		parent::__construct();
@@ -38,15 +45,8 @@ class CG_Loader extends CI_Loader
 	 */
 	protected function _ci_load($_ci_data)
 	{
-		// See if it's inside a package!
-		if (isset($_ci_data['_ci_view']) &&
-			list($package, $class) = get_instance()->packages->_is_valid($_ci_data['_ci_view']))
-		{
-			// package already loaded?
-			$_ci_data['_ci_path'] = get_instance()->router->packages_dir($package).'/views/'.$class.'.php';
-
-			return parent::_ci_load($_ci_data);
-		}
+		// Add Themes Path
+		$this->_ci_view_paths = array(get_theme_path('/') => TRUE) + $this->_ci_view_paths;
 
 		return parent::_ci_load($_ci_data);
 	}

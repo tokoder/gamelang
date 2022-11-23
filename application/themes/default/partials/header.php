@@ -47,14 +47,6 @@
                             'slug'   => $c_user->admin ? CG_ADMIN : 'u/'.$c_user->username,
                             'name'   => __('my_profile'),
                         );
-                        if ( $c_user->admin == false) :
-                        $user_menu[] = array(
-                            'parent' => NULL,
-                            'id'     => 'settings',
-                            'slug'  => site_url('settings'),
-                            'name' => __('lang_settings'),
-                        );
-                        endif;
                         $user_menu[] = array(
                             'parent' => NULL,
                             'id'     => 'logout',
