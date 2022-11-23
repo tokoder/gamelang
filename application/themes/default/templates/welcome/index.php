@@ -1,4 +1,4 @@
-<div class="bg-light p-5 rounded">
+<div class="bg-light p-5 mb-3 rounded">
     <h1>Welcome to CodeIgniter <?=config_item('site_name')?>!</h1>
 
     <p class="lead">The page you are looking at is being generated dynamically by CodeIgniter <?=config_item('site_name')?>.</p>
@@ -16,4 +16,4 @@
     <p class="footer"><?php echo  (ENVIRONMENT === 'development') ?  'CodeIgniter Version <strong>' . CI_VERSION . '</strong>' : '' ?></p>
 </div>
 
-<?php do_action('package_homepage'); ?>
+<?php do_action('show_widget'); ?>
