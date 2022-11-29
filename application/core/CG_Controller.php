@@ -98,7 +98,8 @@ class CG_Controller extends CI_Controller
 		$this->themes->set('package', $package, true);
 
 		// Load authentication library.
-		$this->themes->set('c_user', $this->auth->user(), true);
+		$this->c_user = $this->auth->user();
+		$this->themes->set('c_user', $this->c_user, true);
 
 		// Add all necessary meta tags.
 		$this->themes->set_meta();

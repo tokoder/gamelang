@@ -60,7 +60,10 @@ class Auth extends CG_Controller
 		 * If the view does not exists within the theme's folder,
 		 * we make sure to use our default one.
 		 */
-		if (true == $this->themes->set_theme()->view_exists())
+		$this->themes
+			->set_theme()
+			->set_layout('auth');
+		if (true == $this->themes->view_exists())
 		{
 			// We call the method.
 			return call_user_func_array(array($this, $method), $params);
@@ -217,7 +220,6 @@ class Auth extends CG_Controller
 
 		// Set page title and render view.
 		$this->themes
-			->set_layout('auth')
 			->set_title(__('lang_register'))
 			->set_alert($this->form_validation->validation_errors_list(), 'error')
 			->render($this->data);
@@ -322,7 +324,6 @@ class Auth extends CG_Controller
 
 		// Set page title and render view.
 		$this->themes
-			->set_layout('auth')
 			->set_title(__('lang_RESEND_LINK'))
 			->render($this->data);
 	}
@@ -391,7 +392,6 @@ class Auth extends CG_Controller
 
 		// Set page title and render view.
 		$this->themes
-			->set_layout('auth')
 			->set_title(__('lang_RESTORE_ACCOUNT'))
 			->render($this->data);
 	}
@@ -495,7 +495,6 @@ class Auth extends CG_Controller
 
 		// Set page title and render view.
 		$this->themes
-			->set_layout('auth')
 			->set_title(__('lang_login'))
 			->render($this->data);
 	}
@@ -582,7 +581,6 @@ class Auth extends CG_Controller
 
 		// Set page title and render view.
 		$this->themes
-			->set_layout('auth')
 			->set_title(__('lost_password'))
 			->render($this->data);
 	}
@@ -656,7 +654,6 @@ class Auth extends CG_Controller
 
 		// Set page title and render view.
 		$this->themes
-			->set_layout('auth')
 			->set_title(__('reset_password'))
 			->render($this->data);
 	}
