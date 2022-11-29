@@ -1,7 +1,13 @@
 <header>
     <nav class="navbar navbar-expand-md navbar-dark fixed-top bg-primary">
         <div class="container-fluid">
-            <?php echo anchor('', get_option('site_name'), 'class="navbar-brand"') ?>
+            <?php
+            $brand = anchor('', get_option('site_name'), 'class="navbar-brand"');
+            $brand = apply_filters('site_logo', $brand);
+            if ( ! empty($brand)) {
+                echo $brand;
+            }
+            ?>
             <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarCollapse" aria-controls="navbarCollapse" aria-expanded="false" aria-label="Toggle navigation">
                 <span class="navbar-toggler-icon"></span>
             </button>
@@ -11,7 +17,7 @@
                 echo $this->menus->render([
                     'nav_tag_open' => '<ul class="navbar-nav">',
                     'item_tag_open' => '<li class="nav-item">',
-                    'item_anchor' => '<a href="%s" class="nav-link">%s</a>'
+                    'item_anchor' => '<a href="%s" class="nav-link %s">%s</a>'
                 ]);
                 ?>
 
@@ -46,6 +52,12 @@
                             'id'     => 'profile',
                             'slug'   => $c_user->admin ? CG_ADMIN : 'u/'.$c_user->username,
                             'name'   => __('my_profile'),
+                        );
+                        $user_menu[] = array(
+                            'parent' => NULL,
+                            'id'     => 'settings',
+                            'slug'   => 'settings',
+                            'name'   => __('lang_settings'),
                         );
                         $user_menu[] = array(
                             'parent' => NULL,

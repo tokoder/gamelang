@@ -555,7 +555,13 @@ class Gamelang_themes extends CI_Driver
 			$alt_file .= $modpath.$folder.$file;
 		}
 
-		if (is_file($file_path))
+		if ($alt_file_path && is_file($alt_file_path))
+		{
+			empty($data) OR $this->ci->load->vars($data);
+
+			$output = $this->ci->load->file($alt_file_path, true);
+		}
+		elseif ($file_path && is_file($file_path))
 		{
 			$this->_check_htaccess($full_path);
 
@@ -570,12 +576,6 @@ class Gamelang_themes extends CI_Driver
 			empty($data) OR $this->ci->load->vars($data);
 
 			$output = $this->ci->load->file($file_path, true);
-		}
-		elseif ($alt_file_path && is_file($alt_file_path))
-		{
-			empty($data) OR $this->ci->load->vars($data);
-
-			$output = $this->ci->load->file($alt_file_path, true);
 		}
 		elseif ($fallback && isset($this->{'template_'.$fallback}))
 		{
@@ -1734,7 +1734,7 @@ class Gamelang_themes extends CI_Driver
 			$view[] = $this->controller;
 		}
 
-		$view[] = $this->method;
+		$view[] = $this->ci->router->fetch_method();
 
 		return implode('/', array_clean($view));
 	}

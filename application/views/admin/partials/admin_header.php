@@ -35,7 +35,7 @@ defined('BASEPATH') OR exit('No direct script access allowed');
         <div class="collapse navbar-collapse" id="navbar-admin">
 			<ul class="navbar-nav me-auto">
 				<?php
-				// 1. System dropdown.
+				// 1. Settings dropdown.
 				echo '<li class="nav-item dropdown">',
 					html_tag('a', array(
 						'href'        => '#',
@@ -49,13 +49,12 @@ defined('BASEPATH') OR exit('No direct script access allowed');
 							'settings',
 							__('lang_global_settings'),
 							'class="dropdown-item"'
-						);
+						),
 
 						// System Information
-						echo
 						admin_anchor(
 							'settings/sysinfo',
-							__('lang_settings_system_information'),
+							__('lang_system_information'),
 							'class="dropdown-item"'
 						);
 
@@ -66,7 +65,7 @@ defined('BASEPATH') OR exit('No direct script access allowed');
 							echo '<div class="dropdown-divider"></div>';
 							do_action('_settings_menu');
 						}
-				// Closing tag.
+				// Closing tag (settings menu)
 				echo '</div></li>';
 
 				// 2. Users menu.
@@ -89,7 +88,6 @@ defined('BASEPATH') OR exit('No direct script access allowed');
 							echo '<div class="dropdown-divider"></div>';
 							do_action('_user_menu');
 						}
-
 				// Closing tag (users menu).
 				echo '</div></li>';
 
@@ -98,9 +96,7 @@ defined('BASEPATH') OR exit('No direct script access allowed');
 				 */
 				do_action('_admin_navbar');
 
-				/**
-				 * 3. Display menu for packages with content controller.
-				 */
+				// 3. Display menu for packages with content controller.
 				if ( has_action('_content_menu')) {
 					// Menu opening tag.
 					echo '<li class="nav-item dropdown">',
@@ -118,9 +114,7 @@ defined('BASEPATH') OR exit('No direct script access allowed');
 					echo '</div></li>';
 				}
 
-				/**
-				 * 4. Display menu for packages with admin controller.
-				 */
+				// 4. Display menu for packages with admin controller.
 				if ( has_action('_admin_menu')) {
 					// Menu opening tag.
 					echo '<li class="nav-item dropdown">',
@@ -138,9 +132,7 @@ defined('BASEPATH') OR exit('No direct script access allowed');
 					echo '</div></li>';
 				}
 
-				/**
-				 * 5. Extensions menu.
-				 */
+				// 5. Extensions menu.
 				echo '<li class="nav-item dropdown">',
 					html_tag('a', array(
 						'href' => '#',
@@ -151,11 +143,10 @@ defined('BASEPATH') OR exit('No direct script access allowed');
 					admin_anchor('packages', __('lang_packages'), 'class="dropdown-item"'),
 					admin_anchor('themes', __('lang_themes'), 'class="dropdown-item"'),
 					admin_anchor('languages', __('lang_languages'), 'class="dropdown-item"');
+				// Closing tag (extensions menu).
 				echo '</div></li>';
 
-				/**
-				 * 6. Display menu for packages with reports controller.
-				 */
+				// 6. Display menu for packages with reports controller.
 				if ( has_action('_reports_menu')) {
 					// Menu opening tag.
 					echo '<li class="nav-item dropdown">',
@@ -179,10 +170,7 @@ defined('BASEPATH') OR exit('No direct script access allowed');
 					'</li>';
 				}
 
-				/**
-				 * 7. Help menu.
-				 */
-				// Menu opening tag.
+				// 7. Help menu.
 				echo '<li class="nav-item dropdown">';
 					echo html_tag('a', array(
 						'href'        => '#',
@@ -190,7 +178,6 @@ defined('BASEPATH') OR exit('No direct script access allowed');
 						'data-bs-toggle' => 'dropdown',
 					), __('lang_help')),
 					'<div class="dropdown-menu">';
-
 						// documentation.
 						$wiki_url =  apply_filters('wiki_url', 'https://github.com/tokoder/gamelang/wiki');
 						if ( ! empty($wiki_url)) {
@@ -201,17 +188,12 @@ defined('BASEPATH') OR exit('No direct script access allowed');
 							), __('lang_documentation'));
 						}
 
-						/**
-						 * Display packages with "Help.php" controllers.
-						 */
+						// Display packages with "Help.php" controllers.
 						if ( has_action('_help_menu')) {
 							echo '<div class="dropdown-divider"></div>';
 							do_action('_help_menu');
 						}
 
-						/**
-						 * Various CodeIgniter URLS.
-						 */
 						echo '<div class="dropdown-divider"></div>',
 
 						// Link to extensions page.
@@ -307,8 +289,8 @@ defined('BASEPATH') OR exit('No direct script access allowed');
 						'item_anchor' => '<a href="%s" class="dropdown-item">%s</a>'
 					], ['logout'], '<li class="dropdown-divider"></li>');
 
-				echo '</li>';
 				// Closing tag (right menu).
+				echo '</li>';
 				?>
 			</ul>
         </div>
