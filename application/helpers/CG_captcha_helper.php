@@ -54,6 +54,7 @@ if ( ! function_exists('generate_captcha'))
 		));
 
 		// Load captcha config file.
+		get_instance()->themes->load_functions();
 		get_instance()->load->config('captcha', true);
 
 		// Generate the new captcha.

@@ -443,13 +443,13 @@ class CI_Cart {
 	 * @param	int
 	 * @return	bool
 	 */
-	 public function remove($rowid)
-	 {
+	public function remove($rowid)
+	{
 		// unset & save
 		unset($this->_cart_contents[$rowid]);
 		$this->_save_cart();
 		return TRUE;
-	 }
+	}
 
 	// --------------------------------------------------------------------
 

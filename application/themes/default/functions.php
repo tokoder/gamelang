@@ -51,7 +51,7 @@ class Default_theme {
 		add_filter( 'extra_head', array( $this, 'extra_head' ) );
 
 		// Partials enqueue for caching purpose.
-		add_action('enqueue_partials', array( $this, 'enqueue_partials' ) );
+		add_action( 'enqueue_partials', array( $this, 'enqueue_partials' ) );
 
 		// Theme layout manager.
 		add_filter( 'theme_layout', array( $this, 'theme_layout' ) );
@@ -269,238 +269,239 @@ $Default_theme = new Default_theme();
  * If you want to remove it, and you have the right to do it, the filter
  * below show you how to do it.
  */
-
-// To remove the copyright added between DOCTYPE and <html>:
-if ( ! function_exists('remove_copyright'))
+if (get_instance()->themes->view_exists('auth'))
 {
-	/**
-	 * Remove the copyright.
-	 * @param 	string 	$copyright
-	 * @return 	string
-	 */
-	function remove_copyright($content)
+	// To remove the copyright added between DOCTYPE and <html>:
+	if ( ! function_exists('remove_copyright'))
 	{
-		// Change it or return an empty string
-		// return null or $content = null;
-		return $content;
+		/**
+		 * Remove the copyright.
+		 * @param 	string 	$copyright
+		 * @return 	string
+		 */
+		function remove_copyright($content)
+		{
+			// Change it or return an empty string
+			// return null or $content = null;
+			return $content;
+		}
+
+		// Now you add the filer.
+		add_filter('CG_copyright', 'remove_copyright');
 	}
 
-	// Now you add the filer.
-	add_filter('CG_copyright', 'remove_copyright');
-}
-
-// To remove the generator meta tag:
-if ( ! function_exists('remove_generator'))
-{
-	/**
-	 * Remove the generator meta tag.
-	 * @param 	string 	$content
-	 * @return 	string
-	 */
-	function remove_generator($content)
+	// To remove the generator meta tag:
+	if ( ! function_exists('remove_generator'))
 	{
-		// Change it or return an empty string
-		// return null or $content = null;
-		return $content;
+		/**
+		 * Remove the generator meta tag.
+		 * @param 	string 	$content
+		 * @return 	string
+		 */
+		function remove_generator($content)
+		{
+			// Change it or return an empty string
+			// return null or $content = null;
+			return $content;
+		}
+
+		// Now you add the filer.
+		add_filter('CG_generator', 'remove_generator');
 	}
 
-	// Now you add the filer.
-	add_filter('CG_generator', 'remove_generator');
-}
+	// ------------------------------------------------------------------------
 
-// ------------------------------------------------------------------------
+	if ( ! function_exists( 'fa_icon' ) ) {
+		/**
+		 * Useful to generate a fontawesome icon.
+		 * @param  string $icon the icon to generate.
+		 * @return string       the full FA tag.
+		 */
+		function fa_icon( $icon = 'user' ) {
+			return "<i class=\"fa fa-fw fa-{$icon}\"></i>";
+		}
+	}
 
-if ( ! function_exists( 'fa_icon' ) ) {
+	// ------------------------------------------------------------------------
+
+	if ( ! function_exists( 'bs_label' )) {
+		function bs_label( $content = '', $type = 'default' ) {
+			return "<span class=\"label label-{$type}\">{$content}</span>";
+		}
+	}
+
 	/**
-	 * Useful to generate a fontawesome icon.
-	 * @param  string $icon the icon to generate.
-	 * @return string       the full FA tag.
+	 * Because the Theme library comes with Bootstrap 4 alert template,
+	 * we make sure to change the template to use Bootstrap 3 alert.
 	 */
-	function fa_icon( $icon = 'user' ) {
-		return "<i class=\"fa fa-fw fa-{$icon}\"></i>";
+	add_filter('alert_template', function($output) {
+		$output =<<<EOT
+		<div class="{class} alert-dismissible fade show" role="alert">
+			{message}
+			<button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+		</div>
+		EOT;
+		return $output;
+	});
+
+	/**
+	 * Because the Theme library comes with Bootstrap 4 alert template,
+	 * we make sure to change the template to use Bootstrap 3 alert.
+	 */
+	add_filter('alert_template_js', function($output) {
+		$output =<<<EOT
+		'<div class="{class} alert-dismissible fade show" role="alert">
+		+ '{message}'
+		+ '<button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>'
+		+ '</div>'
+		EOT;
+		return $output;
+	});
+
+	// ------------------------------------------------------------------------
+
+	/**
+	 * The jQuery validate library comes with Bootstrap 4 defaults. We make
+	 * sure to change to Bootstrap 3.
+	 */
+
+	/**
+	 * Class used for invalid inputs.
+	 * @see https://jqueryvalidation.org/validate/#errorclass
+	 */
+	add_filter('jquery_validate_errorClass', function($class) {
+		return 'has-error';
+	});
+
+	/**
+	 * Class used for valid inputs.
+	 * @see https://jqueryvalidation.org/validate/#errorclass
+	 */
+	add_filter('jquery_validate_successClass', function($class) {
+		return 'has-success';
+	});
+
+	/**
+	 * Use this element type to create error messages and to look
+	 * for existing error messages. Default: "label".
+	 * @see https://jqueryvalidation.org/validate/#errorelement
+	 */
+	add_filter('jquery_validate_errorElement', function($el) {
+		return 'small';
+	});
+
+	/**
+	 * Customize placement of created error labels.
+	 * @see https://jqueryvalidation.org/validate/#errorplacement
+	 */
+	add_filter('jquery_validate_errorPlacement', function($output) {
+		return 'function (error, element) { error.addClass("help-block"); element.parents(".form-group").find(".help-block").remove(); if (element.prop("type") === "checkbox") { error.insertAfter(element.parent("label")); } else { error.insertAfter(element); } }';
+	});
+
+	/**
+	 * How to highlight invalid fields.
+	 * @see https://jqueryvalidation.org/validate/#highlight
+	 */
+	add_filter('jquery_validate_highlight', function($function) {
+		return 'function (element, errorClass, validClass) { $(element).parents(".form-group").addClass("has-error").removeClass("has-success"); }';
+	});
+
+	/**
+	 * Called to revert changes made by option highlight,
+	 * same arguments as highlight.
+	 * @see https://jqueryvalidation.org/validate/#unhighlight
+	 */
+	add_filter('jquery_validate_unhighlight', function($function) {
+		return 'function (element, errorClass, validClass) { $(element).parents(".form-group").addClass("has-success").removeClass("has-error"); }';
+	});
+
+	/**
+	 * Example filters on how to edit captcha the way you want
+	 * We use a class for better performance and to avoid any possible
+	 * conflict with other components.
+	 */
+	if ( ! class_exists('captcha_class', false))
+	{
+		class captcha_class {
+
+			public function __construct() {}
+
+			public function init() {
+				add_filter('captcha_font_path',        array($this, 'font_path'));
+				add_filter('captcha_font_size',        array($this, 'font_size'));
+				add_filter('captcha_word_length',      array($this, 'word_length'));
+				add_filter('captcha_img_width',        array($this, 'img_width'));
+				add_filter('captcha_img_height',       array($this, 'img_height'));
+				add_filter('captcha_background_color', array($this, 'background_color'));
+				add_filter('captcha_border_color',     array($this, 'border_color'));
+				add_filter('captcha_text_color',       array($this, 'text_color'));
+				add_filter('captcha_grid_color',       array($this, 'grid_color'));
+			}
+
+			// Font file.
+			public function font_path($path) {
+				// To use theme's provided font.
+				return get_theme_path('assets/fonts/Vigasr.ttf');
+
+				// To use CodeIgniter texb.ttf:
+				return BASEPATH.'fonts/texb.ttf';
+
+				// To use GD ugly font:
+				return false;
+			}
+
+			// Font size.
+			public function font_size($size) {
+				$size = 16;
+				return $size;
+			}
+
+			// Word length.
+			public function word_length($length) {
+				$length = 7;
+				return $length;
+			}
+
+			// Image width.
+			public function img_width($w) {
+				$w = 150;
+				return $w;
+			}
+
+			// Image height.
+			public function img_height($h) {
+				$h = 32;
+				return $h;
+			}
+
+			// Background color.
+			public function background_color($rgb) {
+				// Return RGB color.
+				return array(255, 255, 255);
+			}
+
+			// Border color:
+			public function border_color($rgb) {
+				// Return RGB color.
+				return array(255, 255, 255);
+			}
+
+			// Text Color:
+			public function text_color($rgb) {
+				// Return RGB color.
+				return array(200, 200, 200);
+			}
+
+			// Grid color.
+			public function grid_color($rgb) {
+				// Return RGB color.
+				return array(235, 235, 235);
+			}
+
+		}
+
+		// Initialize class.
+		$captcha_class = new captcha_class();
+		$captcha_class->init();
 	}
-}
-
-// ------------------------------------------------------------------------
-
-if ( ! function_exists( 'bs_label' )) {
-	function bs_label( $content = '', $type = 'default' ) {
-		return "<span class=\"label label-{$type}\">{$content}</span>";
-	}
-}
-
-/**
- * Because the Theme library comes with Bootstrap 4 alert template,
- * we make sure to change the template to use Bootstrap 3 alert.
- */
-add_filter('alert_template', function($output) {
-	$output =<<<EOT
-	<div class="{class} alert-dismissible fade show" role="alert">
-		{message}
-		<button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
-	</div>
-	EOT;
-	return $output;
-});
-
-/**
- * Because the Theme library comes with Bootstrap 4 alert template,
- * we make sure to change the template to use Bootstrap 3 alert.
- */
-add_filter('alert_template_js', function($output) {
-	$output =<<<EOT
-	'<div class="{class} alert-dismissible fade show" role="alert">
-	+ '{message}'
-	+ '<button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>'
-	+ '</div>'
-	EOT;
-	return $output;
-});
-
-// ------------------------------------------------------------------------
-
-/**
- * The jQuery validate library comes with Bootstrap 4 defaults. We make
- * sure to change to Bootstrap 3.
- */
-
-/**
- * Class used for invalid inputs.
- * @see https://jqueryvalidation.org/validate/#errorclass
- */
-add_filter('jquery_validate_errorClass', function($class) {
-	return 'has-error';
-});
-
-/**
- * Class used for valid inputs.
- * @see https://jqueryvalidation.org/validate/#errorclass
- */
-add_filter('jquery_validate_successClass', function($class) {
-	return 'has-success';
-});
-
-/**
- * Use this element type to create error messages and to look
- * for existing error messages. Default: "label".
- * @see https://jqueryvalidation.org/validate/#errorelement
- */
-add_filter('jquery_validate_errorElement', function($el) {
-	return 'small';
-});
-
-/**
- * Customize placement of created error labels.
- * @see https://jqueryvalidation.org/validate/#errorplacement
- */
-add_filter('jquery_validate_errorPlacement', function($output) {
-	return 'function (error, element) { error.addClass("help-block"); element.parents(".form-group").find(".help-block").remove(); if (element.prop("type") === "checkbox") { error.insertAfter(element.parent("label")); } else { error.insertAfter(element); } }';
-});
-
-/**
- * How to highlight invalid fields.
- * @see https://jqueryvalidation.org/validate/#highlight
- */
-add_filter('jquery_validate_highlight', function($function) {
-	return 'function (element, errorClass, validClass) { $(element).parents(".form-group").addClass("has-error").removeClass("has-success"); }';
-});
-
-/**
- * Called to revert changes made by option highlight,
- * same arguments as highlight.
- * @see https://jqueryvalidation.org/validate/#unhighlight
- */
-add_filter('jquery_validate_unhighlight', function($function) {
-	return 'function (element, errorClass, validClass) { $(element).parents(".form-group").addClass("has-success").removeClass("has-error"); }';
-});
-
-
-/**
- * Example filters on how to edit captcha the way you want
- * We use a class for better performance and to avoid any possible
- * conflict with other components.
- */
-if ( ! class_exists('captcha_class', false))
-{
-	class captcha_class {
-
-		public function __construct() {}
-
-		public function init() {
-			add_filter('captcha_font_path',        array($this, 'font_path'));
-			add_filter('captcha_font_size',        array($this, 'font_size'));
-			add_filter('captcha_word_length',      array($this, 'word_length'));
-			add_filter('captcha_img_width',        array($this, 'img_width'));
-			add_filter('captcha_img_height',       array($this, 'img_height'));
-			add_filter('captcha_background_color', array($this, 'background_color'));
-			add_filter('captcha_border_color',     array($this, 'border_color'));
-			add_filter('captcha_text_color',       array($this, 'text_color'));
-			add_filter('captcha_grid_color',       array($this, 'grid_color'));
-		}
-
-		// Font file.
-		public function font_path($path) {
-			// To use theme's provided font.
-			return get_theme_path('assets/fonts/Vigasr.ttf');
-
-			// To use CodeIgniter texb.ttf:
-			return BASEPATH.'fonts/texb.ttf';
-
-			// To use GD ugly font:
-			return false;
-		}
-
-		// Font size.
-		public function font_size($size) {
-			$size = 16;
-			return $size;
-		}
-
-		// Word length.
-		public function word_length($length) {
-			$length = 7;
-			return $length;
-		}
-
-		// Image width.
-		public function img_width($w) {
-			$w = 150;
-			return $w;
-		}
-
-		// Image height.
-		public function img_height($h) {
-			$h = 32;
-			return $h;
-		}
-
-		// Background color.
-		public function background_color($rgb) {
-			// Return RGB color.
-			return array(255, 255, 255);
-		}
-
-		// Border color:
-		public function border_color($rgb) {
-			// Return RGB color.
-			return array(255, 255, 255);
-		}
-
-		// Text Color:
-		public function text_color($rgb) {
-			// Return RGB color.
-			return array(200, 200, 200);
-		}
-
-		// Grid color.
-		public function grid_color($rgb) {
-			// Return RGB color.
-			return array(235, 235, 235);
-		}
-
-	}
-
-	// Initialize class.
-	$captcha_class = new captcha_class();
-	$captcha_class->init();
 }

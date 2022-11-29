@@ -40,7 +40,7 @@ class Settings extends CG_Controller_Admin
 		),
 
 		// User Settings.
-		'users'   => array(
+		'users' => array(
 			'allow_registration',
 			'email_activation',
 			'manual_activation',
@@ -50,7 +50,7 @@ class Settings extends CG_Controller_Admin
 		),
 
 		// Email Settings.
-		'email'   => array(
+		'email' => array(
 			'admin_email',
 			'server_email',
 			'mail_protocol',
@@ -63,7 +63,7 @@ class Settings extends CG_Controller_Admin
 		),
 
 		// Captcha Settings.
-		'captcha'   => array(
+		'captcha' => array(
 			'use_captcha',
 			'use_recaptcha',
 			'recaptcha_site_key',
@@ -71,7 +71,7 @@ class Settings extends CG_Controller_Admin
 		),
 
 		// Upload Settings.
-		'upload'  => array(
+		'upload' => array(
 			'upload_path',
 			'allowed_types',
 			'max_size',

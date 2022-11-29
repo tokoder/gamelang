@@ -10,6 +10,7 @@ defined('BASEPATH') OR exit('No direct script access allowed');
 | provided in the URL cannot be matched to a valid route.
 */
 $route['404_override'] = 'welcome/page_mising';
+$route['translate_uri_dashes'] = TRUE;
 
 /*
 | -------------------------------------------------------------------------

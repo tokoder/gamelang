@@ -789,10 +789,11 @@ class Assets extends CI_Driver_Library {
             $load_f = rtrim(str_replace(normalize_path(APPPATH), '/load/', $path), '/');
             $load_f = rtrim(str_replace(normalize_path(FCPATH), '', $load_f), '/');
 
-            $result = str_replace('./font/', $load_f.'/../font/', $read_f);
-            $result = str_replace('../fonts/', $load_f.'/../../fonts/', $result);
-            $result = str_replace('../images/', $load_f.'/../../images/', $result);
-            $result = str_replace('../webfonts/', $load_f.'/../../webfonts/', $result);
+            $result = str_replace('"./font/', '"'.$load_f.'/../font/', $read_f);
+            $result = str_replace('"./fonts/', '"'.$load_f.'/../fonts/', $result);
+            $result = str_replace('"../fonts/', '"'.$load_f.'/../../fonts/', $result);
+            $result = str_replace('"../images/', '"'.$load_f.'/../../images/', $result);
+            $result = str_replace('"../webfonts/', '"'.$load_f.'/../../webfonts/', $result);
         }
 
         return $result;

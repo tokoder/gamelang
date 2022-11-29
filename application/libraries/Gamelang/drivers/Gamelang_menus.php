@@ -463,11 +463,23 @@ class Gamelang_menus extends CI_Driver {
 
 				$html .= $this->set_active($tag_open, $slug);
 
-				if (substr_count($item_anchor, '%s') == 2) {
-					$html .= sprintf($item_anchor, $href, $label);
-				}
-				else {
-					$html .= sprintf($item_anchor, $label);
+				switch (substr_count($item_anchor, '%s'))
+				{
+					case '3':
+						$uri = (strpos($slug, '://') === FALSE)
+							? uri_string()
+							: current_url();
+						$active = (trim_slashes($slug) == $uri )
+							? $this->item_active_class
+							: '';
+						$html .= sprintf($item_anchor, $href, $active, $label);
+						break;
+					case '2':
+						$html .= sprintf($item_anchor, $href, $label);
+						break;
+					default:
+						$html .= sprintf($item_anchor, $label);
+						break;
 				}
 
 				if ( $has_children )
@@ -534,8 +546,9 @@ class Gamelang_menus extends CI_Driver {
 	{
 		$segment = $this->ci->uri->segment($this->uri_segment);
 
+		$uri = (strpos($slug, '://') === FALSE) ? uri_string() : current_url();
 		if (( $this->item_active != '' && $slug == $this->item_active && empty($segment) )
-			|| trim_slashes($slug) == uri_string()
+			|| trim_slashes($slug) == $uri
 		) {
 			$doc = new DOMDocument();
 			$doc->loadHTML($html);
