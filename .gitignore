@@ -13,8 +13,8 @@ application/logs/*
 
 # Remove generated encryption key file.
 #-------------------------
-application/config/development/config_app.php
-application/config/development/encryption_key.php
+application/config/cg_config.php
+application/config/cg_encryption_key.php
 application/config/production/*
 
 # Ignore packages files.
