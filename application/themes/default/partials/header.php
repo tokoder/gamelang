@@ -30,7 +30,7 @@
                         <ul class="dropdown-menu">
                             <?php foreach($site_languages as $folder => $lang): ?>
                             <li>
-                            <?php echo anchor('load/language/'.$folder,
+                            <?php echo anchor('resource/language/'.$folder,
                                 $lang['name_en'].'<small class="text-muted ms-auto">'.$lang['name'].'</small>',
                                 'class="dropdown-item d-flex align-items-center"'
                             ) ?>
@@ -43,14 +43,14 @@
                     <?php if ($this->auth->online()): ?>
                     <li class="nav-item user-menu dropdown">
                         <a class="nav-link dropdown-toggle" href="#" role="button" data-bs-toggle="dropdown" aria-expanded="false">
-                            <?php echo $c_user->full_name; ?>
-                            <?php echo user_avatar(24, $c_user->id, 'class="img-circle"'); ?>
+                            <?= $c_user->full_name; ?>
+                            <?= user_avatar(24, $c_user->id, 'class="img-circle"'); ?>
                         </a>
                         <?php
                         $user_menu[] = array(
                             'parent' => NULL,
                             'id'     => 'profile',
-                            'slug'   => $c_user->admin ? CG_ADMIN : 'u/'.$c_user->username,
+                            'slug'   => $c_user->admin ? CG_ADMIN : user_url(),
                             'name'   => __('my_profile'),
                         );
                         $user_menu[] = array(
@@ -76,7 +76,7 @@
                     <?php endif; ?>
                 </ul>
                 <?php if ( ! $this->auth->online()): ?>
-                <?php echo anchor('login', __('lang_login'), 'class="btn btn-dark"') ?>
+                <?= anchor('login', __('lang_login'), 'class="btn btn-dark"') ?>
                 <?php if (get_option('allow_registration', false) === true): ?>
                 &nbsp;<?php echo anchor('register', __('lang_create_account'), 'class="btn btn-light"') ?>
                 <?php endif; ?>

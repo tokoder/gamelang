@@ -239,7 +239,7 @@ defined('BASEPATH') OR exit('No direct script access allowed');
 					// Language list.
 					foreach ($site_languages as $folder => $lang) {
 						echo html_tag('a', array(
-							'href' => site_url('load/language/'.$folder.'?next='.current_url()),
+							'href' => site_url('resource/language/'.$folder.'?next='.current_url()),
 							'class' => 'dropdown-item',
 						), $lang['name_en'].html_tag('span', array(
 							'class' => 'text-muted float-end'

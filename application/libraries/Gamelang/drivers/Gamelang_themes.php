@@ -939,7 +939,7 @@ class Gamelang_themes extends CI_Driver
 		if (empty($base_url) OR $_protocol !== $protocol)
 		{
 			$_protocol = $protocol;
-			$base_url = path_join(base_url('load/themes', $_protocol), $this->current_theme());
+			$base_url = path_join(base_url('resource/themes', $_protocol), $this->current_theme());
 		}
 
 		$return = $base_url;
@@ -974,7 +974,7 @@ class Gamelang_themes extends CI_Driver
 		{
 			$_protocol = $protocol;
 
-			$base_url = base_url('load/'.config_item('upload_path'), $_protocol);
+			$base_url = base_url('resource/'.config_item('upload_path'), $_protocol);
 		}
 
 		$return = $base_url;
@@ -2259,12 +2259,12 @@ class Gamelang_themes extends CI_Driver
 
 			if (empty($details['screenshot']))
 			{
-				$details['screenshot'] = base_url('load/themes/theme-blank.png');
+				$details['screenshot'] = base_url('resource/themes/theme-blank.png');
 				foreach (array('.png', '.jpg', '.jpeg', '.gif') as $ext)
 				{
 					if (false !== $this->themes_path($folder.'/screenshot'.$ext))
 					{
-						$details['screenshot'] = base_url('load/themes/'.$folder.'/screenshot'.$ext);
+						$details['screenshot'] = base_url('resource/themes/'.$folder.'/screenshot'.$ext);
 						break;
 					}
 				}

@@ -1858,8 +1858,8 @@ class CG_User
 	 * user_avatar@access 	public
 	 * @param 	object
 	 */
-	public function init($user) {
-
+	public function init($user)
+	{
 		// Format user's ID.
 		$this->id = (int) $user->id;
 

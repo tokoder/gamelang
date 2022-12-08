@@ -325,9 +325,18 @@ class Gamelang_entities extends CI_Driver implements Gamelang_crud_interface
 		if (isset($data['username']))
 		{
 			$data['username'] = url_title($data['username'], '-', true);
-			if (false !== $this->get_by('username', $data['username']))
+			if ($this->get_by('username', $data['username']))
 			{
-				return false;
+				// Let's generate the username.
+				$slug = $maybe_slug = $data['username'];
+				$next = 1;
+
+				while ($this->get_by('username', $slug)) {
+					$slug = "{$maybe_slug}-{$next}";
+					$next++;
+				}
+
+				$data['username'] = $slug;
 			}
 		}
 

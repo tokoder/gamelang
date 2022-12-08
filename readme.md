@@ -49,7 +49,7 @@ Untuk menjalankan aplikasi ini anda dapat menginstall XAMPP dan setidaknya memil
 $ git clone https://github.com/tokoder/gamelang.git
 
 # Run composer install, di folder application
-$ composer install
+$ composer install --prefer-dist
 
 # Buat database
 Buat basisdata di DBMS [phpmyadmin, dll]

@@ -22,7 +22,6 @@ defined('BASEPATH') OR exit('No direct script access allowed');
  * @subpackage 	Core
  * @author		Tokoder Team
  */
-
 class CG_Controller extends CI_Controller
 {
 	/**
@@ -98,7 +97,7 @@ class CG_Controller extends CI_Controller
 		$this->themes->set('package', $package, true);
 
 		// Load authentication library.
-		$this->c_user = $this->auth->user();
+		$this->c_user = apply_filters('get_current_user', $this->auth->user());
 		$this->themes->set('c_user', $this->c_user, true);
 
 		// Add all necessary meta tags.
@@ -170,7 +169,7 @@ class CG_Controller extends CI_Controller
 		}
 
 		// Load inputs config file.
-		$this->load->config('inputs', true);
+		$this->load->config('cg_inputs', true);
 
 		// Are there any rules to apply?
 		if (is_array($rules) && ! empty($rules))
