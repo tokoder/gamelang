@@ -54,7 +54,7 @@ class CG_app
 		}
 
 		// mari kita cek file config
-		if ( ! $this->config->load('config_app', true, true))
+		if ( ! $this->config->load('cg_config', true, true))
 		{
 			// jalankan installasi
 			self::install();
@@ -86,7 +86,7 @@ class CG_app
 		$back_contexts  = array('settings', 'user', 'content', 'reports', 'help');
 
 		// Muat file config
-        $config_file = $this->config->config['config_app'];
+        $config_file = $this->config->config['cg_config'];
 
 		// Muat table options
 		$db_options = self::DB()->get('options')->result();
@@ -185,7 +185,7 @@ class CG_app
 
 		echo '<h1>Apps not installed</h1>';
 		echo '<p>1. To you use the automatic Apps installation tool click <a href="' . $install_url . '">here (' . $install_url . ')</a> (maintenance)</p>';
-		echo '<p>2. If you are installing manually rename the config file located in application/config/config_app.php.dist to config_app.php and populate the defined fields.</p>';
+		echo '<p>2. If you are installing manually rename the config file located in application/config/cg_config.php.dist to cg_config.php and populate the defined fields.</p>';
 		die();
 	}
 }

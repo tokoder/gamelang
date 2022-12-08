@@ -1,7 +1,10 @@
 .DS_Store
 
-application/cache/*
-!application/cache/index.html
+application/cache/assets/*
+!application/cache/assets/index.html
+application/cache/captcha/*
+!application/cache/captcha/fonts
+!application/cache/captcha/index.html
 
 application/logs/*
 !application/logs/index.html
@@ -10,8 +13,8 @@ application/logs/*
 
 # Remove generated encryption key file.
 #-------------------------
-application/config/development/config_app.php
-application/config/development/encryption_key.php
+application/config/cg_config.php
+application/config/cg_encryption_key.php
 application/config/production/*
 
 # Ignore packages files.
@@ -40,12 +43,9 @@ application/composer.lock
 # Public files.
 #-------------------------
 public/assets/yarn.lock
-public/cache/*
-!public/cache/index.html
-public/captcha/*
-!public/captcha/index.html
 
 composer.lock
+tests/mocks/database/ci_test.sqlite
 
 user_guide_src/build/*
 user_guide_src/cilexer/build/*

@@ -21,7 +21,7 @@ defined('BASEPATH') OR exit('No direct script access allowed');
  * @subpackage 	Controllers
  * @author		Tokoder Team
  */
-class Load extends CG_Controller
+class Resource extends CG_Controller
 {
 	/**
 	 * __construct

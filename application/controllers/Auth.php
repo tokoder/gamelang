@@ -173,7 +173,7 @@ class Auth extends CG_Controller
 			);
 		}
 
-		$this->prep_form(apply_filters('auth-validation-data', $rules), '#register');
+		$this->prep_form(apply_filters('register-validation-data', $rules), '#register');
 
 		// After the form is processed.
 		if ($this->form_validation->run() !== false)
@@ -210,7 +210,7 @@ class Auth extends CG_Controller
 		{
 			$name = $field;
 			$inputs[$name] = array_merge(
-				$this->config->item($name, 'inputs'),
+				$this->config->item($name, 'cg_inputs'),
 				array( 'value' => set_value($name, $this->input->post($name, false)) )
 			);
 		}
@@ -221,7 +221,6 @@ class Auth extends CG_Controller
 		// Set page title and render view.
 		$this->themes
 			->set_title(__('lang_register'))
-			->set_alert($this->form_validation->validation_errors_list(), 'error')
 			->render($this->data);
 	}
 
@@ -318,7 +317,7 @@ class Auth extends CG_Controller
 
 		// Prepare form fields.
 		$this->data['identity'] = array_merge(
-			$this->config->item('identity', 'inputs'),
+			$this->config->item('identity', 'cg_inputs'),
 			array('value' => set_value('identity'))
 		);
 
@@ -384,9 +383,9 @@ class Auth extends CG_Controller
 		}
 
 		// Prepare form fields.
-		$this->data['password'] = $this->config->item('password', 'inputs');
+		$this->data['password'] = $this->config->item('password', 'cg_inputs');
 		$this->data['identity'] = array_merge(
-			$this->config->item('identity', 'inputs'),
+			$this->config->item('identity', 'cg_inputs'),
 			array('value' => set_value('identity'))
 		);
 
@@ -486,12 +485,12 @@ class Auth extends CG_Controller
 		}
 
 		// Prepare form fields.
+		$this->data['password'] = $this->config->item('password', 'cg_inputs');
 		$this->data['login_type'] = $login_type;
 		$this->data['login'] = array_merge(
-			$this->config->item($login_type, 'inputs'),
+			$this->config->item($login_type, 'cg_inputs'),
 			array('value' => set_value($login_type))
 		);
-		$this->data['password'] = $this->config->item('password', 'inputs');
 
 		// Set page title and render view.
 		$this->themes
@@ -574,9 +573,9 @@ class Auth extends CG_Controller
 		}
 
 		// Prepare form fields.
-		$this->data['identity'] = array_merge(
-			$this->config->item('identity', 'inputs'),
-			array('value' => set_value('identity'))
+		$this->data['email'] = array_merge(
+			$this->config->item('email', 'cg_inputs'),
+			array('value' => set_value('email'))
 		);
 
 		// Set page title and render view.
@@ -649,8 +648,8 @@ class Auth extends CG_Controller
 
 		// Prepare form fields.
 		$this->data['code'] = $code;
-		$this->data['npassword'] = $this->config->item('npassword', 'inputs');
-		$this->data['cpassword'] = $this->config->item('cpassword', 'inputs');
+		$this->data['npassword'] = $this->config->item('npassword', 'cg_inputs');
+		$this->data['cpassword'] = $this->config->item('cpassword', 'cg_inputs');
 
 		// Set page title and render view.
 		$this->themes
