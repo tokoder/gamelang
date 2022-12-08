@@ -155,7 +155,8 @@ class Resource extends CG_Controller
 
 		$this->load->helper('captcha');
 		$generate_captcha = generate_captcha();
-		$response['results'] = base_url('captcha/'.$generate_captcha['filename']);
+		$img_url = $this->config->item('img_url', 'cg_captcha');
+		$response['results'] = $img_url.'/'.$generate_captcha['filename'];
 
 		// Return the final output.
 		return $this->output
