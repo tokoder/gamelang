@@ -36,7 +36,7 @@ class Assets extends CI_Driver_Library {
     protected $assets_dirs  = [FCPATH];
     protected $script_dirs  = 'assets/js/';
     protected $style_dirs   = 'assets/css/';
-    protected $cache_dir    = 'cache/';
+    protected $cache_dir    = 'cache/assets/';
 
     protected $auto_update  = TRUE;
     protected $cache        = NULL;
@@ -85,7 +85,7 @@ class Assets extends CI_Driver_Library {
 	protected function _delete_cache()
 	{
 		// Prepare the path to to assets folder.
-		$path = realpath(FCPATH . $this->cache_dir);
+		$path = realpath(APPPATH . $this->cache_dir);
 
 		// Let's open the folder to read.
 		if ($handle = opendir($path))
@@ -366,8 +366,8 @@ class Assets extends CI_Driver_Library {
         // check for cached file
         $filename = $this->get_cache_filename($type, $assets);
         $modified = $this->get_last_modified($type, $assets);
-        if ( ! is_file(FCPATH . $this->cache_dir . $filename)
-            || ($this->static_cache && $modified) > filemtime($this->cache_dir . $filename))
+        if ( ! is_file(APPPATH . $this->cache_dir . $filename)
+            || ($this->static_cache && $modified) > filemtime(APPPATH . $this->cache_dir . $filename))
         {
             // build filedata
             $filedata = '';
@@ -377,7 +377,7 @@ class Assets extends CI_Driver_Library {
             }
 
             // write to cache
-            if ( ! write_file($this->cache_dir . $filename, $filedata))
+            if ( ! write_file(APPPATH . $this->cache_dir . $filename, $filedata))
             {
                 return FALSE;
             }
@@ -418,9 +418,8 @@ class Assets extends CI_Driver_Library {
         }
         // check for cached file
         $filename = $this->get_cache_filename($type, $min_assets);
-        if ( ! is_file(FCPATH . $this->cache_dir . $filename)
-            || ($this->static_cache
-            && $this->get_last_modified($type,$assets) > filemtime($this->cache_dir . $filename)))
+        if ( ! is_file(APPPATH . $this->cache_dir . $filename)
+            || ($this->static_cache && $this->get_last_modified($type,$assets) > filemtime(APPPATH . $this->cache_dir . $filename)))
         {
             // call method to generate files
             $this->get_minified_links($type, $assets, $media);
@@ -572,7 +571,7 @@ class Assets extends CI_Driver_Library {
             if (is_null($this->cache))
             {
                 $this->cache = array();
-                if ($filedata = $this->read_file($this->cache_dir . 'store.json'))
+                if ($filedata = $this->read_file(APPPATH . $this->cache_dir . 'store.json'))
                 {
                     $this->cache = json_decode($filedata, TRUE);
                 }
@@ -619,19 +618,22 @@ class Assets extends CI_Driver_Library {
         {
             return;
         }
+
         // build the store from file
         $store = array();
-        $filedata = $this->read_file($this->cache_dir . 'store.json');
+        $filedata = $this->read_file(APPPATH . $this->cache_dir . 'store.json');
         if ($filedata)
         {
             $store = json_decode($filedata, TRUE);
         }
+
         // create/update the record for these assets
         $hash = md5(json_encode($assets));
         $store[$hash] = $filename;
+
         // write it back to file
         $filedata = json_encode($store);
-        write_file($this->cache_dir . 'store.json', $filedata);
+        write_file(APPPATH . $this->cache_dir . 'store.json', $filedata);
     }
 
     // --------------------------------------------------------------------
@@ -692,7 +694,7 @@ class Assets extends CI_Driver_Library {
                 $dir = $this->get_path($path,$type);
             }
 
-            $url = base_url($dir . $path);
+            $url = base_url('resource/'.$dir . $path);
             if ($this->static_cache)
             {
                 $url .= '?cache=' . filemtime($dir . $path);
@@ -786,7 +788,7 @@ class Assets extends CI_Driver_Library {
 
             $read_f = $this->read_file($path);
 
-            $load_f = rtrim(str_replace(normalize_path(APPPATH), '/load/', $path), '/');
+            $load_f = rtrim(str_replace(normalize_path(APPPATH), '/resource/', $path), '/');
             $load_f = rtrim(str_replace(normalize_path(FCPATH), '', $load_f), '/');
 
             $result = str_replace('"./font/',       '"'.$load_f.'/../font/', $read_f);
