@@ -81,7 +81,7 @@ if ( ! function_exists('generate_captcha'))
 				'name'        => 'captcha',
 				'id'          => 'captcha-input',
 				'placeholder' => __('Type the text you see'),
-				'maxlength'   => get_instance()->config->item('word_length', 'captcha'),
+				'maxlength'   => get_instance()->config->item('word_length', 'cg_captcha'),
 				'required' 	  => '',
 			),
 		);

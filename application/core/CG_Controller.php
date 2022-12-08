@@ -441,8 +441,6 @@ class CG_Controller_User extends CG_Controller
 			exit;
 		}
 
-		$this->c_user = $this->auth->user();
-
 		// If we have a heading method, use it.
 		method_exists($this, '_subhead') && $this->_subhead();
 	}
