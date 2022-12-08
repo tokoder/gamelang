@@ -366,9 +366,10 @@ class Assets extends CI_Driver_Library {
         // check for cached file
         $filename = $this->get_cache_filename($type, $assets);
         $modified = $this->get_last_modified($type, $assets);
-        if ( ! is_file(APPPATH . $this->cache_dir . $filename)
-            || ($this->static_cache && $modified) > filemtime(APPPATH . $this->cache_dir . $filename))
-        {
+        $filepath = APPPATH . $this->cache_dir . $filename;
+        if ( ! is_file($filepath)
+            || ($this->static_cache && $modified) > filemtime($filepath)
+        ){
             // build filedata
             $filedata = '';
             foreach ($assets as $a)
@@ -377,7 +378,7 @@ class Assets extends CI_Driver_Library {
             }
 
             // write to cache
-            if ( ! write_file(APPPATH . $this->cache_dir . $filename, $filedata))
+            if ( ! write_file($filepath, $filedata))
             {
                 return FALSE;
             }
@@ -418,9 +419,10 @@ class Assets extends CI_Driver_Library {
         }
         // check for cached file
         $filename = $this->get_cache_filename($type, $min_assets);
-        if ( ! is_file(APPPATH . $this->cache_dir . $filename)
-            || ($this->static_cache && $this->get_last_modified($type,$assets) > filemtime(APPPATH . $this->cache_dir . $filename)))
-        {
+        $filepath = APPPATH . $this->cache_dir . $filename;
+        if ( ! is_file($filepath)
+            || ($this->static_cache && $this->get_last_modified($type,$assets) > filemtime($filepath))
+        ) {
             // call method to generate files
             $this->get_minified_links($type, $assets, $media);
 
