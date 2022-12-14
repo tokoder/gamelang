@@ -523,8 +523,8 @@ class Packages extends CG_Controller_Admin {
 			'delete'     => __('confirm_delete'),
 		);
 		$output .= '<script type="text/javascript">';
-		$output .= 'gamelang.i18n = gamelang.i18n || {};';
-		$output .= ' gamelang.i18n.packages = '.json_encode($lines).';';
+		$output .= 'cg.i18n = cg.i18n || {};';
+		$output .= ' cg.i18n.packages = '.json_encode($lines).';';
 		$output .= '</script>';
 		return $output;
 	}

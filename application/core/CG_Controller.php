@@ -96,22 +96,20 @@ class CG_Controller extends CI_Controller
 		}
 		$this->themes->set('package', $package, true);
 
-		// Load authentication library.
-		$this->c_user = apply_filters('get_current_user', $this->auth->user());
-		$this->themes->set('c_user', $this->c_user, true);
-
 		// Add all necessary meta tags.
 		$this->themes->set_meta();
+
+		// Load authentication library.
+		$this->c_user = $this->auth->user();
+		$this->themes->set('c_user', $this->c_user, true);
 
 		// Always hold the redirection URL for eventual use.
 		if ($this->input->get_post('next'))
 		{
-			$this->session->set_flashdata(
-				'redirect',
+			$this->session->set_flashdata('redirect',
 				rawurldecode($this->input->get_post('next'))
 			);
 		}
-
 		$this->redirect = $this->session->flashdata('redirect');
 
 		log_message('info', 'CG_Controller Class Initialized');
@@ -121,7 +119,7 @@ class CG_Controller extends CI_Controller
 
 	/**
 	 * We are remapping things just so we can handle methods that are
-	 * http accessed and methods that require AJAX requests only.
+	 * http accessed.
 	 *
 	 * @access 	public
 	 * @param 	string 	$method 	The method's name.
@@ -182,8 +180,8 @@ class CG_Controller extends CI_Controller
 			{
 				// Make sure to use _query_validate() method on admin.
 				add_action( 'after_theme_setup', function () {
-					add_script('assets/node_modules/jquery-validation/dist/jquery.validate.js');
-					add_script('assets/node_modules/jquery-validation/dist/additional-methods.js');
+					add_script('assets/vendor/jquery-validation/jquery.validate.js');
+					add_script('assets/vendor/jquery-validation/additional-methods.js');
 				} );
 
 				// Different language?
@@ -191,7 +189,7 @@ class CG_Controller extends CI_Controller
 				if ('en' !== $code)
 				{
 					add_action( 'after_theme_setup', function () use ($code) {
-						add_script('assets/node_modules/jquery-validation/dist/localization/messages_'.$code.'.js');
+						add_script('assets/vendor/jquery-validation/localization/messages_'.$code.'.js');
 					} );
 				}
 
@@ -384,10 +382,10 @@ class CG_Controller_Admin extends CG_Controller
 	 *
 	 * @access 	public
 	 * @param 	string 	$package 	The package to create back link for.
-	 * @param 	bool 	$echo 		Whether to echo the anchor.
+	 * @param 	bool 	$return 		Whether to echo the anchor.
 	 * @return 	string
 	 */
-	protected function _btn_back($package = null, $echo = true)
+	protected function _btn_back($package = null, $echo = false, $return = true)
 	{
 		if (null === $package)
 		{
@@ -401,10 +399,10 @@ class CG_Controller_Admin extends CG_Controller
 
 		$anchor = html_tag('a', array(
 			'href' => admin_url($package),
-			'class' => 'btn btn-outline-dark btn-sm btn-icon',
-		), fa_icon($icon).__('lang_back'));
+			'class' => 'btn btn-outline-dark btn-sm btn-icon me-2',
+		), fa_icon($icon).($echo ? $echo : __('lang_back')));
 
-		if (false === $echo)
+		if (false === $return)
 		{
 			return $anchor;
 		}
@@ -590,7 +588,6 @@ class CG_Controller_Ajax extends CG_Controller
 			$this->response->header  = self::HTTP_UNAUTHORIZED;
 			$this->response->message = __('error_nonce_url');
 		}
-
 		// Does the method require an admin user?
 		elseif (in_array($method, $this->admin_methods)
 			&& true !== $this->auth->is_admin())
@@ -598,7 +595,6 @@ class CG_Controller_Ajax extends CG_Controller
 			$this->response->header  = self::HTTP_UNAUTHORIZED;
 			$this->response->message = __('error_nonce_url');
 		}
-
 		// Does the method require an admin user AND a safety check?
 		elseif (in_array($method, $this->safe_admin_methods)
 			&& (true !== $nonce_status OR true !== $this->auth->is_admin()))

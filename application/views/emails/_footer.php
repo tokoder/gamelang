@@ -20,7 +20,7 @@ $powered_by = sprintf(__('powered_by'), html_tag('a', array(
 	'href'   => 'https://github.com/tokoder/gamelang',
 	'target' => '_blank',
 ), __('app_name')));
-$powered_by =  apply_filters('email_powered_by', $powered_by);
+$powered_by = apply_filters('email_powered_by', $powered_by);
 
 $email_footer = <<<EOT
 						</td>

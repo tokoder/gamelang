@@ -2,15 +2,15 @@
     "use strict";
 
     // Prepare globals.
-    var gamelang = window.gamelang = window.gamelang || {};
-    gamelang.i18n = gamelang.i18n || {};
-    gamelang.languages = gamelang.languages || {};
-    gamelang.i18n.languages = gamelang.i18n.languages || {};
+    var cg = window.cg = window.cg || {};
+    cg.i18n = cg.i18n || {};
+    cg.languages = cg.languages || {};
+    cg.i18n.languages = cg.i18n.languages || {};
 
     /**
      * Languages.
      */
-    gamelang.languages.proceed = function(el, action) {
+    cg.languages.proceed = function(el, action) {
         var $this = $(el),
             href = $this.data("endpoint"),
             row = $this.closest("tr"),
@@ -27,9 +27,9 @@
         row.siblings("tr").addClass("op-2");
 
         /** We define the confirmation message. */
-        var message = gamelang.i18n.languages[action] || undefined;
+        var message = cg.i18n.languages[action] || undefined;
         if (typeof message === "undefined") {
-            message = gamelang.i18n.default[action] || undefined;
+            message = cg.i18n.default[action] || undefined;
             if (typeof message === "undefined") {
                 message = "Are you sure you to " + action + " %s?";
             }
@@ -41,7 +41,7 @@
         }
 
         /** Display confirmation message. */
-        gamelang.ui.confirm(message.replace(/%s/g, name), function () {
+        cg.ui.confirm(message.replace(/%s/g, name), function () {
             window.location.href = href;
         }, function () {
             /** Make sure to remove opacity class from siblings. */
@@ -53,19 +53,19 @@
         /** Enable language. */
         $(document).on("click", ".language-enable", function (e) {
             e.preventDefault();
-            return gamelang.languages.proceed(this, "enable");
+            return cg.languages.proceed(this, "enable");
         });
 
         /** Disable language. */
         $(document).on("click", ".language-disable", function (e) {
             e.preventDefault();
-            return gamelang.languages.proceed(this, "disable");
+            return cg.languages.proceed(this, "disable");
         });
 
         /** Make default. */
         $(document).on("click", ".language-default", function (e) {
             e.preventDefault();
-            return gamelang.languages.proceed(this, "make_default");
+            return cg.languages.proceed(this, "make_default");
         });
     });
 

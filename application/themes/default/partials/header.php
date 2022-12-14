@@ -1,3 +1,6 @@
+<?php
+defined('BASEPATH') OR exit('No direct script access allowed');
+?>
 <header>
     <nav class="navbar navbar-expand-md navbar-dark fixed-top bg-primary">
         <div class="container-fluid">
@@ -75,11 +78,12 @@
                     </li>
                     <?php endif; ?>
                 </ul>
+
                 <?php if ( ! $this->auth->online()): ?>
-                <?= anchor('login', __('lang_login'), 'class="btn btn-dark"') ?>
-                <?php if (get_option('allow_registration', false) === true): ?>
-                &nbsp;<?php echo anchor('register', __('lang_create_account'), 'class="btn btn-light"') ?>
-                <?php endif; ?>
+                    <?= anchor('login', __('lang_login'), 'class="btn btn-dark"') ?>
+                    <?php if (get_option('allow_registration', false) === true): ?>
+                    &nbsp;<?php echo anchor('register', __('lang_create_account'), 'class="btn btn-light"') ?>
+                    <?php endif; ?>
                 <?php endif; ?>
             </div>
         </div>

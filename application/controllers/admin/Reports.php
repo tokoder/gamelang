@@ -217,9 +217,9 @@ class Reports extends CG_Controller_Admin {
 	public function _admin_head($output)
 	{
 		$output .= '<script type="text/javascript">';
-		$output .= 'gamelang.i18n = gamelang.i18n || {};';
-		$output .= 'gamelang.i18n.reports = gamelang.i18n.reports || {};';
-		$output .= 'gamelang.i18n.reports.delete = "'.__('confirm_delete').'";';
+		$output .= 'cg.i18n = cg.i18n || {};';
+		$output .= 'cg.i18n.reports = cg.i18n.reports || {};';
+		$output .= 'cg.i18n.reports.delete = "'.__('confirm_delete').'";';
 		$output .= '</script>';
 
 		return $output;

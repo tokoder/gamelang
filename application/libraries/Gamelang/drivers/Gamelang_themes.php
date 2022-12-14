@@ -420,7 +420,7 @@ class Gamelang_themes extends CI_Driver
 
 		$this->content = $this->_load_file($view, $data, 'view');
 
-		$this->content =  apply_filters(
+		$this->content = apply_filters(
 			$this->_is_admin() ? 'admin_content' : 'the_content',
 			$this->content
 		);
@@ -444,7 +444,7 @@ class Gamelang_themes extends CI_Driver
 
 		$output = $this->_load_file($this->layout, $layout, 'layout');
 
-		$output =  apply_filters($this->_is_admin() ? 'admin_output' : 'theme_output', $output);
+		$output = apply_filters($this->_is_admin() ? 'admin_output' : 'theme_output', $output);
 
 		$output = $this->get_header().$output.$this->get_footer();
 
@@ -801,7 +801,7 @@ class Gamelang_themes extends CI_Driver
 
 		$this->body_classes = array_clean((array)$this->body_classes);
 
-		$this->body_classes =  apply_filters(
+		$this->body_classes = apply_filters(
 			$this->_is_admin() ? 'admin_body_class' : 'body_class',
 			$this->body_classes
 		);
@@ -979,14 +979,18 @@ class Gamelang_themes extends CI_Driver
 
 		$return = $base_url;
 
-		if ( ! empty($uri))
-		{
+		if ( ! empty($uri)
+			&& file_exists($this->upload_path($uri))
+		) {
 			if ( ! isset($cached_uris[$uri]))
 			{
 				$cached_uris[$uri] = $base_url.'/'.$uri;
 			}
 
 			$return = $cached_uris[$uri];
+		}
+		else {
+			$return = base_url('assets/images/blank.png');
 		}
 
 		return $return;
@@ -1039,7 +1043,7 @@ class Gamelang_themes extends CI_Driver
 			? 'after_admin_styles'
 			: 'after_styles';
 
-		$styles =  apply_filters($after_filter, $styles);
+		$styles = apply_filters($after_filter, $styles);
 
 		$styles .= $this->ci->assets->get_assets('style', [], 'css');
 
@@ -1103,7 +1107,7 @@ class Gamelang_themes extends CI_Driver
 
 		if ($site_id && 'UA-XXXXX-Y' !== $site_id)
 		{
-			$temp_analytics =  apply_filters(
+			$temp_analytics = apply_filters(
 				$this->_is_admin() ? 'admin_google_analytics' : 'google_analytics',
 				$this->template_google_analytics
 			);
@@ -1161,7 +1165,7 @@ class Gamelang_themes extends CI_Driver
 
 		if ( ! $this->_is_admin())
 		{
-			$generator =  apply_filters('CG_generator', 'Tokoder '.CI_VERSION);
+			$generator = apply_filters('CG_generator', 'Tokoder '.CI_VERSION);
 			empty($generator) OR $this->add_meta('generator', $generator);
 		}
 
@@ -1213,9 +1217,9 @@ class Gamelang_themes extends CI_Driver
 			$after_filter  = 'after_admin_meta';
 		}
 
-		$meta_tags =  apply_filters($before_filter, '');
+		$meta_tags = apply_filters($before_filter, '');
 		$meta_tags .= $this->_render_meta_tags();
-		$meta_tags =  apply_filters($after_filter, $meta_tags);
+		$meta_tags = apply_filters($after_filter, $meta_tags);
 
 		return $meta_tags;
 	}
@@ -1313,7 +1317,7 @@ class Gamelang_themes extends CI_Driver
 
 		if ($this->_is_admin())
 		{
-			$CG_title =  apply_filters('CG_title', ' &lsaquo; '.__('lang_app'));
+			$CG_title = apply_filters('CG_title', ' &lsaquo; '.__('lang_app'));
 			empty($CG_title) OR $this->title .= $CG_title;
 
 			if (null !== ($site_name = $this->ci->config->item('site_name')))
@@ -1387,7 +1391,7 @@ class Gamelang_themes extends CI_Driver
 
 		$attrs = array($this->language('code'));
 
-		$attrs =  apply_filters(
+		$attrs = apply_filters(
 			$this->_is_admin() ? 'admin_language_attributes' : 'language_attributes',
 			$attrs
 		);
@@ -1451,8 +1455,8 @@ class Gamelang_themes extends CI_Driver
 		{
 			if ( ! $this->_is_admin())
 			{
-				$this->template_alert =  apply_filters('alert_template', $this->template_alert);
-				$this->alert_classes  =  apply_filters('alert_classes', $this->alert_classes);
+				$this->template_alert = apply_filters('alert_template', $this->template_alert);
+				$this->alert_classes  = apply_filters('alert_classes', $this->alert_classes);
 			}
 
 			foreach ($this->messages as $index => $message)
@@ -1495,7 +1499,7 @@ class Gamelang_themes extends CI_Driver
 				?  apply_filters('alert_template_js', $this->template_alert_js)
 				:  apply_filters('alert_template', $this->template_alert);
 
-			$this->alert_classes =  apply_filters('alert_classes', $this->alert_classes);
+			$this->alert_classes = apply_filters('alert_classes', $this->alert_classes);
 		}
 
 		$output = str_replace(
@@ -1644,7 +1648,7 @@ class Gamelang_themes extends CI_Driver
 
 		if ( ! empty($full_lang))
 		{
-			$textdomain =  apply_filters('theme_translation_index', $index);
+			$textdomain = apply_filters('theme_translation_index', $index);
 			empty($textdomain) && $textdomain = $this->current_theme();
 
 			$this->ci->lang->language[$textdomain] = $full_lang;
@@ -1697,7 +1701,7 @@ class Gamelang_themes extends CI_Driver
 		// Backend-end view.
 		if ( has_filter('admin_view'))
 		{
-			$this->view =  apply_filters('admin_view', $this->view);
+			$this->view = apply_filters('admin_view', $this->view);
 			return $this->view;
 		}
 
@@ -1753,12 +1757,12 @@ class Gamelang_themes extends CI_Driver
 
 		$view = preg_replace('/.php$/', '', (string)$view).'.php';
 
-		$full_path =  apply_filters(
+		$full_path = apply_filters(
 			$this->_is_admin() ? 'admin_views_path' : 'theme_views_path',
 			$this->theme_path()
 		);
 
-		return is_file($full_path.'/'.$view);
+		return is_file($full_path.$view);
 	}
 
 	// ------------------------------------------------------------------------
@@ -2152,7 +2156,7 @@ class Gamelang_themes extends CI_Driver
 				unset($return[$i]);
 			}
 
-			$return =  apply_filters('get_themes', $return);
+			$return = apply_filters('get_themes', $return);
 		}
 
 		return $return;
@@ -2259,7 +2263,7 @@ class Gamelang_themes extends CI_Driver
 
 			if (empty($details['screenshot']))
 			{
-				$details['screenshot'] = base_url('resource/themes/theme-blank.png');
+				$details['screenshot'] = base_url('assets/images/blank.png');
 				foreach (array('.png', '.jpg', '.jpeg', '.gif') as $ext)
 				{
 					if (false !== $this->themes_path($folder.'/screenshot'.$ext))
@@ -2296,7 +2300,7 @@ class Gamelang_themes extends CI_Driver
 		/**
 		 * Allow users to filter default themes details.
 		 */
-		$details =  apply_filters('themes_details', $this->_headers);
+		$details = apply_filters('themes_details', $this->_headers);
 
 		// We fall-back to default details if empty.
 		empty($details) && $details = $this->_headers;

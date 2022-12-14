@@ -47,69 +47,66 @@ class Auth extends CG_Controller
 	// ------------------------------------------------------------------------
 
 	/**
-	 * We remap methods so we can do extra actions.
-	 *
-	 * @access 	public
-	 * @param 	string 	$method 	The method's name.
-	 * @param 	array 	$params 	Arguments to pass to the method.
-	 * @return 	mixed 	Depends on the called method.
+	 * We are remapping things just so we can handle methods that are
+	 * http accessed.
 	 */
 	public function _remap($method, $params = array())
 	{
 		/**
+		 * Filters the host user.
+		 */
+		$this->host_user = apply_filters('host_user', false);
+		$this->themes->set('host_user', $this->host_user, true);
+
+		/**
 		 * If the view does not exists within the theme's folder,
 		 * we make sure to use our default one.
 		 */
-		$this->themes
-			->set_theme()
-			->set_layout('auth');
-		if (true == $this->themes->view_exists())
+		$this->themes->set_theme()->set_layout('auth');
+		if (false == $this->themes->view_exists())
 		{
-			// We call the method.
-			return call_user_func_array(array($this, $method), $params);
+			remove_all_filters();
+			remove_all_actions('enqueue_partials');
+
+			// Enqueue our assets.
+			add_action( 'extra_head', function ($output) {
+				$config = array(
+					'siteURL'     => site_url(),
+					'tokenName'   => config_item('csrf_token_name'),
+					'tokenCookie' => config_item('csrf_cookie_name'),
+				);
+				$output .= '<script type="text/javascript">';
+				$output .= 'config = '.json_encode($config).';';
+				$output .= '</script>';
+				return $output;
+			});
+
+			// Enqueue our assets.
+			add_action( 'after_theme_setup', function () {
+				add_styles('assets/vendor/bootstrap/css/bootstrap.min.css');
+				add_styles('assets/vendor/fontawesome-free/css/all.min.css');
+				add_script('assets/vendor/jquery/jquery.js');
+				add_script('assets/vendor/bootstrap/js/bootstrap.bundle.js');
+			});
+
+			// Fixed views and layouts if theme doesn't have theme.
+			add_filter('theme_layouts_path', function($path) {
+				return VIEWPATH.'auth/layouts';
+			});
+
+			add_filter( 'theme_partials_path', function () {
+				return VIEWPATH.'auth/partials';
+			});
+
+			add_filter('theme_views_path', function($path) {
+				return VIEWPATH;
+			});
+
+			// Separated dashboard header and footer to allow different layouts.
+			add_partial('footer');
 		}
 
-		remove_all_filters();
-		remove_all_actions('enqueue_partials');
-
-		// Enqueue our assets.
-		add_action( 'extra_head', function ($output) {
-			$config = array(
-				'siteURL'     => site_url(),
-				'tokenName'   => config_item('csrf_token_name'),
-				'tokenCookie' => config_item('csrf_cookie_name'),
-			);
-			$output .= '<script type="text/javascript">';
-			$output .= 'config = '.json_encode($config).';';
-			$output .= '</script>';
-			return $output;
-		});
-
-		// Enqueue our assets.
-		add_action( 'after_theme_setup', function () {
-			add_styles('assets/node_modules/bootstrap/dist/css/bootstrap.min.css');
-			add_styles('assets/fontawesome-free/css/all.min.css');
-			add_script('assets/node_modules/jquery/dist/jquery.js');
-			add_script('assets/node_modules/bootstrap/dist/js/bootstrap.bundle.js');
-		});
-
-		// Fixed views and layouts if theme doesn't have theme.
-		add_filter('theme_layouts_path', function($path) {
-			return VIEWPATH.'auth/layouts';
-		});
-
-		add_filter( 'theme_partials_path', function () {
-			return VIEWPATH.'auth/partials';
-		});
-
-		add_filter('theme_views_path', function($path) {
-			return VIEWPATH;
-		});
-
-		// Separated dashboard header and footer to allow different layouts.
-		add_partial('footer');
-
-		// We call the method.
+		// Call the method.
 		return call_user_func_array(array($this, $method), $params);
 	}
 

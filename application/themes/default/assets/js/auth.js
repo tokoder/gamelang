@@ -1,11 +1,24 @@
 $(document).ready(function(){
     $(document).on('click', '#refresh_captcha', function(e) {
         e.preventDefault();
-        $(this).find('.fa').addClass('fa-spin-pulse');
-        $.get(config.siteURL + 'resource/captcha', function(json) {
-            $('#captcha').attr('src', json.results);
-            $('#captcha-input').focus();
-            $('#refresh_captcha').find('.fa').removeClass('fa-spin-pulse');
+
+        $.ajax({
+            type: "GET",
+            url: config.siteURL + 'resource/captcha',
+            beforeSend: function(xhr) {
+                $('#refresh_captcha')
+                    .find('.fa')
+                    .addClass('fa-spin-pulse');
+            },
+            success: function(result, status, xhr) {
+                $('#captcha').attr('src', result.results);
+            },
+            complete: function(xhr, status) {
+                $('#captcha-input').focus();
+                $('#refresh_captcha')
+                    .find('.fa')
+                    .removeClass('fa-spin-pulse');
+            }
         });
     });
 

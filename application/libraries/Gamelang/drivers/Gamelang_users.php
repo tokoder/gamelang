@@ -108,7 +108,7 @@ class Gamelang_users extends CI_Driver implements Gamelang_crud_interface
 		// Izinkan peran pengguna default.
 		if ( ! isset($entity['subtype']))
 		{
-			$role =  apply_filters('default_users_role', 'regular');
+			$role = apply_filters('default_users_role', 'regular');
 			empty($role) && $role = 'regular';
 			$entity['subtype'] = $role;
 		}
@@ -358,12 +358,12 @@ class Gamelang_users extends CI_Driver implements Gamelang_crud_interface
 			foreach ($user as $key => &$val) {
 				// Global fields.
 				if ( has_filter("edit_{$key}")) {
-					$var =  apply_filters("edit_{$key}", $val, $key);
+					$var = apply_filters("edit_{$key}", $val, $key);
 				}
 
 				// "users" table related fields.
 				if ( has_filter("edit_user_{$key}")) {
-					$var =  apply_filters("edit_user_{$key}", $val, $key);
+					$var = apply_filters("edit_user_{$key}", $val, $key);
 				}
 			}
 

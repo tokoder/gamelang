@@ -147,7 +147,7 @@ class CG_Security extends CI_Security {
 	public function nonce_tick()
 	{
 		$CI =& get_instance();
-		$nonce_life =  apply_filters('nonce_life', DAY_IN_SECONDS);
+		$nonce_life = apply_filters('nonce_life', DAY_IN_SECONDS);
 		return ceil(time() / ($nonce_life / 2));
 	}
 

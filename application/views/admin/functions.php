@@ -69,20 +69,15 @@ class Admin_theme
 	 */
 	public function after_theme_setup()
 	{
-		add_styles('assets/node_modules/bootstrap/dist/css/bootstrap.css');
-		add_styles('assets/node_modules/sweetalert2/dist/sweetalert2.css');
-		add_styles('assets/node_modules/summernote/dist/summernote-bs5.css');
-		add_styles('assets/node_modules/bootstrap-tagsinput/dist/bootstrap-tagsinput.css');
-		add_styles('assets/fontawesome-free/css/all.min.css');
-		add_styles('offcanvas.css');
+		add_styles('assets/vendor/bootstrap/css/bootstrap.css');
+		add_styles('assets/vendor/sweetalert2/sweetalert2.css');
+		add_styles('assets/vendor/fontawesome-free/css/all.css');
 
-		add_script('assets/node_modules/jquery/dist/jquery.js');
-		add_script('assets/node_modules/bootstrap/dist/js/bootstrap.bundle.js');
-		add_script('assets/node_modules/sweetalert2/dist/sweetalert2.js');
-		add_script('assets/node_modules/js-cookie/dist/js.cookie.js');
-		add_script('assets/node_modules/bootbox/dist/bootbox.min.js');
-		add_script('assets/node_modules/summernote/dist/summernote-bs5.min.js');
-		add_script('assets/node_modules/bootstrap-tagsinput/dist/bootstrap-tagsinput.js');
+		add_script('assets/vendor/jquery/jquery.js');
+		add_script('assets/vendor/bootstrap/js/bootstrap.bundle.js');
+		add_script('assets/vendor/sweetalert2/sweetalert2.js');
+		add_script('assets/vendor/js-cookie/js.cookie.js');
+		add_script('assets/vendor/bootbox/bootbox.min.js');
 		add_script('admin.js');
 	}
 
@@ -137,10 +132,10 @@ class Admin_theme
 		);
 
 		$output .= '<script type="text/javascript">';
-		$output .= 'var gamelang = window.gamelang = window.gamelang || {};';
-		$output .= ' gamelang.config = '.json_encode($config).';';
-		$output .= ' gamelang.i18n = gamelang.i18n || {};';
-		$output .= ' gamelang.i18n.default = '.json_encode($lines).';';
+		$output .= 'var cg = window.cg = window.cg || {};';
+		$output .= ' cg.config = '.json_encode($config).';';
+		$output .= ' cg.i18n = cg.i18n || {};';
+		$output .= ' cg.i18n.default = '.json_encode($lines).';';
 		$output .= '</script>';
 
 		return $output;

@@ -2,15 +2,15 @@
     "use strict";
 
     // Prepare globals.
-    var gamelang = window.gamelang = window.gamelang || {};
-    gamelang.i18n = gamelang.i18n || {};
-    gamelang.packages = gamelang.packages || {};
-    gamelang.i18n.packages = gamelang.i18n.packages || {};
+    var cg = window.cg = window.cg || {};
+    cg.i18n = cg.i18n || {};
+    cg.packages = cg.packages || {};
+    cg.i18n.packages = cg.i18n.packages || {};
 
     /**
      * Packages.
      */
-    gamelang.packages.proceed = function(el, action) {
+    cg.packages.proceed = function(el, action) {
         var $this = $(el),
             href = $this.data("endpoint"),
             row = $this.closest("tr"),
@@ -27,9 +27,9 @@
         row.siblings("tr").addClass("op-2");
 
         /** We define the confirmation message. */
-        var message = gamelang.i18n.packages[action] || undefined;
+        var message = cg.i18n.packages[action] || undefined;
         if (typeof message === "undefined") {
-            message = gamelang.i18n.default[action] || undefined;
+            message = cg.i18n.default[action] || undefined;
             if (typeof message === "undefined") {
                 message = "Are you sure you to " + action + " %s?";
             }
@@ -41,7 +41,7 @@
         }
 
         /** Display confirmation message. */
-        gamelang.ui.confirm(message.replace(/%s/g, name), function () {
+        cg.ui.confirm(message.replace(/%s/g, name), function () {
             window.location.href = href;
         }, function () {
             /** Make sure to remove opacity class from siblings. */
@@ -54,19 +54,19 @@
         /** Activate package. */
         $(document).on("click", ".package-activate", function(e) {
             e.preventDefault();
-            return gamelang.packages.proceed(this, "activate");
+            return cg.packages.proceed(this, "activate");
         });
 
         /** Deactivate package. */
         $(document).on("click", ".package-deactivate", function(e) {
             e.preventDefault();
-            return gamelang.packages.proceed(this, "deactivate");
+            return cg.packages.proceed(this, "deactivate");
         });
 
         /** Delete package. */
         $(document).on("click", ".package-delete", function(e) {
             e.preventDefault();
-            return gamelang.packages.proceed(this, "delete");
+            return cg.packages.proceed(this, "delete");
         });
     });
 

@@ -138,16 +138,12 @@ class Default_theme {
 	 */
 	public function after_theme_setup()
 	{
-		add_styles('assets/node_modules/bootstrap/dist/css/bootstrap.min.css');
-		add_styles('assets/fontawesome-free/css/all.min.css');
-		add_styles('assets/node_modules/summernote/dist/summernote-bs5.css');
-		add_styles('assets/node_modules/bootstrap-tagsinput/dist/bootstrap-tagsinput.css');
+		add_styles('assets/vendor/bootstrap/css/bootstrap.css');
+		add_styles('assets/vendor/fontawesome-free/css/all.css');
 		add_styles(get_theme_path('style.css'));
 
-		add_script('assets/node_modules/jquery/dist/jquery.min.js');
-		add_script('assets/node_modules/bootstrap/dist/js/bootstrap.bundle.min.js');
-		add_script('assets/node_modules/summernote/dist/summernote-bs5.min.js');
-		add_script('assets/node_modules/bootstrap-tagsinput/dist/bootstrap-tagsinput.js');
+		add_script('assets/vendor/jquery/jquery.js');
+		add_script('assets/vendor/bootstrap/js/bootstrap.bundle.js');
 
 		$output = '<script>';
 		$output .= 'var site_url = "'.site_url().'";';
@@ -263,17 +259,6 @@ endif; // End of class Default_theme.
 // Initialize class.
 $Default_theme = new Default_theme();
 
-/**
- * We really appreciate the fact that you keep it, it is a
- * way to say "Oh yeah, another person using my project.".
- * If you want to remove it, and you have the right to do it, the filter
- * below show you how to do it.
- */
-if ( ! get_instance()->themes->view_exists('auth'))
-{
-	return;
-}
-
 // To remove the copyright added between DOCTYPE and <html>:
 if ( ! function_exists('remove_copyright'))
 {
@@ -361,63 +346,6 @@ add_filter('alert_template_js', function($output) {
 	return $output;
 });
 
-// ------------------------------------------------------------------------
-
-/**
- * The jQuery validate library comes with Bootstrap 4 defaults. We make
- * sure to change to Bootstrap 3.
- */
-
-/**
- * Class used for invalid inputs.
- * @see https://jqueryvalidation.org/validate/#errorclass
- */
-add_filter('jquery_validate_errorClass', function($class) {
-	return 'has-error';
-});
-
-/**
- * Class used for valid inputs.
- * @see https://jqueryvalidation.org/validate/#errorclass
- */
-add_filter('jquery_validate_successClass', function($class) {
-	return 'has-success';
-});
-
-/**
- * Use this element type to create error messages and to look
- * for existing error messages. Default: "label".
- * @see https://jqueryvalidation.org/validate/#errorelement
- */
-add_filter('jquery_validate_errorElement', function($el) {
-	return 'small';
-});
-
-/**
- * Customize placement of created error labels.
- * @see https://jqueryvalidation.org/validate/#errorplacement
- */
-add_filter('jquery_validate_errorPlacement', function($output) {
-	return 'function (error, element) { error.addClass("help-block"); element.parents(".form-group").find(".help-block").remove(); if (element.prop("type") === "checkbox") { error.insertAfter(element.parent("label")); } else { error.insertAfter(element); } }';
-});
-
-/**
- * How to highlight invalid fields.
- * @see https://jqueryvalidation.org/validate/#highlight
- */
-add_filter('jquery_validate_highlight', function($function) {
-	return 'function (element, errorClass, validClass) { $(element).parents(".form-group").addClass("has-error").removeClass("has-success"); }';
-});
-
-/**
- * Called to revert changes made by option highlight,
- * same arguments as highlight.
- * @see https://jqueryvalidation.org/validate/#unhighlight
- */
-add_filter('jquery_validate_unhighlight', function($function) {
-	return 'function (element, errorClass, validClass) { $(element).parents(".form-group").addClass("has-success").removeClass("has-error"); }';
-});
-
 /**
  * Example filters on how to edit captcha the way you want
  * We use a class for better performance and to avoid any possible
@@ -430,6 +358,9 @@ if ( ! class_exists('captcha_class', false))
 		public function __construct() {}
 
 		public function init() {
+			if( ! get_instance()->themes->view_exists('auth/login'))  {
+				return;
+			}
 			add_filter('captcha_font_path',        array($this, 'font_path'));
 			add_filter('captcha_font_size',        array($this, 'font_size'));
 			add_filter('captcha_word_length',      array($this, 'word_length'));

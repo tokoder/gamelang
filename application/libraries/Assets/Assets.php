@@ -31,21 +31,27 @@ class Assets extends CI_Driver_Library {
      */
     public $valid_drivers = array('css', 'js');
 
-    private $ci;
-
     protected $assets_dirs  = [FCPATH];
-    protected $script_dirs  = 'assets/js/';
-    protected $style_dirs   = 'assets/css/';
-    protected $cache_dir    = 'cache/assets/';
 
-    protected $auto_update  = TRUE;
-    protected $cache        = NULL;
+    protected $script_dirs  = 'assets/js/';
+
+    protected $style_dirs   = 'assets/css/';
+
+    protected $cache_dir    = 'cache/assets/';
 
     protected $static_cache = FALSE;
 
+    protected $auto_update  = TRUE;
+
+    protected $cache        = NULL;
+
+    private $ci;
+
     private $current_group  = NULL;
-    private $store = array();
-    private $groups = array();
+
+    private $groups         = array();
+
+    private $store          = array();
 
     // --------------------------------------------------------------------
 
@@ -793,11 +799,11 @@ class Assets extends CI_Driver_Library {
             $load_f = rtrim(str_replace(normalize_path(APPPATH), '/resource/', $path), '/');
             $load_f = rtrim(str_replace(normalize_path(FCPATH), '', $load_f), '/');
 
-            $result = str_replace('"./font/',       '"'.$load_f.'/../font/', $read_f);
+            $result = str_replace('../images/',     $load_f.'/../../images/', $read_f);
+            $result = str_replace('../webfonts/',   $load_f.'/../../webfonts/', $result);
+            $result = str_replace('"./font/',       '"'.$load_f.'/../font/', $result);
             $result = str_replace('"./fonts/',      '"'.$load_f.'/../fonts/', $result);
             $result = str_replace('(../fonts/',     '('.$load_f.'/../../fonts/', $result);
-            $result = str_replace('(../images/',    '('.$load_f.'/../../images/', $result);
-            $result = str_replace('(../webfonts/',  '('.$load_f.'/../../webfonts/', $result);
         }
 
         return $result;

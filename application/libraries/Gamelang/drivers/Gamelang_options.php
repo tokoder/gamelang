@@ -612,8 +612,8 @@ class CG_Option
 		}
 
 		// Apply filters to value and options.
-		$this->data->value   =  apply_filters("option_value_{$this->name}", $option->value);
-		$this->data->options =  apply_filters("option_options_{$this->name}", $option->options);
+		$this->data->value   = apply_filters("option_value_{$this->name}", $option->value);
+		$this->data->options = apply_filters("option_options_{$this->name}", $option->options);
 	}
 
 	// ------------------------------------------------------------------------

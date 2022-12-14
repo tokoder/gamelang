@@ -129,7 +129,7 @@ function _set_cookie($user_id, $token)
 function _get_cookie()
 {
 	// Allow themes and plug-ins to alter the cookie name.
-	$cookie_name =  apply_filters('user_cookie_name', 'c_user');
+	$cookie_name = apply_filters('user_cookie_name', 'c_user');
 
 	// Check whether the cookie exists.
 	$cookie = get_instance()->input->cookie($cookie_name, true);
