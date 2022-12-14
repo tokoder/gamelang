@@ -47,7 +47,7 @@ class CG_Pagination extends CI_Pagination
 
 			// Apply the pagination filter to our parameters.
 			$filtered_params = array_intersect_key($params, array_flip($filterable_params));
-			$filtered_params =  apply_filters('pagination', $filtered_params);
+			$filtered_params = apply_filters('pagination', $filtered_params);
 
 			// For security reasons, we remove unaccepted parameters.
 			foreach ($filtered_params as $key => $val)

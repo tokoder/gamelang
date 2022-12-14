@@ -2,15 +2,15 @@
     "use strict";
 
     // Prepare globals.
-    var gamelang = window.gamelang = window.gamelang || {};
-    gamelang.i18n = gamelang.i18n || {};
-    gamelang.users = gamelang.users || {};
-    gamelang.i18n.users = gamelang.i18n.users || {};
+    var cg = window.cg = window.cg || {};
+    cg.i18n = cg.i18n || {};
+    cg.users = cg.users || {};
+    cg.i18n.users = cg.i18n.users || {};
 
     /**
      * Users.
      */
-    gamelang.users.proceed = function(el, action) {
+    cg.users.proceed = function(el, action) {
         var $this = $(el),
             href = $this.data("endpoint"),
             row = $this.closest("tr"),
@@ -27,9 +27,9 @@
         row.siblings("tr").addClass("op-2");
 
         /** We define the confirmation message. */
-        var message = gamelang.i18n.users[action] || undefined;
+        var message = cg.i18n.users[action] || undefined;
         if (typeof message === "undefined") {
-            message = gamelang.i18n.default[action] || undefined;
+            message = cg.i18n.default[action] || undefined;
             if (typeof message === "undefined") {
                 message = "Are you sure you to " + action + " %s?";
             }
@@ -41,7 +41,7 @@
         }
 
         /** Display confirmation message. */
-        gamelang.ui.confirm(message.replace(/%s/g, name), function () {
+        cg.ui.confirm(message.replace(/%s/g, name), function () {
             window.location.href = href;
         }, function () {
             /** Make sure to remove opacity class from siblings. */
@@ -53,31 +53,31 @@
         /** Activate user. */
         $(document).on("click", ".user-activate", function (e) {
             e.preventDefault();
-            return gamelang.users.proceed(this, "activate");
+            return cg.users.proceed(this, "activate");
         });
 
         /** Deactivate user. */
         $(document).on("click", ".user-deactivate", function (e) {
             e.preventDefault();
-            return gamelang.users.proceed(this, "deactivate");
+            return cg.users.proceed(this, "deactivate");
         });
 
         /** Soft delete a user. */
         $(document).on("click", ".user-delete", function (e) {
             e.preventDefault();
-            return gamelang.users.proceed(this, "delete");
+            return cg.users.proceed(this, "delete");
         });
 
         /** Restore a deleted user. */
         $(document).on("click", ".user-restore", function (e) {
             e.preventDefault();
-            return gamelang.users.proceed(this, "restore");
+            return cg.users.proceed(this, "restore");
         });
 
         /** Remove user and related data. */
         $(document).on("click", ".user-remove", function (e) {
             e.preventDefault();
-            return gamelang.users.proceed(this, "remove");
+            return cg.users.proceed(this, "remove");
         });
     });
 

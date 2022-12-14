@@ -42,6 +42,9 @@ class Gamelang_auth extends CI_Driver
 	 */
 	private $admin;
 
+	protected $permission;
+	protected $package;
+
 	// ------------------------------------------------------------------------
 
 	/**
@@ -55,6 +58,7 @@ class Gamelang_auth extends CI_Driver
 	{
 		// Make sure to load users language file.
 		$this->ci->load->helper('security');
+		$this->package = '';
 
 		// Attempt to authenticate the current user.
 		$this->_authenticate();
@@ -298,6 +302,41 @@ class Gamelang_auth extends CI_Driver
 	}
 
 	// ------------------------------------------------------------------------
+	// Authorization methods.
+	// ------------------------------------------------------------------------
+
+	public function method($package = null)
+	{
+		$package = ($package!=null)
+			? strtolower($package)
+			: $this->ci->router->fetch_package();
+
+		$this->package = $package;
+		$this->permission = ($this->checkMethod($package)) ? true : false;
+
+		return $this;
+	}
+
+	public function checkMethod($package = NULL)
+	{
+		if($this->is_admin()) {
+			return true;
+		} elseif ($this->online()) {
+			return true;
+		} else {
+			return false;
+		}
+	}
+
+	public function redirect()
+	{
+		if ( ! $this->permission) {
+			set_alert("You do not have permission to access. Please contact with administrator.");
+			redirect($this->redirect);
+		}
+	}
+
+	// ------------------------------------------------------------------------
 	// Authentication methods.
 	// ------------------------------------------------------------------------
 
@@ -510,7 +549,7 @@ class Gamelang_auth extends CI_Driver
 		/**
 		 * Filters online token line so plugin can change it.
 		 */
-		$expired =  apply_filters('user_cookie_life', MONTH_IN_SECONDS * 2);
+		$expired = apply_filters('user_cookie_life', MONTH_IN_SECONDS * 2);
 		(is_int($expired) && $expired <= 0) OR $expired = MONTH_IN_SECONDS * 2;
 
 		// Perform a clean up of older tokens.
@@ -637,12 +676,12 @@ if ( ! function_exists('user_anchor'))
 		// Translatable string?
 		elseif (1 === sscanf($title, 'lang:%s', $line))
 		{
-			$title = line($line);
+			$title = __($line);
 		}
 
 		// Add required attributes first.
 		$attributes = array(
-			'href' => site_url($user->username),
+			'href' => site_url(['u', $user->username]),
 			'data-userid' => $user->id,
 		);
 

@@ -162,7 +162,7 @@ class Users extends CG_Controller_Admin {
 		$_defaults = array('first_name', 'last_name', 'email', 'password', 'cpassword');
 
 		// Allow users to add extra fields.
-		$defaults =  apply_filters('users_fields', $_defaults);
+		$defaults = apply_filters('users_fields', $_defaults);
 
 		// Let's now generate our form fields.
 		foreach ($defaults as $field)
@@ -697,8 +697,8 @@ class Users extends CG_Controller_Admin {
 		), ENT_QUOTES, 'UTF-8');
 
 		$output .= '<script type="text/javascript">';
-		$output .= 'gamelang.i18n = gamelang.i18n || {};';
-		$output .= 'gamelang.i18n.users = '.json_encode($lines).';';
+		$output .= 'cg.i18n = cg.i18n || {};';
+		$output .= 'cg.i18n.users = '.json_encode($lines).';';
 		$output .= '</script>';
 
 		return $output;

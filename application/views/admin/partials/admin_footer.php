@@ -27,7 +27,7 @@ defined('BASEPATH') OR exit('No direct script access allowed');
 		 * This line can be removed/overridden using the "admin_footer_text".
 		 */
 		$thankyou = sprintf(__('lang_footer_text'), 'https://github.com/tokoder/gamelang');
-		$thankyou =  apply_filters('admin_footer_text', $thankyou);
+		$thankyou = apply_filters('admin_footer_text', $thankyou);
 		if ( ! empty($thankyou))
 		{
 			echo html_tag('span', array(
@@ -41,7 +41,7 @@ defined('BASEPATH') OR exit('No direct script access allowed');
 		 * Can be removed or overridden using the "admin_version_text" fitler.
 		 */
 		$version = sprintf(__('lang_version_text'), CG_VERSION);
-		$version =  apply_filters('admin_version_text', $version);
+		$version = apply_filters('admin_version_text', $version);
 		if ( ! empty($version))
 		{
 			echo html_tag('span', array(

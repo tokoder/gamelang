@@ -10,94 +10,6 @@ $(function() {
         ajaxList();
     })
 
-    $(document).on('click', '#checkalldata', function(e) {
-        var checklist = '.checklistdata';
-        if ($(this).is(':checked')) {
-            $(checklist).prop("checked", true);
-        } else {
-            $(checklist).prop("checked", false);
-        }
-    })
-
-    $(document).on('click', '.checklistdata', function(e) {
-        var checkall = '#checkalldata';
-        var checklist = '.checklistdata';
-        if ($(checklist).length == $(checklist + ":checked").length) {
-            $(checkall).prop("checked", true);
-        } else {
-            $(checkall).prop("checked", false);
-        }
-    })
-
-    $(document).on('click', '.submitdata', function(e) {
-        e.preventDefault();
-
-        var $this = $(this);
-        var form = "#form";
-        var route = $(form).attr('action');
-        var formData = $(form).serializeArray();
-
-        // Ajax config
-        ajaxSetup(route, formData);
-        $.ajax({
-            beforeSend: function() {
-                $this.prop("disabled", true)
-                    .append("<i class='fa fa-spinner fa-spin'></i>");
-            },
-            success: function(result, status) {
-                $("#modal").modal("hide");
-                ajaxList();
-            },
-            complete: function(xhr, status) {
-                var result = eval("(" + xhr.responseText + ")");
-                $this.prop("disabled", false)
-                    .children().remove(".fa-spin");
-
-                if (xhr.status == 200) {
-                    Toast.fire({
-                        icon: status,
-                        title: result.msg,
-                        timer: 3000
-                    })
-                }
-            },
-            error: function(xhr, status, error) {
-                var result = eval("(" + xhr.responseText + ")");
-
-                if (xhr.status == 412) {
-                    for (key in result.msg) {
-                        if (result.msg[key] != '') {
-                            $("input[name='" + key + "']").addClass('is-invalid');
-                            $("input[name='" + key + "[]']").addClass('is-invalid');
-                            $('#' + key).addClass('invalid-feedback');
-                            $('#' + key).html(result.msg[key]);
-                            $('#' + key).css('display', 'inline');
-                        } else {
-                            $("input[name='" + key + "']")
-                                .removeClass('is-invalid')
-                                .addClass('is-valid');
-                            $("input[name='" + key + "[]']")
-                                .removeClass('is-invalid')
-                                .addClass('is-valid');
-                            $('#' + key).css('display', '');
-                        }
-                    }
-                } else {
-                    for (key in result.msg) {
-                        $(form + " .form-notif").html(
-                            '<div class="alert alert-danger"><i class="fa fa-exclamation"></i>' +
-                            result.msg[key] + '</div>'
-                        );
-                    }
-                    if ($('.is-invalid').length || $('.invalid-feedback').length) {
-                        $(form + "  input.is-invalid").removeClass('is-invalid');
-                        $(form + " .invalid-feedback").css('display', '');
-                    }
-                }
-            }
-        });
-    });
-
     $(document).on('click', '.showdata', function(e) {
         e.preventDefault();
 
@@ -273,7 +185,7 @@ function ajaxSetup(route, data) {
         data = arr;
     }
     var formData = (data !== undefined) ? data : {};
-    formData[gamelang.config.tokenName] = Cookies.get(gamelang.config.tokenCookie);
+    formData[cg.config.tokenName] = Cookies.get(cg.config.tokenCookie);
 
     $.ajaxSetup({
         type: "POST",

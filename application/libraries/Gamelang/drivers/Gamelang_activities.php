@@ -94,12 +94,7 @@ class Gamelang_activities extends CI_Driver implements Gamelang_crud_interface
 		}
 
 		// Let's complete some data.
-		if ( ! isset($data['package']))
-		{
-			$data['package'] = (method_exists($this->ci->router, 'fetch_package'))
-				? $this->ci->router->fetch_package()
-				: null;
-		}
+		(isset($data['package'])) 	 OR $data['package'] 	= $this->ci->router->fetch_package();
 		(isset($data['controller'])) OR $data['controller'] = $this->ci->router->fetch_class();
 		(isset($data['method']))     OR $data['method']     = $this->ci->router->fetch_method();
 		(isset($data['created_at'])) OR $data['created_at'] = time();

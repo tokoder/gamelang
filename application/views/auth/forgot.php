@@ -22,13 +22,13 @@ echo '<p class="mb-3">', __('lang_RECOVER_tip'), '</p>';
 echo form_open('lost-password', 'role="form" id="forgot"'),
 form_nonce('user-lost-password');
 
-// Identity field.
+// email field.
 echo '<div class="form-floating mb-3">',
-print_input($identity, array(
-	'class' => 'form-control'.(has_error('identity') ? ' is-invalid' : '')
+print_input($email, array(
+	'class' => 'form-control'.(has_error('email') ? ' is-invalid' : '')
 )),
-form_label(__('lang_identity')),
-form_error('identity', '<div class="form-text invalid-feedback">', '</div>'),
+form_label(__('lang_email')),
+form_error('email', '<div class="form-text invalid-feedback">', '</div>'),
 '</div>';
 
 if (get_option('use_captcha', false) === true) :

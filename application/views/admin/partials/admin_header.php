@@ -14,7 +14,7 @@
 defined('BASEPATH') OR exit('No direct script access allowed');
 ?>
 
-<nav class="navbar navbar-expand-lg fixed-top navbar-dark bg-primary navbar-admin" aria-label="Main navigation">
+<nav class="navbar navbar-expand-lg navbar-dark bg-primary navbar-admin" aria-label="Main navigation">
     <div class="container-fluid">
         <?php
 		/**
@@ -24,7 +24,7 @@ defined('BASEPATH') OR exit('No direct script access allowed');
 			'href'  => admin_url(),
 			'class' => 'navbar-brand apps-logo',
 		), get_option('site_name'));
-		$brand =  apply_filters('admin_logo', $brand);
+		$brand = apply_filters('admin_logo', $brand);
 		if ( ! empty($brand)) {
 			echo $brand;
 		}
@@ -179,7 +179,7 @@ defined('BASEPATH') OR exit('No direct script access allowed');
 					), __('lang_help')),
 					'<div class="dropdown-menu">';
 						// documentation.
-						$wiki_url =  apply_filters('wiki_url', 'https://github.com/tokoder/gamelang/wiki');
+						$wiki_url = apply_filters('wiki_url', 'https://github.com/tokoder/gamelang/wiki');
 						if ( ! empty($wiki_url)) {
 							echo html_tag('a', array(
 								'href'   => $wiki_url,
@@ -321,8 +321,8 @@ defined('BASEPATH') OR exit('No direct script access allowed');
 		isset($page_title) OR $page_title = $default_title;
 
 		// Filtered icon and title.
-		$page_icon  =  apply_filters('admin_page_icon', $page_icon);
-		$page_title =  apply_filters('admin_page_title', $page_title);
+		$page_icon  = apply_filters('admin_page_icon', $page_icon);
+		$page_title = apply_filters('admin_page_title', $page_title);
 
 		echo html_tag('h4', array('class' => 'page-title me-3 my-0'), fa_icon($page_icon).$page_title);
 		/**

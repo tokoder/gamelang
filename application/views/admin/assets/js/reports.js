@@ -2,16 +2,16 @@
     "use strict";
 
     // Prepare globals.
-    var gamelang = window.gamelang = window.gamelang || {},
-        reportsURL = gamelang.config.currentURL;
-    gamelang.i18n = gamelang.i18n || {};
-    gamelang.i18n.reports = gamelang.i18n.reports || {};
+    var cg = window.cg = window.cg || {},
+        reportsURL = cg.config.currentURL;
+    cg.i18n = cg.i18n || {};
+    cg.i18n.reports = cg.i18n.reports || {};
 
     /**
      * Activities Object.
      * Handles all operations done on reports package.
      */
-    gamelang.reports = {
+    cg.reports = {
 
         // Delete the targeted report.
         delete: function (el) {
@@ -28,12 +28,12 @@
             // Keep the count to see if we shall refresh page.
             var logCount = $("#reports-list").children(".report-item").length;
 
-            return gamelang.ui.confirm(gamelang.i18n.reports.delete, function () {
+            return cg.ui.confirm(cg.i18n.reports.delete, function () {
                 var data = {};
-                data[gamelang.config.tokenName] = Cookies.get(gamelang.config.tokenCookie);
+                data[cg.config.tokenName] = Cookies.get(cg.config.tokenCookie);
                 data['action'] = "delete-report_" + id;
 
-                gamelang.ajax.request(href, {
+                cg.ajax.request(href, {
                     type: "POST",
                     data: data,
                     complete: function (jqXHR, textStatus) {
@@ -43,7 +43,7 @@
                                 window.location.href = reportsURL;
                             } else {
                                 row.animate({opacity: 0}, function () {
-                                    gamelang.ui.reload();
+                                    cg.ui.reload();
                                 });
                             }
                         }
@@ -62,7 +62,7 @@
         // Delete report.
         $(document).on("click", ".report-delete", function (e) {
             e.preventDefault();
-            return gamelang.reports.delete(this);
+            return cg.reports.delete(this);
         });
     });
 

@@ -1,5 +1,5 @@
 <footer class="footer">
-    <nav class="navbar fixed-bottom bg-light navbar-expand-sm">
+    <nav class="navbar bg-light navbar-expand-sm">
         <div class="container">
             <span class="navbar-text">
                 <?php
@@ -10,7 +10,7 @@
                 '</span>';
 
                 $default_copyright = sprintf(__('lang_copyright'), date('Y'));
-                $footer_copyright =  apply_filters('login_copyright', $default_copyright);
+                $footer_copyright = apply_filters('login_copyright', $default_copyright);
                 if ( ! empty($footer_copyright)) {
                     echo $footer_copyright;
                 }

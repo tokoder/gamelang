@@ -388,8 +388,8 @@ class Themes extends CG_Controller_Admin {
 			'upload'   => __('confirm_UPLOAD'),
 		);
 		$output .= '<script type="text/javascript">';
-		$output .= 'gamelang.i18n = gamelang.i18n || {};';
-		$output .= ' gamelang.i18n.themes = '.json_encode($lines).';';
+		$output .= 'cg.i18n = cg.i18n || {};';
+		$output .= ' cg.i18n.themes = '.json_encode($lines).';';
 		$output .= '</script>';
 
 		return $output;

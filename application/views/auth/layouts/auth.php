@@ -4,12 +4,12 @@ defined('BASEPATH') OR exit('No direct script access allowed');
 // Layout opening tags.
 echo '<main class="container vh-100 d-flex flex-column justify-content-center">';
 echo '<div class="row">';
-echo '<div class="col-lg-5 col-md-8 mx-auto mb-5">';
+echo '<div class="col-lg-5 col-md-8 mx-auto my-5">';
 
 // logo filter.
-$login_src =  apply_filters('login_img_src', "");
-$login_alt =  apply_filters('login_img_alt', config_item('site_name'));
-$login_url =  apply_filters('login_img_url', site_url());
+$login_src = apply_filters('login_img_src', "");
+$login_alt = apply_filters('login_img_alt', config_item('site_name'));
+$login_url = apply_filters('login_img_url', site_url());
 
 if ( ! empty($login_src))
 {

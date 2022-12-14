@@ -866,7 +866,7 @@ class CG_Meta
 		}
 
 		// Terapkan filter agar plugin/tema dapat menggunakannya.
-		$this->data->value =  apply_filters("pre_meta_{$meta->name}", $meta->value);
+		$this->data->value = apply_filters("pre_meta_{$meta->name}", $meta->value);
 	}
 
 	// ------------------------------------------------------------------------

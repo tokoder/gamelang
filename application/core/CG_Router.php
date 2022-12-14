@@ -588,7 +588,7 @@ class CG_Router extends CI_Router
 		/**
 		 * Allow users to filter default packages headers.
 		 */
-		$default_headers =  apply_filters('packages_headers', $this->_headers);
+		$default_headers = apply_filters('packages_headers', $this->_headers);
 		empty($default_headers) && $default_headers = $this->_headers;
 
 		$headers = array_replace_recursive($default_headers, $headers);
