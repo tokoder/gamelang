@@ -84,7 +84,7 @@ class Users extends CG_Controller_Admin {
 		// Pagination configuration.
 		$config['base_url']   = $config['first_link'] = admin_url('users');
 		$config['total_rows'] = $this->users->count($where);
-		$config['per_page']   = $this->config->item('per_page');
+		$config['per_page']   = config_item('per_page');
 
 		// Initialize pagination.
 		$this->pagination->initialize($config);
@@ -697,7 +697,6 @@ class Users extends CG_Controller_Admin {
 		), ENT_QUOTES, 'UTF-8');
 
 		$output .= '<script type="text/javascript">';
-		$output .= 'cg.i18n = cg.i18n || {};';
 		$output .= 'cg.i18n.users = '.json_encode($lines).';';
 		$output .= '</script>';
 

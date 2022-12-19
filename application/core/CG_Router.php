@@ -403,8 +403,8 @@ class CG_Router extends CI_Router
 
         // Flag to see if we are in a package.
         $is_package = false;
-		$package_path = PACKAGEPATH . $package;
-		$directory_path = empty($directory) ?: PACKAGEPATH . $directory;
+		$package_path = APPPATH.config_item('package_path').'/'. $package;
+		$directory_path = empty($directory) ?: APPPATH.config_item('package_path').'/'. $directory;
 
 		// we check entities user
 		if (is_dir($package_path))
@@ -653,7 +653,7 @@ class CG_Router extends CI_Router
 	{
 		if ( ! isset($this->_packages_dir))
 		{
-			$this->_packages_dir = rtrim(str_replace('\\', '/', PACKAGEPATH), '/').'/';
+			$this->_packages_dir = rtrim(str_replace('\\', '/', APPPATH.config_item('package_path').'/'), '/').'/';
 		}
 
 		// Provided a $uri? Format it first.

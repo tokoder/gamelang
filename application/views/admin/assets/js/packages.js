@@ -2,10 +2,7 @@
     "use strict";
 
     // Prepare globals.
-    var cg = window.cg = window.cg || {};
-    cg.i18n = cg.i18n || {};
     cg.packages = cg.packages || {};
-    cg.i18n.packages = cg.i18n.packages || {};
 
     /**
      * Packages.

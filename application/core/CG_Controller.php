@@ -70,7 +70,7 @@ class CG_Controller extends CI_Controller
 			if (false === stripos($this->uri->uri_string(), $this->router->default_controller))
 			{
 				set_alert(__('error_component_disabled'), 'error');
-				redirect(($this->auth->is_admin() ? CG_ADMIN : ''));
+				redirect(($this->auth->is_admin() ? config_item('app_admin') : ''));
 				exit;
 			}
 

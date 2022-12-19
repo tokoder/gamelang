@@ -123,7 +123,7 @@ class Resource extends CG_Controller
 		}
 
 		// Language not available? Nothing to do.
-		if (in_array($folder, $this->config->item('languages')))
+		if (in_array($folder, config_item('languages')))
 		{
 			// We setup the session.
 			$this->session->set_userdata('language', $folder);

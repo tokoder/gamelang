@@ -40,7 +40,7 @@ defined('BASEPATH') OR exit('No direct script access allowed');
 		 * Footer version text.
 		 * Can be removed or overridden using the "admin_version_text" fitler.
 		 */
-		$version = sprintf(__('lang_version_text'), CG_VERSION);
+		$version = sprintf(__('lang_version_text'), config_item('app_version'));
 		$version = apply_filters('admin_version_text', $version);
 		if ( ! empty($version))
 		{

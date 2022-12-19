@@ -185,7 +185,7 @@ function ajaxSetup(route, data) {
         data = arr;
     }
     var formData = (data !== undefined) ? data : {};
-    formData[cg.config.tokenName] = Cookies.get(cg.config.tokenCookie);
+    formData[cg.config.token_name] = Cookies.get(cg.config.token_cookie);
 
     $.ajaxSetup({
         type: "POST",

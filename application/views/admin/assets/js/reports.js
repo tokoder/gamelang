@@ -2,10 +2,8 @@
     "use strict";
 
     // Prepare globals.
-    var cg = window.cg = window.cg || {},
-        reportsURL = cg.config.currentURL;
-    cg.i18n = cg.i18n || {};
-    cg.i18n.reports = cg.i18n.reports || {};
+    cg.reports = cg.reports || {};
+    var reportsURL = cg.config.currentURL;
 
     /**
      * Activities Object.
@@ -30,7 +28,7 @@
 
             return cg.ui.confirm(cg.i18n.reports.delete, function () {
                 var data = {};
-                data[cg.config.tokenName] = Cookies.get(cg.config.tokenCookie);
+                data[cg.config.token_name] = Cookies.get(cg.config.token_cookie);
                 data['action'] = "delete-report_" + id;
 
                 cg.ajax.request(href, {

@@ -44,7 +44,7 @@ echo '<div class="table-responsive-sm">',
 						html_tag('button', array(
 							'type' => 'button',
 							'data-endpoint' => nonce_ajax_url(
-								CG_ADMIN.'/reports/delete/'.$report->id, 'delete-report_'.$report->id
+								config_item('app_admin').'/reports/delete/'.$report->id, 'delete-report_'.$report->id
 							),
 							'class' => 'btn btn-outline-danger btn-sm btn-icon report-delete',
 						), fa_icon('trash').__('lang_delete')),

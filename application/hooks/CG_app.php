@@ -109,10 +109,6 @@ class CG_app
 	 */
 	public static function constants()
 	{
-		// We define useful constants first.
-		defined('CG_VERSION')    		OR define('CG_VERSION', '1.0.0');
-		defined('CG_ADMIN')          	OR define('CG_ADMIN', 'admin');
-
 		// Constants useful for expressing human-readable data sizes
 		defined('KB_IN_BYTES')   		OR define('KB_IN_BYTES', 1024);
 		defined('MB_IN_BYTES')    		OR define('MB_IN_BYTES', 1024 * KB_IN_BYTES);
@@ -126,9 +122,6 @@ class CG_app
 		defined('WEEK_IN_SECONDS')      OR define('WEEK_IN_SECONDS',    7 * DAY_IN_SECONDS);
 		defined('MONTH_IN_SECONDS')     OR define('MONTH_IN_SECONDS',  30 * DAY_IN_SECONDS);
 		defined('YEAR_IN_SECONDS')      OR define('YEAR_IN_SECONDS',  365 * DAY_IN_SECONDS);
-
-		// Folder Package
-		defined('PACKAGEPATH')          OR define('PACKAGEPATH', APPPATH.'packages/');
 	}
 
 	// -----------------------------------------------------------------------------

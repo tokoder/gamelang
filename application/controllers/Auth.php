@@ -71,12 +71,12 @@ class Auth extends CG_Controller
 			// Enqueue our assets.
 			add_action( 'extra_head', function ($output) {
 				$config = array(
-					'siteURL'     => site_url(),
-					'tokenName'   => config_item('csrf_token_name'),
-					'tokenCookie' => config_item('csrf_cookie_name'),
+					'site_url'     => site_url(),
+					'token_name'   => config_item('csrf_token_name'),
+					'token_cookie' => config_item('csrf_cookie_name'),
 				);
 				$output .= '<script type="text/javascript">';
-				$output .= 'config = '.json_encode($config).';';
+				$output .= 'cg.config = '.json_encode($config).';';
 				$output .= '</script>';
 				return $output;
 			});

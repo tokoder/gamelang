@@ -4,7 +4,7 @@ $(document).ready(function(){
 
         $.ajax({
             type: "GET",
-            url: config.siteURL + 'resource/captcha',
+            url: cg.config.site_url + 'resource/captcha',
             beforeSend: function(xhr) {
                 $('#refresh_captcha')
                     .find('.fa')

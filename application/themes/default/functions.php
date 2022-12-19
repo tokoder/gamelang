@@ -35,11 +35,18 @@ class Default_theme {
 		// Let's first change paths to layouts, partials and views.
 		$this->set_views_paths();
 
+		// Add IE8 support.
+		add_filter( 'extra_head', array( $this, 'globals' ), 0 );
+		add_filter( 'extra_head', array( $this, 'extra_head' ), 99 );
+
 		// Register theme menus.
 		add_action( 'theme_menus', array( $this, 'theme_menus' ) );
 
 		// Register theme thumbnails sizes and names.
 		add_action( 'theme_images', array( $this, 'theme_images' ) );
+
+		// Theme layout manager.
+		add_filter( 'theme_layout', array( $this, 'theme_layout' ) );
 
 		// Enqueue our assets.
 		add_action( 'after_theme_setup', array( $this, 'after_theme_setup' ), 0);
@@ -47,14 +54,8 @@ class Default_theme {
 		// Add some meta tags.
 		add_action( 'enqueue_meta', array( $this, 'enqueue_meta' ) );
 
-		// Add IE8 support.
-		add_filter( 'extra_head', array( $this, 'extra_head' ) );
-
 		// Partials enqueue for caching purpose.
 		add_action( 'enqueue_partials', array( $this, 'enqueue_partials' ) );
-
-		// Theme layout manager.
-		add_filter( 'theme_layout', array( $this, 'theme_layout' ) );
 
 		// pagination
 		add_filter( 'pagination', array( $this, 'pagination' ) );
@@ -144,13 +145,47 @@ class Default_theme {
 
 		add_script('assets/vendor/jquery/jquery.js');
 		add_script('assets/vendor/bootstrap/js/bootstrap.bundle.js');
+	}
+
+	/**
+	 * globals
+	 *
+	 * Method for adding JS global before anything else.
+	 *
+	 * @access 	public
+	 * @param 	string 	$output 	StyleSheets output.
+	 * @return 	void
+	 */
+	public function globals($output)
+	{
+		$config = array(
+			'site_url'     => site_url(),
+			'token_name'   => config_item('csrf_token_name'),
+			'token_cookie' => config_item('csrf_cookie_name'),
+		);
 
 		$output = '<script>';
-		$output .= 'var site_url = "'.site_url().'";';
-		$output .= 'var token_name = "'.config_item('csrf_token_name').'";';
-		$output .= 'var token_cookie = "'.config_item('csrf_cookie_name').'";';
+		$output .= 'var cg = window.cg = window.cg || {};';
+		$output .= 'cg.i18n = cg.i18n || {};';
+		$output .= 'cg.config = '.json_encode($config).';';
 		$output .= '</script>';
-		add_inline('js', $output, true);
+
+		return $output;
+	}
+
+	/**
+	 * extra_head
+	 *
+	 * Method for adding extra stuff to output before closing </head> tag.
+	 *
+	 * @access 	public
+	 * @param 	string 	$output 	The head output.
+	 * @return 	void
+	 */
+	public function extra_head($output)
+	{
+		add_ie9_support($output, (ENVIRONMENT !== 'development'));
+		return $output;
 	}
 
 	/**
@@ -160,16 +195,6 @@ class Default_theme {
 	public function enqueue_meta() {
 		// We are only adding favicon.
 		add_meta_tag('icon', base_url('favicon.ico'), 'rel', 'type="image/x-icon"');
-	}
-
-	/**
-	 * Add output before closing </head>
-	 * @access 	public
-	 */
-	public function extra_head( $output ) {
-		// We add support for old browsers.
-		add_ie9_support($output, (ENVIRONMENT !== 'development'));
-		return $output;
 	}
 
 	/**
@@ -194,7 +219,7 @@ class Default_theme {
 			$layout = 'clean';
 		}
 		// In case of admin area.
-		elseif ( is_controller( CG_ADMIN ) ) {
+		elseif ( is_controller( config_item('app_admin') ) ) {
 			return 'admin';
 		}
 

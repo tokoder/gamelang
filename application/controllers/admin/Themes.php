@@ -66,7 +66,7 @@ class Themes extends CG_Controller_Admin {
 			$t['actions'] = array();
 
 			// Activation button.
-			if ($folder !== $this->config->item('theme'))
+			if ($folder !== config_item('theme'))
 			{
 				$t['actions'][] = html_tag('a', array(
 					'href' => esc_url(nonce_admin_url(
@@ -388,8 +388,12 @@ class Themes extends CG_Controller_Admin {
 			'upload'   => __('confirm_UPLOAD'),
 		);
 		$output .= '<script type="text/javascript">';
+<<<<<<< HEAD
 		$output .= 'cg.i18n = cg.i18n || {};';
 		$output .= ' cg.i18n.themes = '.json_encode($lines).';';
+=======
+		$output .= 'cg.i18n.themes = '.json_encode($lines).';';
+>>>>>>> cef277748121a6b817c08e0e7e316c44374813f3
 		$output .= '</script>';
 
 		return $output;
