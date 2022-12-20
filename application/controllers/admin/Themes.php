@@ -388,12 +388,7 @@ class Themes extends CG_Controller_Admin {
 			'upload'   => __('confirm_UPLOAD'),
 		);
 		$output .= '<script type="text/javascript">';
-<<<<<<< HEAD
-		$output .= 'cg.i18n = cg.i18n || {};';
-		$output .= ' cg.i18n.themes = '.json_encode($lines).';';
-=======
 		$output .= 'cg.i18n.themes = '.json_encode($lines).';';
->>>>>>> cef277748121a6b817c08e0e7e316c44374813f3
 		$output .= '</script>';
 
 		return $output;
