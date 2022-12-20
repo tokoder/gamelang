@@ -306,7 +306,7 @@ class Packages extends CG_Controller_Admin {
 		$data = $this->upload->data();
 
 		// Catch the upload status and delete the temporary file anyways.
-		$status = unzip_file($data['full_path'], PACKAGEPATH);
+		$status = unzip_file($data['full_path'], APPPATH.config_item('package_path'));
 		@unlink($data['full_path']);
 
 		// Successfully installed?
@@ -523,8 +523,7 @@ class Packages extends CG_Controller_Admin {
 			'delete'     => __('confirm_delete'),
 		);
 		$output .= '<script type="text/javascript">';
-		$output .= 'cg.i18n = cg.i18n || {};';
-		$output .= ' cg.i18n.packages = '.json_encode($lines).';';
+		$output .= 'cg.i18n.packages = '.json_encode($lines).';';
 		$output .= '</script>';
 		return $output;
 	}

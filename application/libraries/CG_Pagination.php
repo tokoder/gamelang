@@ -34,7 +34,7 @@ class CG_Pagination extends CI_Pagination
 		 */
 		global $back_contexts;
 		$controller = get_instance()->router->fetch_class();
-		if (CG_ADMIN === $controller
+		if (config_item('app_admin') === $controller
 			OR in_array($controller, $back_contexts) )
 		{
 			$params = array_merge($params, $this->_admin_params());

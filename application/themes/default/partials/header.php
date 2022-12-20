@@ -46,14 +46,13 @@ defined('BASEPATH') OR exit('No direct script access allowed');
                     <?php if ($this->auth->online()): ?>
                     <li class="nav-item user-menu dropdown">
                         <a class="nav-link dropdown-toggle" href="#" role="button" data-bs-toggle="dropdown" aria-expanded="false">
-                            <?= $c_user->full_name; ?>
                             <?= user_avatar(24, $c_user->id, 'class="img-circle"'); ?>
                         </a>
                         <?php
                         $user_menu[] = array(
                             'parent' => NULL,
                             'id'     => 'profile',
-                            'slug'   => $c_user->admin ? CG_ADMIN : user_url(),
+                            'slug'   => $c_user->admin ? config_item('app_admin') : user_url(),
                             'name'   => __('my_profile'),
                         );
                         $user_menu[] = array(

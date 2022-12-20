@@ -112,7 +112,7 @@ class Welcome extends CG_Controller_Admin
 		}
 
 		// Languages count.
-		$langs_count = count($this->config->item('languages'));
+		$langs_count = count(config_item('languages'));
 		if ($langs_count >= 1)
 		{
 			$boxes[] = info_box(

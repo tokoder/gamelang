@@ -107,14 +107,14 @@ class Admin_theme
 	{
 		// Default configuration.
 		$config = array(
-			'siteURL'     => site_url(),
-			'baseURL'     => base_url(),
-			'adminURL'    => admin_url(),
-			'currentURL'  => current_url(),
-			'ajaxURL'     => ajax_url(),
-			'tokenName'   => config_item('csrf_token_name'),
-			'tokenCookie' => config_item('csrf_cookie_name'),
-			'lang'        => get_instance()->lang->lang_lists(get_instance()->session->language),
+			'site_url'     => site_url(),
+			'baseURL'      => base_url(),
+			'adminURL'     => admin_url(),
+			'currentURL'   => current_url(),
+			'ajaxURL'      => ajax_url(),
+			'token_name'   => config_item('csrf_token_name'),
+			'token_cookie' => config_item('csrf_cookie_name'),
+			'lang'         => get_instance()->lang->lang_lists(get_instance()->session->language),
 		);
 
 		// Generic language lines.
@@ -133,9 +133,9 @@ class Admin_theme
 
 		$output .= '<script type="text/javascript">';
 		$output .= 'var cg = window.cg = window.cg || {};';
-		$output .= ' cg.config = '.json_encode($config).';';
-		$output .= ' cg.i18n = cg.i18n || {};';
-		$output .= ' cg.i18n.default = '.json_encode($lines).';';
+		$output .= 'cg.config = '.json_encode($config).';';
+		$output .= 'cg.i18n = cg.i18n || {};';
+		$output .= 'cg.i18n.default = '.json_encode($lines).';';
 		$output .= '</script>';
 
 		return $output;

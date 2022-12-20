@@ -20,43 +20,22 @@ defined('BASEPATH') OR exit('No direct script access allowed');
  * @author		Tokoder Team
  */
 
-// -----------------------------------------------------------------------------
+// ------------------------------------------------------------------------
 
-if ( ! function_exists('anchor'))
+if ( ! function_exists('uri_string'))
 {
 	/**
-	 * Anchor Link
+	 * URL String
 	 *
-	 * Creates an anchor based on the local URL.
+	 * Overrides CodeIgniter default function in order to optionally
+	 * include GET parameters.
 	 *
-	 * @param	string	the URL
-	 * @param	string	the link title
-	 * @param	mixed	any attributes
-	 * @return	string
+	 * @param 	bool 	$include_get 	Whether to include GET parameters.
+	 * @return 	string
 	 */
-	function anchor($uri = '', $title = '', $attributes = '')
+	function uri_string($include_get = false)
 	{
-		$title = (string) $title;
-
-		$site_url = is_array($uri)
-			? site_url($uri)
-			: (preg_match('#^(\w+:)?//#i', $uri) ? $uri : site_url($uri));
-
-		if ($title === '')
-		{
-			$title = $site_url;
-		}
-		elseif (1 === sscanf($title, 'lang:%s', $line))
-		{
-			$title = __($line);
-		}
-
-		if ($attributes !== '')
-		{
-			$attributes = _stringify_attributes($attributes);
-		}
-
-		return '<a href="'.$site_url.'"'.$attributes.'>'.$title.'</a>';
+		return get_instance()->uri->uri_string($include_get);
 	}
 }
 
@@ -121,108 +100,43 @@ if ( ! function_exists('previous_url'))
 	}
 }
 
-// ------------------------------------------------------------------------
+// -----------------------------------------------------------------------------
 
-if ( ! function_exists('uri_string'))
+if ( ! function_exists('anchor'))
 {
 	/**
-	 * URL String
+	 * Anchor Link
 	 *
-	 * Overrides CodeIgniter default function in order to optionally
-	 * include GET parameters.
+	 * Creates an anchor based on the local URL.
 	 *
-	 * @param 	bool 	$include_get 	Whether to include GET parameters.
-	 * @return 	string
+	 * @param	string	the URL
+	 * @param	string	the link title
+	 * @param	mixed	any attributes
+	 * @return	string
 	 */
-	function uri_string($include_get = false)
+	function anchor($uri = '', $title = '', $attributes = '')
 	{
-		return get_instance()->uri->uri_string($include_get);
-	}
-}
+		$title = (string) $title;
 
-// ------------------------------------------------------------------------
+		$site_url = is_array($uri)
+			? site_url($uri)
+			: (preg_match('#^(\w+:)?//#i', $uri) ? $uri : site_url($uri));
 
-if ( ! function_exists('nonce_url'))
-{
-	/**
-	 * nonce_url
-	 *
-	 * Function for generating site URLs with appended security nonce.
-	 *
-	 * @param 	string 	$uri 		The URI used to generate the URL.
-	 * @param 	mixed 	$action 	Action to attach to the URL.
-	 * @return 	string
-	 */
-	function nonce_url($uri = '', $action = -1)
-	{
-		$uri    = str_replace('&amp;', '&', $uri);
-		$url    = site_url($uri);
-		$params = parse_url($url);
-
-		// Prepare URL query string then add the nonce token.
-		$query  = array();
-		(isset($params['query'])) && parse_str($params['query'], $query);
-		$query['_nonce'] = create_nonce($action);
-
-		// Build the query then add it to params group.
-		$query = http_build_query($query);
-		$params['query'] = $query;
-
-		// We build the final URL.
-		$output = (isset($params['scheme'])) ? "{$params['scheme']}://": '';
-		$output .= (isset($params['host'])) ? "{$params['host']}": '';
-		$output .= (isset($params['port'])) ? ":{$params['port']}": '';
-		$output .= (isset($params['path'])) ? "{$params['path']}": '';
-		$output .= (isset($params['query'])) ? "?{$params['query']}": '';
-		return htmlentities($output, ENT_QUOTES, 'UTF-8');
-	}
-}
-
-// ------------------------------------------------------------------------
-
-if ( ! function_exists('admin_url'))
-{
-	/**
-	 * Admin URL
-	 *
-	 * Returns the full URL to admin sections of the site.
-	 *
-	 * @param 	string 	$uri
-	 * @param 	string 	$protocol
-	 * @return 	string
-	 */
-	function admin_url($uri = '', $protocol = null)
-	{
-		if ('' === $uri)
+		if ($title === '')
 		{
-			return site_url(CG_ADMIN, $protocol);
+			$title = $site_url;
+		}
+		elseif (1 === sscanf($title, 'lang:%s', $line))
+		{
+			$title = __($line);
 		}
 
-		$CI =& get_instance();
-
-		$exp = explode('/', $uri);
-
-		if (count($exp) === 1)
+		if ($attributes !== '')
 		{
-			list($package, $method, $controller) = array_pad($exp, 3, null);
-
-			if ( ! empty($contexts = $CI->router->package_contexts(strtok($package, '?'))))
-			{
-				foreach ($contexts as $context => $status)
-				{
-					if ('admin' !== $context && true === $status)
-					{
-						$uri = $context.'/'.ltrim(str_replace($context, '', $uri), '/');
-					}
-					elseif('admin' == $context) {
-						$exp = explode('/', $uri);
-					}
-					break;
-				}
-			}
+			$attributes = _stringify_attributes($attributes);
 		}
 
-		return site_url(CG_ADMIN.'/'.$uri, $protocol);
+		return '<a href="'.$site_url.'"'.$attributes.'>'.$title.'</a>';
 	}
 }
 
@@ -244,7 +158,7 @@ if ( ! function_exists('admin_anchor'))
 	{
 		if ('' === $uri)
 		{
-			return anchor(CG_ADMIN, $title, $attrs);
+			return anchor(config_item('app_admin'), $title, $attrs);
 		}
 
 		$CI =& get_instance();
@@ -271,7 +185,55 @@ if ( ! function_exists('admin_anchor'))
 			}
 		}
 
-		return anchor(CG_ADMIN.'/'.$uri, $title, $attrs);
+		return anchor(config_item('app_admin').'/'.$uri, $title, $attrs);
+	}
+}
+
+// ------------------------------------------------------------------------
+
+if ( ! function_exists('admin_url'))
+{
+	/**
+	 * Admin URL
+	 *
+	 * Returns the full URL to admin sections of the site.
+	 *
+	 * @param 	string 	$uri
+	 * @param 	string 	$protocol
+	 * @return 	string
+	 */
+	function admin_url($uri = '', $protocol = null)
+	{
+		if ('' === $uri)
+		{
+			return site_url(config_item('app_admin'), $protocol);
+		}
+
+		$CI =& get_instance();
+
+		$exp = explode('/', $uri);
+
+		if (count($exp) === 1)
+		{
+			list($package, $method, $controller) = array_pad($exp, 3, null);
+
+			if ( ! empty($contexts = $CI->router->package_contexts(strtok($package, '?'))))
+			{
+				foreach ($contexts as $context => $status)
+				{
+					if ('admin' !== $context && true === $status)
+					{
+						$uri = $context.'/'.ltrim(str_replace($context, '', $uri), '/');
+					}
+					elseif('admin' == $context) {
+						$exp = explode('/', $uri);
+					}
+					break;
+				}
+			}
+		}
+
+		return site_url(config_item('app_admin').'/'.$uri, $protocol);
 	}
 }
 
@@ -291,7 +253,7 @@ if ( ! function_exists('nonce_admin_url'))
 	{
 		if ('' === $uri)
 		{
-			return nonce_url(CG_ADMIN, $action);
+			return nonce_url(config_item('app_admin'), $action);
 		}
 
 		$CI =& get_instance();
@@ -318,27 +280,7 @@ if ( ! function_exists('nonce_admin_url'))
 			}
 		}
 
-		return nonce_url(CG_ADMIN.'/'.$uri, $action);
-	}
-}
-
-// ------------------------------------------------------------------------
-
-if ( ! function_exists('process_url'))
-{
-	/**
-	 * Process URL
-	 *
-	 * Returns the full URL to process sections of the site.
-	 *
-	 * @param 	string 	$uri
-	 * @param 	string 	$protocol
-	 * @return 	string
-	 */
-	function process_url($uri = '', $protocol = null)
-	{
-		$uri = ($uri == '') ? 'process' : 'process/'.$uri;
-		return site_url($uri, $protocol);
+		return nonce_url(config_item('app_admin').'/'.$uri, $action);
 	}
 }
 
@@ -379,6 +321,44 @@ if ( ! function_exists('nonce_ajax_url'))
 	{
 		$uri = ($uri == '') ? 'ajax' : 'ajax/'.$uri;
 		return nonce_url($uri, $action);
+	}
+}
+
+// ------------------------------------------------------------------------
+
+if ( ! function_exists('nonce_url'))
+{
+	/**
+	 * nonce_url
+	 *
+	 * Function for generating site URLs with appended security nonce.
+	 *
+	 * @param 	string 	$uri 		The URI used to generate the URL.
+	 * @param 	mixed 	$action 	Action to attach to the URL.
+	 * @return 	string
+	 */
+	function nonce_url($uri = '', $action = -1)
+	{
+		$uri    = str_replace('&amp;', '&', $uri);
+		$url    = site_url($uri);
+		$params = parse_url($url);
+
+		// Prepare URL query string then add the nonce token.
+		$query  = array();
+		(isset($params['query'])) && parse_str($params['query'], $query);
+		$query['_nonce'] = create_nonce($action);
+
+		// Build the query then add it to params group.
+		$query = http_build_query($query);
+		$params['query'] = $query;
+
+		// We build the final URL.
+		$output = (isset($params['scheme'])) ? "{$params['scheme']}://": '';
+		$output .= (isset($params['host'])) ? "{$params['host']}": '';
+		$output .= (isset($params['port'])) ? ":{$params['port']}": '';
+		$output .= (isset($params['path'])) ? "{$params['path']}": '';
+		$output .= (isset($params['query'])) ? "?{$params['query']}": '';
+		return htmlentities($output, ENT_QUOTES, 'UTF-8');
 	}
 }
 

@@ -88,7 +88,7 @@ class Reports extends CG_Controller_Admin {
 		// Load pagination library and set configuration.
 		$this->load->library('pagination');
 		$config['base_url'] = $config['first_ul'] = admin_url('reports'.$_get);
-		$config['per_page'] = $this->config->item('per_page');
+		$config['per_page'] = config_item('per_page');
 
 		// Count total rows.
 		$config['total_rows'] = $this->activities->count($where);
@@ -217,7 +217,6 @@ class Reports extends CG_Controller_Admin {
 	public function _admin_head($output)
 	{
 		$output .= '<script type="text/javascript">';
-		$output .= 'cg.i18n = cg.i18n || {};';
 		$output .= 'cg.i18n.reports = cg.i18n.reports || {};';
 		$output .= 'cg.i18n.reports.delete = "'.__('confirm_delete').'";';
 		$output .= '</script>';

@@ -86,12 +86,15 @@ do_action('auth-form-after');
 
 echo '<div class="form-group mb-3">';
 echo '<div class="list-group">',
-	'<li class="list-group-item disabled">Akun Demo</li>',
+	'<li class="list-group-item list-group-item-secondary">Akun Demo</li>',
 	html_tag('a', array(
-		'href' => 'javascript:void(0)',
-		'onclick'=> 'copy(\'admin\', \'admin123\')',
-		'class' => 'list-group-item list-group-item-action',
-	), __('Admin'));
+			'href' => 'javascript:void(0)',
+			'onclick'=> 'copy(\'admin\', \'admin123\')',
+			'class' => 'list-group-item d-flex justify-content-between align-items-start list-group-item-action',
+		),
+		html_tag('div', ['class'=>'me-auto'], __('Admin')).
+		html_tag('span', ['class'=>'badge bg-primary'], __('click here'))
+	);
 echo '</div>';
 echo '</div>';
 

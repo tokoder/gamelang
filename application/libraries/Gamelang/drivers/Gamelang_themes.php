@@ -516,15 +516,6 @@ class Gamelang_themes extends CI_Driver
 		elseif (false !== ($modpath = $this->ci->router->packages_dir($this->package.'/')))
 		{
 			$full_path = $modpath.$folder;
-			if ('view' === $type && $this->_is_admin())
-			{
-				global $back_contexts;
-				if (isset($this->uri[2]) && in_array($this->uri[2], $back_contexts))
-				{
-					$full_path .= $this->uri[2];
-					$file = ltrim(str_replace(array($this->uri[1], $this->uri[2]), '', $file), '/');
-				}
-			}
 		}
 
 		$file_path = normalize_path($full_path.'/'.$file);
@@ -1925,7 +1916,7 @@ class Gamelang_themes extends CI_Driver
 		 * We make sure the method remembers the status to reduce each time we use it.
 		 * @var boolean
 		 */
-		$is_admin = ($this->ci->uri->segment(1) === CG_ADMIN)
+		$is_admin = ($this->ci->uri->segment(1) === config_item('app_admin'))
 			? true
 			: false;
 
