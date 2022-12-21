@@ -32,7 +32,8 @@ $config['app_admin']   = 'admin';
 | Packages settings.
 |--------------------------------------------------------------------------
 */
-$config['package_path'] = 'packages';
+$config['package_dir']  = 'packages';
+$config['package_path'] = APPPATH.$config['package_dir'];
 
 /*
 |--------------------------------------------------------------------------

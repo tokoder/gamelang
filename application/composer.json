@@ -12,6 +12,7 @@
 		"nesbot/carbon": "^2.57",
 		"google/recaptcha": "^1.2",
 		"phpmailer/phpmailer": "^6.6",
-		"google/apiclient": "2.12.1"
+		"google/apiclient": "2.12.1",
+		"studio-42/elfinder": "^2.1"
 	}
 }

@@ -273,7 +273,7 @@ defined('BASEPATH') OR exit('No direct script access allowed');
 					$user_menu[] = array(
 						'parent' => NULL,
 						'id'     => 'settings',
-						'slug'  => admin_url('users/edit/'.$c_user->id),
+						'slug'  => admin_url('users/edit/'.($c_user ? $c_user->id : 0)),
 						'name' => __('lang_settings'),
 					);
 					$user_menu[] = array(

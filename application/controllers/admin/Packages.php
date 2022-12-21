@@ -306,7 +306,7 @@ class Packages extends CG_Controller_Admin {
 		$data = $this->upload->data();
 
 		// Catch the upload status and delete the temporary file anyways.
-		$status = unzip_file($data['full_path'], APPPATH.config_item('package_path'));
+		$status = unzip_file($data['full_path'], config_item('package_path'));
 		@unlink($data['full_path']);
 
 		// Successfully installed?
