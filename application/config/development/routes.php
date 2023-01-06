@@ -9,7 +9,7 @@ defined('BASEPATH') OR exit('No direct script access allowed');
 | This route will tell the Router which controller/method to use if those
 | provided in the URL cannot be matched to a valid route.
 */
-$route['404_override'] = 'welcome/page_mising';
+$route['404_override'] = 'welcome/error_404';
 $route['translate_uri_dashes'] = TRUE;
 
 /*
@@ -41,16 +41,13 @@ Route::any('register', 'auth/register', array('as' => 'register'), function() {
 | The application has a built-in administration panel.
 | Each package can have context controllers.
 */
-Route::prefix(config_item('app_admin'), function()
+Route::prefix(config_item('site_admin'), function()
 {
-	// reserved routes system information
-	Route::any('settings/sysinfo', config_item('app_admin').'/settings/sysinfo');
-
-	// back-end contexts.
+	// Reserved back-end contexts.
 	global $back_contexts;
-	$contexts_routes = implode('|', $back_contexts);
-	Route::context("({$contexts_routes})", config_item('app_admin').'/$1', array(
-		'home'   => config_item('app_admin').'/$1/index',
+	$back_routes = implode('|', $back_contexts);
+	Route::context("({$back_routes})", '$1', array(
+		'home'   => '$1/index',
 		'offset' => 1,
 	));
 });
@@ -61,8 +58,8 @@ Route::prefix(config_item('app_admin'), function()
 | -------------------------------------------------------------------------
 */
 global $front_contexts;
-$contexts_routes = implode('|', $front_contexts);
-Route::context("({$contexts_routes})", '$1', array(
+$front_routes = implode('|', $front_contexts);
+Route::context("({$front_routes})", '$1', array(
 	'home'   => '$1/index',
 	'offset' => 1,
 ));

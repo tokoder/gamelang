@@ -37,6 +37,13 @@ class Packages extends CG_Controller_Admin {
 	{
 		parent::__construct();
 
+		if ( ! $this->auth->is_admin())
+		{
+			set_alert(__('lang_error_permission'), 'error');
+			redirect('');
+			exit;
+		}
+
 		// Default page title and icon.
 		$this->data['page_icon']  = 'plug';
 		$this->data['page_title'] = __('lang_packages');
@@ -55,11 +62,12 @@ class Packages extends CG_Controller_Admin {
 	 */
 	public function index()
 	{
-		$this->prep_form(array(array(
+		$rules[] = array(
 			'field' => '_nonce',
 			'label' => 'Security',
 			'rules' => 'required',
-		)));
+		);
+		$this->prep_form($rules);
 
 		if ($this->form_validation->run() == true)
 		{
@@ -92,18 +100,15 @@ class Packages extends CG_Controller_Admin {
 			exit;
 		}
 
-		// Let's get our packages.
-		$packages = $this->router->list_packages(true);
-
 		// Filter displayed packages.
 		$filter = $this->input->get('status');
-
 		if ( ! in_array($filter, array('active', 'inactive')))
 		{
 			$filter = null;
 		}
 
-		// Add action buttons.
+		// Let's get our packages.
+		$packages = $this->router->list_packages(true);
 		foreach ($packages as $folder => &$p)
 		{
 			if (('active' === $filter && ! $p['enabled'])
@@ -111,6 +116,44 @@ class Packages extends CG_Controller_Admin {
 			{
 				unset($packages[$folder]);
 				continue;
+			}
+
+			$headers = $this->router->package_header($folder);
+			if ( $headers['enabled'] )
+			{
+				unset($packages[$folder]);
+				continue;
+			}
+
+			// add details.
+			$p['details'] = array();
+
+			if ( ! empty($p['version'])) {
+				$p['details'][] = sprintf(__('lang_version_%s'), $p['version']);
+			}
+			if ( ! empty($p['author'])) {
+				$author = (empty($p['author_uri']))
+					? $p['author']
+					: sprintf(__('lang_%s_%s'), $p['author'], $p['author_uri']);
+				$p['details'][] = sprintf(__('lang_by_%s'), $author);
+			}
+			if ( ! empty($p['license'])) {
+				$license = empty($p['license_uri'])
+					? $p['license']
+					: sprintf(__('lang_%s_%s'), $p['license'], $p['license_uri']);
+				$p['details'][] = sprintf(__('lang_license_%s'), $license);
+				// Reset license.
+				$license = null;
+			}
+			if ( ! empty($p['package_uri'])) {
+				$p['details'][] = html_tag('a', array(
+					'href'   => $p['package_uri'],
+					'target' => '_blank',
+					'rel'    => 'nofollow',
+				), __('lang_website'));
+			}
+			if ( ! empty($p['author_email'])) {
+				$p['details'][] = sprintf(__('lang_email_%s'), $p['author_email']);
 			}
 
 			// Add package actions.
@@ -125,7 +168,7 @@ class Packages extends CG_Controller_Admin {
 						'package-deactivate_'.$folder
 					)),
 					'class' => 'btn btn-warning btn-sm btn-icon package-deactivate ms-2',
-					'aria-label' => sprintf(__('lang_deactivate_com'), $p['name']),
+					'aria-label' => sprintf(__('lang_deactivate_%s'), $p['name']),
 				), fa_icon('times').__('lang_deactivate'));
 			}
 			else
@@ -137,17 +180,17 @@ class Packages extends CG_Controller_Admin {
 						'package-activate_'.$folder
 					)),
 					'class' => 'btn btn-success btn-sm btn-icon package-activate ms-2',
-					'aria-label' => sprintf(__('lang_activate_com'), $p['name']),
+					'aria-label' => sprintf(__('lang_activate_%s'), $p['name']),
 				), fa_icon('check').__('lang_activate'));
 			}
 
 			// add button settings
-			if (true === $p['enabled'] && true === $p['has_settings'])
+			if (true === $p['enabled'] && true === $p['has_setting'])
 			{
 				$p['actions'][] = html_tag('a', array(
-					'href'  => admin_url('settings/'.$folder),
+					'href'  => admin_url('setting/'.$folder),
 					'class' => 'btn btn-secondary btn-sm btn-icon ms-2',
-					'aria-label' => sprintf(__('lang_settings_com'), $p['name']),
+					'aria-label' => sprintf(__('lang_settings_%s'), $p['name']),
 				), fa_icon('cogs').__('lang_settings'));
 			}
 
@@ -161,46 +204,9 @@ class Packages extends CG_Controller_Admin {
 						'package-delete_'.$folder
 					)),
 					'class' => 'btn btn-danger btn-sm btn-icon package-delete ms-2',
-					'aria-label' => sprintf(__('lang_delete_com'), $p['name']),
+					'aria-label' => sprintf(__('lang_delete_%s'), $p['name']),
 				), fa_icon('trash').__('lang_delete'));
 			}
-
-			// add details.
-			$details = array();
-
-			if ( ! empty($p['version'])) {
-				$details[] = sprintf(__('lang_version_num'), $p['version']);
-			}
-			if ( ! empty($p['author'])) {
-				$author = (empty($p['author_uri']))
-					? $p['author']
-					: sprintf(__('lang_author_uri'), $p['author'], $p['author_uri']);
-				$details[] = sprintf(__('lang_by_name'), $author);
-			}
-			if ( ! empty($p['license'])) {
-				$license = empty($p['license_uri'])
-					? $p['license']
-					: sprintf(__('lang_license_uri'), $p['license'], $p['license_uri']);
-				$details[] = sprintf(__('lang_license_name'), $license);
-				// Reset license.
-				$license = null;
-			}
-			if ( ! empty($p['package_uri'])) {
-				$details[] = html_tag('a', array(
-					'href'   => $p['package_uri'],
-					'target' => '_blank',
-					'rel'    => 'nofollow',
-				), __('lang_website'));
-			}
-			if ( ! empty($p['author_email'])) {
-				$details[] = sprintf(
-					__('lang_author_email_uri'),
-					$p['author_email'],
-					rawurlencode('Support: '.$p['name'])
-				);
-			}
-
-			$p['details'] = $details;
 		}
 
 		/**
@@ -306,7 +312,7 @@ class Packages extends CG_Controller_Admin {
 		$data = $this->upload->data();
 
 		// Catch the upload status and delete the temporary file anyways.
-		$status = unzip_file($data['full_path'], config_item('package_path'));
+		$status = unzip_file($data['full_path'], APPPATH.config_item('package_folder'));
 		@unlink($data['full_path']);
 
 		// Successfully installed?
@@ -341,12 +347,12 @@ class Packages extends CG_Controller_Admin {
 
 		if (false !== $this->packages->activate($folder))
 		{
-			set_alert(sprintf(__('lang_success_activate'), $name), 'success');
+			set_alert(sprintf(__('lang_success_activate_%s'), $name), 'success');
 			redirect(admin_url('packages'));
 			exit;
 		}
 
-		set_alert(sprintf(__('lang_error_activate'), $name), 'error');
+		set_alert(sprintf(__('lang_error_activate_%s'), $name), 'error');
 		redirect(admin_url('packages'));
 		exit;
 	}
@@ -367,12 +373,12 @@ class Packages extends CG_Controller_Admin {
 
 		if (package_is_active($folder) && $this->packages->deactivate($folder))
 		{
-			set_alert(sprintf(__('lang_success_deactivate'), $name), 'success');
+			set_alert(sprintf(__('lang_success_deactivate_%s'), $name), 'success');
 			redirect(admin_url('packages'));
 			exit;
 		}
 
-		set_alert(sprintf(__('lang_error_deactivate'), $name), 'error');
+		set_alert(sprintf(__('lang_error_deactivate_%s'), $name), 'error');
 		redirect(admin_url('packages'));
 		exit;
 	}
@@ -393,7 +399,7 @@ class Packages extends CG_Controller_Admin {
 
 		if (package_is_active($folder))
 		{
-			set_alert(sprintf(__('lang_error_delete_active'), $name), 'error');
+			set_alert(sprintf(__('lang_error_delete_active_%s'), $name), 'error');
 			redirect(admin_url('packages'));
 			exit;
 		}
@@ -402,12 +408,12 @@ class Packages extends CG_Controller_Admin {
 
 		if (false !== directory_delete($details['full_path']))
 		{
-			set_alert(sprintf(__('lang_success_delete'), $name), 'success');
+			set_alert(sprintf(__('lang_success_delete_%s'), $name), 'success');
 			redirect(admin_url('packages'));
 			exit;
 		}
 
-		set_alert(sprintf(__('lang_error_delete'), $name), 'error');
+		set_alert(sprintf(__('lang_error_delete_%s'), $name), 'error');
 		redirect(admin_url('packages'));
 		exit;
 	}
@@ -422,7 +428,7 @@ class Packages extends CG_Controller_Admin {
 	 * @param 	none
 	 * @return	 void
 	 */
-	public function _subhead()
+	protected function _subhead()
 	{
 		// Displaying buttons depending on the page we are on.
 		$method = $this->router->fetch_method();
@@ -445,7 +451,7 @@ class Packages extends CG_Controller_Admin {
 					), fa_icon('upload').__('lang_upload'));
 
 					// Back button.
-					$this->_btn_back('packages');
+					$this->_btn_back();
 
 				});
 				break;
@@ -453,10 +459,10 @@ class Packages extends CG_Controller_Admin {
 			// Case of package's settings page.
 			case 'settings':
 				$details = package_details($this->uri->segment(4));
-				$this->data['page_title'] = sprintf(__('lang_settings_name'), $details['name']);
+				$this->data['page_title'] = sprintf(__('lang_settings_name_%s'), $details['name']);
 
 				add_action('admin_subhead', function() {
-					$this->_btn_back('packages');
+					$this->_btn_back();
 				}, 0);
 				break;
 
@@ -465,7 +471,7 @@ class Packages extends CG_Controller_Admin {
 				add_action('admin_subhead', function() {
 					$folder_packages = $this->router->list_packages();
 					$active_packages = $this->options->get('active_packages');
-					$filter         = $this->input->get('status');
+					$filter          = $this->input->get('status');
 
 					$all      = count($folder_packages);
 					$active   = count($active_packages->value);
@@ -484,19 +490,19 @@ class Packages extends CG_Controller_Admin {
 						html_tag('a', array(
 							'href'  => admin_url('packages'),
 							'class' => 'btn btn-sm btn-'.($filter ? 'outline-secondary' : 'secondary'),
-						), sprintf(__('filter_all'), $all)),
+						), sprintf(__('filter_all_%s'), $all)),
 
 						// Active packages.
 						html_tag('a', array(
 							'href'  => admin_url('packages?status=active'),
 							'class' => 'btn btn-sm btn-'.('active' === $filter ? 'secondary' : 'outline-secondary'),
-						), sprintf(__('filter_active'), $active)),
+						), sprintf(__('filter_active_%s'), $active)),
 
 						// Inactive packages.
 						html_tag('a', array(
 							'href'  => admin_url('packages?status=inactive'),
 							'class' => 'btn btn-sm btn-'.('inactive' === $filter ? 'secondary' : 'outline-secondary'),
-						), sprintf(__('filter_inactive'), $inactive)),
+						), sprintf(__('filter_inactive_%s'), $inactive)),
 
 					'</div>';
 				});

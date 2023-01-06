@@ -1,7 +1,7 @@
 (function ($, window, document, undefined) {
     "use strict";
 
-    // Prepare globals.
+    // Prepare globals.]
     cg.themes = cg.themes || {};
     var themesURL = cg.config.currentURL,
         themeModalContainer = "#theme-details",

@@ -46,13 +46,10 @@ class Welcome extends CG_Controller
     // -----------------------------------------------------------------------------
 
 	/**
-	 * Index Page for this controller.
+	 * Error Page for this controller.
 	 */
-	public function page_mising()
+	public function error_404()
 	{
-		$this->themes
-			->set_layout('clean')
-			->set_view('welcome/404')
-			->render();
+		$this->themes->render();
 	}
 }

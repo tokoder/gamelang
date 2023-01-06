@@ -387,7 +387,7 @@ class Languages extends CG_Controller_Admin
 	 * @param 	none
 	 * @return	 void
 	 */
-	public function _subhead()
+	protected function _subhead()
 	{
 		add_action('admin_subhead', function () {
 			echo html_tag('span', array(), fa_icon('info-circle text-primary me-1').__('lang_tip'));

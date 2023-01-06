@@ -32,7 +32,7 @@ class Gamelang_auth extends CI_Driver
 
 	/**
 	 * Holds the currently logged in user's object.
-	 * @var object
+	 * @var 	object
 	 */
 	private $user;
 
@@ -42,7 +42,16 @@ class Gamelang_auth extends CI_Driver
 	 */
 	private $admin;
 
+	/**
+	 * check user permission
+	 * @var 	boolean
+	 */
 	protected $permission;
+
+	/**
+	 * Holds the package.
+	 * @var 	string
+	 */
 	protected $package;
 
 	// ------------------------------------------------------------------------
@@ -58,6 +67,7 @@ class Gamelang_auth extends CI_Driver
 	{
 		// Make sure to load users language file.
 		$this->ci->load->helper('security');
+		$this->ci->load->helper('cookie');
 		$this->package = '';
 
 		// Attempt to authenticate the current user.
@@ -77,8 +87,7 @@ class Gamelang_auth extends CI_Driver
 	private function _authenticate()
 	{
 		// Let's make sure the cookie is set first.
-		$this->ci->load->helper('cookie');
-		list($user_id, $token, $random) = _get_cookie();
+		list($user_id, $token, $random) = user_get_cookie();
 		if (empty($user_id) OR empty($token))
 		{
 			return;
@@ -120,7 +129,7 @@ class Gamelang_auth extends CI_Driver
 		}
 
 		// If the session is not set, we set it.
-		_set_session($user->id, true, $token, $user->language);
+		user_set_session($user->id, true, $token, $user->language);
 	}
 
 	// ------------------------------------------------------------------------
@@ -305,35 +314,40 @@ class Gamelang_auth extends CI_Driver
 	// Authorization methods.
 	// ------------------------------------------------------------------------
 
-	public function method($package = null)
+	//check user permission
+	public function user_permission($package = null, $method = null)
 	{
+		if ( ! $this->online()) {
+			return false;
+		}
+
+		if( $this->is_admin()) {
+			return true;
+		}
+
 		$package = ($package!=null)
 			? strtolower($package)
 			: $this->ci->router->fetch_package();
 
 		$this->package = $package;
-		$this->permission = ($this->checkMethod($package)) ? true : false;
+		$role = $this->user()->subtype;
+		$user_role = $this->_parent->groups->get($role);
+		$role_permission = apply_filters('role_permission', ['admin_panel', 'posts']);
 
-		return $this;
+		if(in_array($package, $role_permission)) {
+			return true;
+		}
+
+		return false;
 	}
 
-	public function checkMethod($package = NULL)
+	public function check_permission($section = NULL)
 	{
-		if($this->is_admin()) {
-			return true;
-		} elseif ($this->online()) {
-			return true;
-		} else {
+		if ( ! user_permission($section)) {
 			return false;
 		}
-	}
 
-	public function redirect()
-	{
-		if ( ! $this->permission) {
-			set_alert("You do not have permission to access. Please contact with administrator.");
-			redirect($this->redirect);
-		}
+		return true;
 	}
 
 	// ------------------------------------------------------------------------
@@ -438,7 +452,7 @@ class Gamelang_auth extends CI_Driver
 		}
 
 		// Setup the session.
-		if (true === _set_session($user->id, $remember, null, $user->language))
+		if (true === user_set_session($user->id, $remember, null, $user->language))
 		{
 			// TODO: Log the activity.
 			// NOTE: This is temporary.
@@ -475,7 +489,7 @@ class Gamelang_auth extends CI_Driver
 
 		$language OR $language = $user->language;
 
-		if (false !== _set_session($user->id, true, null, $language))
+		if (false !== user_set_session($user->id, true, null, $language))
 		{
 			// Change users language if needed.
 			if ($language !== $user->language
@@ -508,7 +522,7 @@ class Gamelang_auth extends CI_Driver
 		do_action('before_user_logout', $user_id);
 
 		// Delete the cookie.
-		$this->ci->input->set_cookie('c_user', '', '');
+		set_cookie('c_user', '', '');
 
 		// Delete online tokens.
 		$this->delete_online_tokens($user_id);
@@ -635,67 +649,90 @@ class Gamelang_auth extends CI_Driver
 
 // ------------------------------------------------------------------------
 
-if ( ! function_exists('user_anchor'))
+if ( ! function_exists('user_permission'))
 {
 	/**
-	 * user_anchor
-	 *
-	 * Function fro generating an HTML anchor for the user's profile page.
-	 *
-	 * @param 	mixed 	$id
-	 * @param 	string 	$title
-	 * @param 	mixed 	$attrs
+	 * user_permission
 	 * @return 	string
 	 */
-	function user_anchor($id = 0, $title = '', $attrs = array())
+	function user_permission($package)
 	{
-		$user = ($id instanceof CG_User) ? $id : get_user($id);
+		return get_instance()->auth->user_permission($package);
+	}
+}
 
-		if (false === $user)
+// -----------------------------------------------------------------------------
+
+if ( ! function_exists('user_online'))
+{
+	function user_online($timestamp)
+	{
+		$time_ago = strtotime($timestamp);
+		$current_time = time();
+		$time_difference = $current_time - $time_ago;
+		$seconds = $time_difference;
+		$minutes = round($seconds / 60);
+		return ($minutes <= 3) ? true : false;
+	}
+}
+
+// -----------------------------------------------------------------------------
+
+if ( ! function_exists('user_set_session'))
+{
+	/**
+	 * Setup session data at login and autologin.
+	 *
+	 * @access
+	 * @param 	int 	$user_id 	the user's ID.
+	 * @param 	bool 	$remember 	whether to remember the user.
+	 * @param 	string 	$token 		the user's online token.
+	 * @param 	string 	$language 	the user's language.
+	 * @return 	bool
+	 */
+	function user_set_session($user_id, $remember = false, $token = null, $language = null)
+	{
+		// Make sure all neded data are present.
+		if (empty($user_id))
 		{
-			return null;
+			return false;
 		}
 
-		// No title provided? Use full name.
-		if ('' === $title)
+		// If no $token is provided, we generate a new one.
+		if (empty($token))
 		{
-			$title = isset($user->full_name) ? $user->full_name  : $user->username;
-		}
-		// Display the avatar?
-		elseif (0 === strpos($title, 'user.avatar') && isset($user->avatar))
-		{
-			$title = (1 === sscanf($title, 'user.avatar.%d', $size))
-				? user_avatar($size, $user->avatar)
-				: user_avatar(50, $user->avatar);
-		}
-		// Any other key?
-		elseif (1 === sscanf($title, 'user.%s', $key) && isset($user->{$key}))
-		{
-			$title = $user->{$key};
-		}
-		// Translatable string?
-		elseif (1 === sscanf($title, 'lang:%s', $line))
-		{
-			$title = __($line);
+			get_instance()->load->library('encryption');
+			$token = get_instance()->encryption->hash($user_id.session_id().rand());
 		}
 
-		// Add required attributes first.
-		$attributes = array(
-			'href' => site_url(['u', $user->username]),
-			'data-userid' => $user->id,
+		// Fires before logging in the user.
+		do_action('after_user_login', $user_id);
+
+		// Prepare session data.
+		$sess_data = array(
+			'user_id'  => $user_id,
+			'token'    => $token,
 		);
 
-		// Merge all attributes.
-		if (is_array($attrs))
+		// Add user language only if available.
+		if ($language && in_array($language, (array) get_instance()->config->item('languages')))
 		{
-			$attributes = array_merge($attributes, $attrs);
-		}
-		else
-		{
-			$attributes = $attrs._stringify_attributes($attributes);
+			$sess_data['language'] = $language;
 		}
 
-		// Render the final anchor tag.
-		return html_tag('a', $attributes, $title);
+		// Now we set session data.
+		get_instance()->session->set_userdata($sess_data);
+
+		// Now we create/update the variable.
+		get_instance()->variables->set_var($user_id, 'online_token', $token, get_instance()->input->ip_address);
+
+		// Put the user online.
+		get_instance()->users->update($user_id, array(
+			'online' => 1,
+			'last_seen' => time()
+		));
+
+		// The return depends on $remember.
+		return (true === $remember) ? user_set_cookie($user_id, $token) : true;
 	}
 }

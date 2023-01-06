@@ -153,12 +153,6 @@ class Gamelang_themes extends CI_Driver
 	protected $controller = null;
 
 	/**
-	 * Holds the currently accessed controller's method.
-	 * @var string
-	 */
-	protected $method = null;
-
-	/**
 	 * Holds the currently used layout.
 	 * @var string
 	 */
@@ -273,6 +267,12 @@ class Gamelang_themes extends CI_Driver
 	 */
 	protected $uri = array();
 
+	/**
+	 * Holds an array of details about user's browser.
+	 * @var array
+	 */
+	public $user_agent = array();
+
 	// Default theme details.
 	private $_headers = array(
 		'name'         => null,
@@ -304,19 +304,17 @@ class Gamelang_themes extends CI_Driver
 		// Start our class initialization benchmark.
 		$this->ci->benchmark->mark('theme_initialize_start');
 
-		// load url
+		// load dependency
 		$this->ci->load->helper('url');
-
-		// load html
 		$this->ci->load->helper('html');
+		$this->ci->load->helper('file');
 
-		// Load User Agent
-		$this->ci->load->library('user_agent');
+		// We detect user's browser details.
+		$this->user_agent = $this->_set_user_agent();
 
 		// Store information about package, controller and method.
 		$this->package    = $this->ci->router->fetch_package();
 		$this->controller = $this->ci->router->fetch_class();
-		$this->method     = $this->ci->router->fetch_method();
 
 		// Overridden output compression.
 		$this->compress = $this->ci->config->item('theme_compress');
@@ -355,10 +353,7 @@ class Gamelang_themes extends CI_Driver
 			die();
 		}
 
-		if ($this->current_theme == NULL OR $this->_is_admin())
-		{
-			$this->load_functions();
-		}
+		$this->load_functions();
 
 		$this->load_translation();
 
@@ -466,9 +461,9 @@ class Gamelang_themes extends CI_Driver
 	protected function _load_file($file, $data = array(), $type = 'view')
 	{
 		$file = preg_replace('/.php$/', '', $file).'.php';
-		$alt_path = VIEWPATH;
-		$this->_is_admin() && $alt_path .= 'admin/';
-		$alt_path = normalize_path($alt_path);
+		$file_path = VIEWPATH;
+		$this->_is_admin() && $file_path .= 'admin/';
+		$file_path = normalize_path($file_path);
 
 		$output = '';
 
@@ -495,11 +490,13 @@ class Gamelang_themes extends CI_Driver
 				break;
 		}
 
+		isset($packpath) OR $packpath = $this->ci->router->package_path($this->package);
+
 		if ( ! $this->_is_admin() OR 'view' !== $type)
 		{
-			$alt_path .= $folder;
+			$file_path .= $folder;
 		}
-		$alt_path = apply_filters($filter, $alt_path);
+		$file_path = apply_filters($filter, $file_path);
 
 		// Alternative file.
 		$alt_file = apply_filters($alt_filter, null);
@@ -511,51 +508,41 @@ class Gamelang_themes extends CI_Driver
 		// Full path to file.
 		if ( ! $this->package)
 		{
-			$full_path = $alt_path;
+			$alt_file_path = $file_path;
 		}
-		elseif (false !== ($modpath = $this->ci->router->packages_dir($this->package.'/')))
+		elseif (false !== $packpath)
 		{
-			$full_path = $modpath.$folder;
-		}
-
-		$file_path = normalize_path($full_path.'/'.$file);
-		$alt_file_path = normalize_path($alt_path.'/'.$file);
-
-		if ( ! is_file((string)$alt_file) && $this->package)
-		{
-			isset($modpath) OR $modpath = $this->ci->router->package_path($this->package);
-
-			// Attempt to guess the folder from package's contexts.
+			$alt_file_path = $packpath.$folder;
 			if ('view' === $type && $this->_is_admin())
 			{
 				global $back_contexts;
 				if (isset($this->uri[2]) && in_array($this->uri[2], $back_contexts))
 				{
-					$folder .= $this->uri[2].'/';
+					$file = ltrim(str_replace(array($this->uri[1], $this->uri[2]), $this->uri[2], $file), '/');
 				}
-				else
-				{
-					$folder .= 'admin/';
-				}
+			}
+		}
+
+		$file_path = normalize_path($file_path.'/'.$file);
+		$alt_file_path = normalize_path($alt_file_path.'/'.$file);
+
+		if ( ! is_file((string)$alt_file) && $this->package)
+		{
+			// Attempt to guess the folder from package's contexts.
+			if ('view' === $type && $this->_is_admin())
+			{
+				$folder .= 'admin/';
 			}
 			else
 			{
 				$folder = 'views/'.$folder;
 			}
 
-			$alt_file .= $modpath.$folder.$file;
+			$alt_file .= $packpath.$folder.$file;
 		}
 
-		if ($alt_file_path && is_file($alt_file_path))
+		if (is_file($file_path))
 		{
-			empty($data) OR $this->ci->load->vars($data);
-
-			$output = $this->ci->load->file($alt_file_path, true);
-		}
-		elseif ($file_path && is_file($file_path))
-		{
-			$this->_check_htaccess($full_path);
-
 			empty($data) OR $this->ci->load->vars($data);
 
 			$output = $this->ci->load->file($file_path, true);
@@ -567,6 +554,12 @@ class Gamelang_themes extends CI_Driver
 			empty($data) OR $this->ci->load->vars($data);
 
 			$output = $this->ci->load->file($file_path, true);
+		}
+		elseif ($alt_file_path && is_file($alt_file_path))
+		{
+			empty($data) OR $this->ci->load->vars($data);
+
+			$output = $this->ci->load->file($alt_file_path, true);
 		}
 		elseif ($fallback && isset($this->{'template_'.$fallback}))
 		{
@@ -584,6 +577,47 @@ class Gamelang_themes extends CI_Driver
 		}
 
 		return $output;
+	}
+
+	// ------------------------------------------------------------------------
+
+	/**
+	 * Set details about the user's browser.
+	 * @access 	protected
+	 * @param 	none
+	 * @return 	array
+	 */
+	protected function _set_user_agent()
+	{
+		(class_exists('CI_User_agent', false)) OR $this->ci->load->library('user_agent');
+
+		// We store details in session.
+		if ( ! $this->ci->session->user_agent)
+		{
+			// Get the browser's nae.
+			$user_agent['browser'] = $this->ci->agent->mobile()
+				? $this->ci->agent->mobile()
+				: $this->ci->agent->browser();
+
+			// Browser's version.
+			$user_agent['version'] = $this->ci->agent->version();
+
+			// Browser's accepted languages.
+			$user_agent['languages'] = array_values(array_filter(
+				$this->ci->agent->languages(),
+				function($lang) {
+					return strlen($lang) <= 3;
+				}
+			));
+
+			// Client's used platform (Window, iOS, Unix...).
+			$user_agent['platform'] = $this->ci->agent->platform();
+
+			// Set the session now.
+			$this->ci->session->set_userdata('user_agent', $user_agent);
+		}
+
+		return $this->ci->session->user_agent;
 	}
 
 	// ------------------------------------------------------------------------
@@ -783,7 +817,7 @@ class Gamelang_themes extends CI_Driver
 
 		$this->package && $this->body_classes[] = $this->package;
 		$this->body_classes[] = $this->controller;
-		('index' !== $this->method) && $this->body_classes[] = $this->method;
+		('index' !== $this->ci->router->fetch_method()) && $this->body_classes[] = $this->ci->router->fetch_method();
 
 		if ('login' !== $this->controller && 'rtl' === $this->language('direction'))
 		{
@@ -867,7 +901,6 @@ class Gamelang_themes extends CI_Driver
 
 		if (is_null($path))
 		{
-			$this->ci->load->helper('path');
 			$path = $this->_is_admin() ? VIEWPATH : APPPATH.'themes';
 			$path = path_join($path, $theme);
 		}
@@ -930,7 +963,7 @@ class Gamelang_themes extends CI_Driver
 		if (empty($base_url) OR $_protocol !== $protocol)
 		{
 			$_protocol = $protocol;
-			$base_url = path_join(base_url('resource/themes', $_protocol), $this->current_theme());
+			$base_url = path_join(base_url('gamelang/themes', $_protocol), $this->current_theme());
 		}
 
 		$return = $base_url;
@@ -965,7 +998,7 @@ class Gamelang_themes extends CI_Driver
 		{
 			$_protocol = $protocol;
 
-			$base_url = base_url('resource/'.config_item('upload_path'), $_protocol);
+			$base_url = base_url('gamelang/'.config_item('upload_path'), $_protocol);
 		}
 
 		$return = $base_url;
@@ -981,7 +1014,7 @@ class Gamelang_themes extends CI_Driver
 			$return = $cached_uris[$uri];
 		}
 		else {
-			$return = base_url('assets/images/blank.png');
+			$return = base_url('gamelang/views/assets/img/blank.png');
 		}
 
 		return $return;
@@ -1028,15 +1061,20 @@ class Gamelang_themes extends CI_Driver
 	 */
 	public function print_styles()
 	{
-		$styles = '';
-
 		$after_filter  = ($this->_is_admin())
 			? 'after_admin_styles'
 			: 'after_styles';
 
-		$styles = apply_filters($after_filter, $styles);
+		$styles = '';
 
 		$styles .= $this->ci->assets->get_assets('style', [], 'css');
+
+		if ( ! empty($this->inline_styles))
+		{
+			$styles .= implode("\n\t", $this->inline_styles);
+		}
+
+		$styles = apply_filters($after_filter, $styles)."\t";
 
 		return $styles;
 	}
@@ -1337,7 +1375,7 @@ class Gamelang_themes extends CI_Driver
 		$title[] = $this->package;
 		$title[] = $this->controller;
 
-		($this->method !== 'index') && $title[] = $this->method;
+		($this->ci->router->fetch_method() !== 'index') && $title[] = $this->ci->router->fetch_method();
 
 		$title = array_clean(array_map('ucwords', $title));
 
@@ -1554,12 +1592,12 @@ class Gamelang_themes extends CI_Driver
 
 		$layout = preg_replace('/.php$/', '', (string)$layout).'.php';
 
-		$full_path = $this->apply_filters(
+		$theme_path = $this->apply_filters(
 			$this->_is_admin() ? 'admin_layouts_path' : 'theme_layouts_path',
 			$this->theme_path()
 		);
 
-		return is_file($full_path.'/'.$layout);
+		return is_file($theme_path.'/'.$layout);
 	}
 
 	// -----------------------------------------------------------------------------
@@ -1698,9 +1736,9 @@ class Gamelang_themes extends CI_Driver
 
 		if ($this->_is_admin())
 		{
-			$view = str_replace('admin/', '', isset($this->view) ? $this->view : $this->method);
-			$this->view = ($this->package && false !== ($modpath = $this->ci->router->package_path($this->package)))
-				? 'admin/'.$view : $view;
+			$view = str_replace(config_item('site_admin').'/', '', isset($this->view) ? $this->view : $this->ci->router->fetch_method());
+			$packpath = $this->ci->router->package_path($this->package);
+			$this->view = ($this->package && false !== $packpath) ? config_item('site_admin').'/'.$view : $view;
 		}
 
 		return $this->view;
@@ -1718,9 +1756,9 @@ class Gamelang_themes extends CI_Driver
 	{
 		$view = array();
 
-		if ($this->_is_admin() OR 'admin' === $this->ci->uri->segment(1) && $this->package == '')
+		if ($this->_is_admin() OR config_item('site_admin') === $this->ci->uri->segment(1) && $this->package == '')
 		{
-			$view[] = 'admin';
+			$view[] = config_item('site_admin');
 		}
 
 		if ($this->package !== $this->controller)
@@ -1748,12 +1786,12 @@ class Gamelang_themes extends CI_Driver
 
 		$view = preg_replace('/.php$/', '', (string)$view).'.php';
 
-		$full_path = apply_filters(
+		$theme_path = apply_filters(
 			$this->_is_admin() ? 'admin_views_path' : 'theme_views_path',
 			$this->theme_path()
 		);
 
-		return is_file($full_path.$view);
+		return is_file($theme_path.$view);
 	}
 
 	// ------------------------------------------------------------------------
@@ -1877,7 +1915,7 @@ class Gamelang_themes extends CI_Driver
 	{
 		if ( ! isset($this->public_theme))
 		{
-			$this->public_theme = $this->ci->config->item('theme');
+			$this->public_theme = apply_filters('public_theme', $this->ci->config->item('theme'));
 			$this->public_theme OR $this->public_theme = 'default';
 		}
 
@@ -1916,9 +1954,8 @@ class Gamelang_themes extends CI_Driver
 		 * We make sure the method remembers the status to reduce each time we use it.
 		 * @var boolean
 		 */
-		$is_admin = ($this->ci->uri->segment(1) === config_item('app_admin'))
-			? true
-			: false;
+		static $is_admin;
+		is_null($is_admin) && $is_admin = $this->ci->router->is_admin();
 
 		return $is_admin;
 	}
@@ -2075,37 +2112,6 @@ class Gamelang_themes extends CI_Driver
 		return $output;
 	}
 
-	// ------------------------------------------------------------------------
-
-	/**
-	 * Makes sure the ".htaccess" file that denies direct access is present.
-	 * @access 	protected
-	 * @param 	string 	$path 	The path to check/create .htaccess.
-	 * @return 	void
-	 */
-	protected function _check_htaccess($path)
-	{
-		if ($path == $this->theme_path()
-			OR ! is_dir($path)
-			OR ! is_writable($path)
-			OR is_file($path.'.htaccess'))
-		{
-			return;
-		}
-
-		$_htaccess_content = <<<EOT
-		<IfModule authz_core_module>
-			Require all denied
-		</IfModule>
-		<IfModule !authz_core_module>
-			Deny from all
-		</IfModule>
-		EOT;
-		$_htaccess_file = fopen(normalize_path($path.'/.htaccess'), 'w');
-		fwrite($_htaccess_file, $_htaccess_content);
-		fclose($_htaccess_file);
-	}
-
 	// -----------------------------------------------------------------------------
 	// THEME MANAGEMENT
 	// -----------------------------------------------------------------------------
@@ -2206,7 +2212,6 @@ class Gamelang_themes extends CI_Driver
 				return false;
 			}
 
-			get_instance()->load->helper('file');
 			$manifest_file = 'manifest.json';
 			$manifest_dist = 'manifest.json.dist';
 
@@ -2254,12 +2259,12 @@ class Gamelang_themes extends CI_Driver
 
 			if (empty($details['screenshot']))
 			{
-				$details['screenshot'] = base_url('assets/images/blank.png');
+				$details['screenshot'] = base_url('gamelang/views/assets/img/blank.png');
 				foreach (array('.png', '.jpg', '.jpeg', '.gif') as $ext)
 				{
 					if (false !== $this->themes_path($folder.'/screenshot'.$ext))
 					{
-						$details['screenshot'] = base_url('resource/themes/'.$folder.'/screenshot'.$ext);
+						$details['screenshot'] = base_url('gamelang/themes/'.$folder.'/screenshot'.$ext);
 						break;
 					}
 				}

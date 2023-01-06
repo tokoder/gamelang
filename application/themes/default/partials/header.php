@@ -33,7 +33,7 @@ defined('BASEPATH') OR exit('No direct script access allowed');
                         <ul class="dropdown-menu">
                             <?php foreach($site_languages as $folder => $lang): ?>
                             <li>
-                            <?php echo anchor('resource/language/'.$folder,
+                            <?php echo anchor('gamelang/lang/'.$folder.'?next='.rawurlencode(uri_string()),
                                 $lang['name_en'].'<small class="text-muted ms-auto">'.$lang['name'].'</small>',
                                 'class="dropdown-item d-flex align-items-center"'
                             ) ?>
@@ -51,9 +51,15 @@ defined('BASEPATH') OR exit('No direct script access allowed');
                         <?php
                         $user_menu[] = array(
                             'parent' => NULL,
+                            'id'     => 'dashboard',
+                            'slug'   => config_item('site_admin'),
+                            'name'   => __('lang_dashboard'),
+                        );
+                        $user_menu[] = array(
+                            'parent' => NULL,
                             'id'     => 'profile',
-                            'slug'   => $c_user->admin ? config_item('app_admin') : user_url(),
-                            'name'   => __('my_profile'),
+                            'slug'   => 'profile/'.$c_user->username,
+                            'name'   => __('lang_profile'),
                         );
                         $user_menu[] = array(
                             'parent' => NULL,

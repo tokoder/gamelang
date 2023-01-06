@@ -52,6 +52,9 @@ class Auth extends CG_Controller
 	 */
 	public function _remap($method, $params = array())
 	{
+		// set layouts.
+		$this->themes->set_theme()->set_layout('auth');
+
 		/**
 		 * Filters the host user.
 		 */
@@ -62,11 +65,9 @@ class Auth extends CG_Controller
 		 * If the view does not exists within the theme's folder,
 		 * we make sure to use our default one.
 		 */
-		$this->themes->set_theme()->set_layout('auth');
 		if (false == $this->themes->view_exists())
 		{
-			remove_all_filters();
-			remove_all_actions('enqueue_partials');
+			remove_all_actions('extra_head');
 
 			// Enqueue our assets.
 			add_action( 'extra_head', function ($output) {
@@ -76,10 +77,13 @@ class Auth extends CG_Controller
 					'token_cookie' => config_item('csrf_cookie_name'),
 				);
 				$output .= '<script type="text/javascript">';
+				$output .= 'var cg = window.cg = window.cg || {};';
 				$output .= 'cg.config = '.json_encode($config).';';
 				$output .= '</script>';
 				return $output;
 			});
+
+			remove_all_actions('after_theme_setup');
 
 			// Enqueue our assets.
 			add_action( 'after_theme_setup', function () {
@@ -88,6 +92,8 @@ class Auth extends CG_Controller
 				add_script('assets/vendor/jquery/jquery.js');
 				add_script('assets/vendor/bootstrap/js/bootstrap.bundle.js');
 			});
+
+			remove_all_actions('enqueue_partials');
 
 			// Fixed views and layouts if theme doesn't have theme.
 			add_filter('theme_layouts_path', function($path) {
@@ -102,8 +108,9 @@ class Auth extends CG_Controller
 				return VIEWPATH;
 			});
 
-			// Separated dashboard header and footer to allow different layouts.
+			// Separated footer to allow different layouts.
 			add_partial('footer');
+			add_partial('script');
 		}
 
 		// Call the method.
@@ -654,7 +661,9 @@ class Auth extends CG_Controller
 			->render($this->data);
 	}
 
-	// --------------------------------------------------------------------------------
+	// ------------------------------------------------------------------------
+	// Captcha methods.
+	// ------------------------------------------------------------------------
 
 	/**
 	 * Check captcha.

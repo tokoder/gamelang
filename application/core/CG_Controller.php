@@ -70,7 +70,7 @@ class CG_Controller extends CI_Controller
 			if (false === stripos($this->uri->uri_string(), $this->router->default_controller))
 			{
 				set_alert(__('error_component_disabled'), 'error');
-				redirect(($this->auth->is_admin() ? config_item('app_admin') : ''));
+				redirect(($this->router->is_admin() ? config_item('site_admin') : ''));
 				exit;
 			}
 
@@ -220,17 +220,17 @@ class CG_Controller_Admin extends CG_Controller
 	{
 		parent::__construct();
 
-		if ( ! $this->auth->is_admin())
+		// Make sure the user is logged in.
+		if (true !== $this->auth->online())
 		{
-			set_alert(__('lang_error_permission'), 'error');
-			redirect('');
+			redirect('login?next='.rawurlencode(uri_string()),'refresh');
 			exit;
 		}
 
-		// Make sure the user is logged in.
-		if (true !== $this->auth->is_admin())
+		if ( ! $this->auth->check_permission('admin_panel'))
 		{
-			redirect('login?next='.rawurlencode(uri_string()),'refresh');
+			set_alert(__('lang_error_permission'), 'error');
+			redirect('');
 			exit;
 		}
 	}
@@ -312,6 +312,13 @@ class CG_Controller_Admin extends CG_Controller
 				continue;
 			}
 
+			// header
+			$headers = $this->router->package_header($folder);
+			if ( $headers['enabled'])
+			{
+				continue;
+			}
+
 			/**
 			 * Jika modul dilengkapi dengan item menu tingkat atas menggunakan
 			 * "admin_navbar-name" atau "admin_navbar_right-name",
@@ -341,7 +348,9 @@ class CG_Controller_Admin extends CG_Controller
 			foreach ($package['contexts'] as $context => $status)
 			{
 				// No context? Ignore it.
-				if (false === $status OR in_array($folder, $ignored_contexts))
+				if (false === $status
+					OR in_array($folder, $ignored_contexts)
+					OR ! user_permission($package['folder']))
 				{
 					continue;
 				}
@@ -352,14 +361,15 @@ class CG_Controller_Admin extends CG_Controller
 					$uri = $package['folder'];
 					('admin' !== $context) && $uri = $context.'/'.$uri;
 
-					$title_line = isset($package[$context.'_menu']) ? $context.'_menu' : 'admin_menu';
+					$title_line = isset($package[$context.'_menu'])
+						? $context.'_menu'
+						: 'admin_menu';
 
 					// Translation present?
-					if (isset($package[$title_line]) && 1 === sscanf($package[$title_line], 'lang:%s', $line)) {
-						$title = __($line);
-					} else {
-						$title = ucwords($package[$title_line]);
-					}
+					$title = (isset($package[$title_line])
+						&& 1 === sscanf($package[$title_line], 'lang:%s', $line))
+						? __($line)
+						: ucwords($package[$title_line]);
 
 					echo html_tag('a', array(
 						'href' => admin_url($uri),
@@ -371,36 +381,28 @@ class CG_Controller_Admin extends CG_Controller
 		}
 	}
 
-	// ------------------------------------------------------------------------
-	// Private Methods.
-	// ------------------------------------------------------------------------
-
 	/**
 	 * _btn_back
 	 *
 	 * Method for creating a back to packages main page.
 	 *
 	 * @access 	public
-	 * @param 	string 	$package 	The package to create back link for.
+	 * @param 	int 	$limit 	The limit to create back link for.
 	 * @param 	bool 	$return 		Whether to echo the anchor.
 	 * @return 	string
 	 */
-	protected function _btn_back($package = null, $echo = false, $return = true)
+	protected function _btn_back($limit = null, $label = false, $return = true)
 	{
-		if (null === $package)
-		{
-			$package = empty($this->uri->segment(3))
-				? $this->uri->segment(2)
-				: $this->uri->segment(3);
-		}
+		$limit OR $limit = 3;
+		$referrer = $this->_referrer($limit);
 
 		// Direction of the icon depends on the language.
 		$icon = 'caret-'.('rtl' === $this->lang->lang_detail('direction') ? 'right' : 'left');
 
 		$anchor = html_tag('a', array(
-			'href' => admin_url($package),
+			'href' => $referrer,
 			'class' => 'btn btn-outline-dark btn-sm btn-icon me-2',
-		), fa_icon($icon).($echo ? $echo : __('lang_back')));
+		), fa_icon($icon).($label ? $label : __('lang_back')));
 
 		if (false === $return)
 		{
@@ -408,6 +410,25 @@ class CG_Controller_Admin extends CG_Controller
 		}
 
 		echo $anchor;
+	}
+
+	/**
+	 * _referrer
+	 *
+	 * @access 	public
+	 * @param 	int 	$limit 	The limit to create back link for.
+	 * @return 	string
+	 */
+	protected function _referrer($limit = null, $redirect = false)
+	{
+		$total_segments = $this->uri->total_segments() - $limit;
+		$slice          = $total_segments ? -1 - ($total_segments) : -1;
+		$segment        = array_slice($this->uri->segment_array(), 1, $slice);
+		$referrer       = admin_url($segment);
+
+		return (false === $redirect)
+			? $referrer
+			: redirect($referrer);
 	}
 }
 
@@ -438,9 +459,6 @@ class CG_Controller_User extends CG_Controller
 			redirect('login?next='.rawurlencode(uri_string()),'refresh');
 			exit;
 		}
-
-		// If we have a heading method, use it.
-		method_exists($this, '_subhead') && $this->_subhead();
 	}
 }
 

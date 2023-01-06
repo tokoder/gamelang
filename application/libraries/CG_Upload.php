@@ -73,6 +73,7 @@ class CG_Upload extends CI_Upload
 
 		// Are we using YEAR/MONTH path? (Ignore avatars).
 		if (false === strpos($this->upload_path, 'avatars')
+			&& false === strpos($this->upload_path, date('Y/m/'))
 			&& true === get_option('upload_year_month', true)
 			&& true === $this->upload_year_month)
 		{
@@ -171,9 +172,9 @@ class CG_Upload extends CI_Upload
 		// Configuration Of Image Manipulation :: Static
 		// -----------------------------------------------------------------------------
 		$this->_CI->load->library('image_lib') ;
-		$img['image_library'] = 'GD2';
-		$img['create_thumb']  = $this->create_thumb;
-		$img['maintain_ratio']= TRUE;
+		$img['image_library']  = 'GD2';
+		$img['create_thumb']   = $this->create_thumb;
+		$img['maintain_ratio'] = TRUE;
 
 		/// Limit Width Resize
 		$limit_medium   = $this->limit_medium;

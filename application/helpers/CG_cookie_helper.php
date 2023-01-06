@@ -20,61 +20,6 @@ defined('BASEPATH') OR exit('No direct script access allowed');
  * @author		Tokoder Team
  */
 
-// -----------------------------------------------------------------------------
-
-/**
- * Setup session data at login and autologin.
- *
- * @access
- * @param 	int 	$user_id 	the user's ID.
- * @param 	bool 	$remember 	whether to remember the user.
- * @param 	string 	$token 		the user's online token.
- * @param 	string 	$language 	the user's language.
- * @return 	bool
- */
-function _set_session($user_id, $remember = false, $token = null, $language = null)
-{
-	// Make sure all neded data are present.
-	if (empty($user_id))
-	{
-		return false;
-	}
-
-	// If no $token is provided, we generate a new one.
-	if (empty($token))
-	{
-		get_instance()->load->library('encryption');
-		$token = get_instance()->encryption->hash($user_id.session_id().rand());
-	}
-
-	// Fires before logging in the user.
-	do_action('after_user_login', $user_id);
-
-	// Prepare session data.
-	$sess_data = array(
-		'user_id'  => $user_id,
-		'token'    => $token,
-	);
-
-	// Add user language only if available.
-	if ($language && in_array($language, (array) get_instance()->config->item('languages')))
-	{
-		$sess_data['language'] = $language;
-	}
-
-	// Now we set session data.
-	get_instance()->session->set_userdata($sess_data);
-
-	// Now we create/update the variable.
-	get_instance()->variables->set_var($user_id, 'online_token', $token, get_instance()->input->ip_address);
-
-	// Put the user online.
-	get_instance()->users->update($user_id, array('online' => 1));
-
-	// The return depends on $remember.
-	return (true === $remember) ? _set_cookie($user_id, $token) : true;
-}
-
 // ------------------------------------------------------------------------
 
 /**
@@ -84,7 +29,7 @@ function _set_session($user_id, $remember = false, $token = null, $language = nu
  * @param 	string 	$token 		the user's online token.
  * @return 	bool
  */
-function _set_cookie($user_id, $token)
+function user_set_cookie($user_id, $token)
 {
 	// If no data provided, nothing to do.
 	if (empty($user_id) OR empty($token))
@@ -114,7 +59,7 @@ function _set_cookie($user_id, $token)
 	$cookie_expire = $expire;
 
 	// Now we set the cookie.
-	get_instance()->input->set_cookie($cookie_name, $cookie_value, $cookie_expire);
+	set_cookie($cookie_name, $cookie_value, $cookie_expire);
 	return true;
 }
 
@@ -126,13 +71,13 @@ function _set_cookie($user_id, $token)
  * @param 	none
  * @return 	array if found, else false.
  */
-function _get_cookie()
+function user_get_cookie()
 {
 	// Allow themes and plug-ins to alter the cookie name.
 	$cookie_name = apply_filters('user_cookie_name', 'c_user');
 
 	// Check whether the cookie exists.
-	$cookie = get_instance()->input->cookie($cookie_name, true);
+	$cookie = get_cookie($cookie_name, true);
 	if ( ! $cookie)
 	{
 		return false;

@@ -568,6 +568,7 @@ class CG_Model extends CI_Model
 		{
 			if (is_string($value))
 			{
+				$this->load->helper('inflector');
 				$relationship = $value;
 				$options = array( 'primary_key' => singular($this->_table) . '_id', 'model' => singular($value) . '_model' );
 			}

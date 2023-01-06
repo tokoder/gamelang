@@ -72,7 +72,7 @@ CREATE TABLE `entities` (
 
 LOCK TABLES `entities` WRITE;
 /*!40000 ALTER TABLE `entities` DISABLE KEYS */;
-INSERT INTO `entities` VALUES (1,0,0,'user','administrator','admin','indonesia',2,1,0,1526871009,0,0);
+INSERT INTO `entities` VALUES (1,0,0,'user','admin','administrator','indonesia',2,1,0,1526871009,0,0);
 /*!40000 ALTER TABLE `entities` ENABLE KEYS */;
 UNLOCK TABLES;
 

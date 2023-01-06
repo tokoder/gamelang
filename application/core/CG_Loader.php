@@ -45,6 +45,14 @@ class CG_Loader extends CI_Loader
 	 */
 	protected function _ci_load($_ci_data)
 	{
+		// See if it's inside a package!
+		if (isset($_ci_data['_ci_view'])
+			&& list($package, $class) = get_instance()->router->valid_package($_ci_data['_ci_view']))
+		{
+			$package_path = get_instance()->router->package_path($package);
+			$this->add_package_path($package_path);
+		}
+
 		// Add Themes Path
 		$this->_ci_view_paths = array(get_theme_path('/') => TRUE) + $this->_ci_view_paths;
 

@@ -19,8 +19,8 @@ defined('BASEPATH') OR exit('No direct script access allowed');
  * @category 	Libraries
  * @author		Tokoder Team
  */
-class CG_Security extends CI_Security {
-
+class CG_Security extends CI_Security
+{
 	/**
 	 * create_nonce
 	 *

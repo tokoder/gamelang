@@ -9,7 +9,7 @@ defined('BASEPATH') OR exit('No direct script access allowed');
 
 // Images path and URL.
 $config['img_path']    = APPPATH.'cache/captcha/';
-$config['img_url']     = base_url('resource/cache/captcha');
+$config['img_url']     = base_url('gamelang/cache/captcha');
 
 // Catpcha font path, font size, word length and characters used.
 $config['font_path']   = apply_filters('captcha_font_path', APPPATH.'cache/captcha/fonts/edmunds.ttf');

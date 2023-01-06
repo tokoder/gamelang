@@ -62,6 +62,11 @@ class Users extends CG_Controller_Admin {
 			$where['subtype'] = $role;
 		}
 
+		if ( ! $this->auth->is_admin() && user_permission('users'))
+		{
+			$where['owner_id'] = $this->auth->user_id();
+		}
+
 		// Account status.
 		if (null !== ($status = $this->input->get('status', true)))
 		{
@@ -367,7 +372,7 @@ class Users extends CG_Controller_Admin {
 		if ($this->form_validation->run() == false)
 		{
 			$this->data['page_icon'] = 'user';
-			$this->data['page_title'] = sprintf(__('lang_EDIT_USER_NAME'), $this->data['user']->username);
+			$this->data['page_title'] = sprintf(__('lang_edit_user_%s'), $this->data['user']->username);
 
 			// Set page title and render view.
 			$this->themes
@@ -474,13 +479,13 @@ class Users extends CG_Controller_Admin {
 		// Successfully activated?
 		elseif (0 == $user->enabled && false !== $user->update('enabled', 1))
 		{
-			set_alert(sprintf(__('lang_success_activate'), $user->username), 'success');
+			set_alert(sprintf(__('lang_success_activate_%s'), $user->username), 'success');
 		}
 
 		// An error occurred somewhere?
 		else
 		{
-			set_alert(sprintf(__('lang_error_activate'), $user->username), 'error');
+			set_alert(sprintf(__('lang_error_activate_%s'), $user->username), 'error');
 		}
 
 		redirect($this->redirect);
@@ -513,13 +518,13 @@ class Users extends CG_Controller_Admin {
 		// Successfully activated?
 		elseif (1 == $user->enabled && false !== $user->update('enabled', 0))
 		{
-			set_alert(sprintf(__('lang_success_deactivate'), $user->username), 'success');
+			set_alert(sprintf(__('lang_success_deactivate_%s'), $user->username), 'success');
 		}
 
 		// An error occurred somewhere?
 		else
 		{
-			set_alert(sprintf(__('lang_error_deactivate'), $user->username), 'error');
+			set_alert(sprintf(__('lang_error_deactivate_%s'), $user->username), 'error');
 		}
 
 		redirect($this->redirect);
@@ -552,13 +557,13 @@ class Users extends CG_Controller_Admin {
 		// Successfully activated?
 		elseif (0 == $user->deleted && false !== $this->users->delete($id))
 		{
-			set_alert(sprintf(__('lang_success_delete'), $user->username), 'success');
+			set_alert(sprintf(__('lang_success_delete_%s'), $user->username), 'success');
 		}
 
 		// An error occurred somewhere?
 		else
 		{
-			set_alert(sprintf(__('lang_error_delete'), $user->username), 'error');
+			set_alert(sprintf(__('lang_error_delete_%s'), $user->username), 'error');
 		}
 
 		redirect($this->redirect);
@@ -579,25 +584,25 @@ class Users extends CG_Controller_Admin {
 		// No action done on own account.
 		if ($id == $this->c_user->id)
 		{
-			set_alert(__('lang_ERROR_RESTORE_OWN'), 'error');
+			set_alert(__('lang_error_restore_own'), 'error');
 		}
 
 		// Make sure the user exists.
 		elseif (false === ($user = $this->users->get($id)))
 		{
-			set_alert(__('lang_ERROR_ACCOUNT_MISSING'), 'error');
+			set_alert(__('lang_error_account_missing'), 'error');
 		}
 
 		// Successfully activated?
 		elseif (1 == $user->deleted && false !== $this->users->restore($id))
 		{
-			set_alert(sprintf(__('lang_SUCCESS_RESTORE'), $user->username), 'success');
+			set_alert(sprintf(__('lang_success_restore_%s'), $user->username), 'success');
 		}
 
 		// An error occurred somewhere?
 		else
 		{
-			set_alert(sprintf(__('lang_ERROR_RESTORE'), $user->username), 'error');
+			set_alert(sprintf(__('lang_error_restore_%s'), $user->username), 'error');
 		}
 
 		redirect($this->redirect);
@@ -618,25 +623,25 @@ class Users extends CG_Controller_Admin {
 		// No action done on own account.
 		if ($id == $this->c_user->id)
 		{
-			set_alert(__('lang_ERROR_REMOVE_OWN'), 'error');
+			set_alert(__('lang_error_remove_own'), 'error');
 		}
 
 		// Make sure the user exists.
 		elseif (false === ($user = $this->users->get($id)))
 		{
-			set_alert(__('lang_ERROR_ACCOUNT_MISSING'), 'error');
+			set_alert(__('lang_error_account_missing'), 'error');
 		}
 
 		// Successfully activated?
 		elseif (false !== $this->users->remove($id))
 		{
-			set_alert(sprintf(__('lang_SUCCESS_REMOVE'), $user->username), 'success');
+			set_alert(sprintf(__('lang_success_remove_%s'), $user->username), 'success');
 		}
 
 		// An error occurred somewhere?
 		else
 		{
-			set_alert(sprintf(__('lang_ERROR_REMOVE'), $user->username), 'error');
+			set_alert(sprintf(__('lang_error_remove_%s'), $user->username), 'error');
 		}
 
 		redirect($this->redirect);
@@ -653,12 +658,12 @@ class Users extends CG_Controller_Admin {
 	 * @param 	none
 	 * @return	 void
 	 */
-	public function _subhead()
+	protected function _subhead()
 	{
 		if ('index' !== $this->router->fetch_method())
 		{
 			add_action('admin_subhead', function () {
-				$this->_btn_back('users');
+				$this->_btn_back();
 			});
 			return;
 		}

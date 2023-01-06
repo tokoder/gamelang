@@ -72,13 +72,16 @@ class Admin_theme
 		add_styles('assets/vendor/bootstrap/css/bootstrap.css');
 		add_styles('assets/vendor/sweetalert2/sweetalert2.css');
 		add_styles('assets/vendor/fontawesome-free/css/all.css');
+		add_styles('assets/vendor/summernote/summernote-bs5.css');
+		add_styles(get_theme_path('assets/css/admin.css'));
 
 		add_script('assets/vendor/jquery/jquery.js');
 		add_script('assets/vendor/bootstrap/js/bootstrap.bundle.js');
 		add_script('assets/vendor/sweetalert2/sweetalert2.js');
 		add_script('assets/vendor/js-cookie/js.cookie.js');
 		add_script('assets/vendor/bootbox/bootbox.min.js');
-		add_script('admin.js');
+		add_script('assets/vendor/summernote/summernote-bs5.min.js');
+		add_script(get_theme_path('assets/js/admin.js'));
 	}
 
 	// ----------------------------------------------------------------------------
@@ -107,11 +110,11 @@ class Admin_theme
 	{
 		// Default configuration.
 		$config = array(
-			'site_url'     => site_url(),
 			'baseURL'      => base_url(),
 			'adminURL'     => admin_url(),
 			'currentURL'   => current_url(),
 			'ajaxURL'      => ajax_url(),
+			'site_url'     => site_url(),
 			'token_name'   => config_item('csrf_token_name'),
 			'token_cookie' => config_item('csrf_cookie_name'),
 			'lang'         => get_instance()->lang->lang_lists(get_instance()->session->language),

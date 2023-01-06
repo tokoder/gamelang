@@ -59,10 +59,6 @@ class Default_theme {
 
 		// pagination
 		add_filter( 'pagination', array( $this, 'pagination' ) );
-
-		// class
-		add_filter( 'html_class', array( $this, 'html_class' ) );
-		add_filter( 'body_class', array( $this, 'body_class' ) );
 	}
 
 	// ------------------------------------------------------------------------
@@ -159,6 +155,7 @@ class Default_theme {
 	public function globals($output)
 	{
 		$config = array(
+			'ajaxURL'      => ajax_url(),
 			'site_url'     => site_url(),
 			'token_name'   => config_item('csrf_token_name'),
 			'token_cookie' => config_item('csrf_cookie_name'),
@@ -205,46 +202,6 @@ class Default_theme {
 		add_partial( 'header' );
 		add_partial( 'sidebar' );
 		add_partial( 'footer' );
-	}
-
-	/**
-	 * Handle our theme layouts.
-	 * @access 	public
-	 * @param 	string 	$layout 	The layout to use.
-	 * @return 	string 	The layout to be used.
-	 */
-	public function theme_layout( $layout ) {
-		// Change layout of Auth controller.
-		if ( is_package( 'users' ) ) {
-			$layout = 'clean';
-		}
-		// In case of admin area.
-		elseif ( is_controller( config_item('app_admin') ) ) {
-			return 'admin';
-		}
-
-		// Always return the layout.
-		return $layout;
-	}
-
-	/**
-	 * Handle our body class
-	 * @access 	public
-	 */
-	public function body_class( $class ) {
-		$class[] = 'd-flex flex-column h-100';
-		// Always return the layout.
-		return $class;
-	}
-
-	/**
-	 * Handle our html class
-	 * @access 	public
-	 */
-	public function html_class( $class ) {
-		$class[] = 'h-100';
-		// Always return the layout.
-		return $class;
 	}
 
 	// ------------------------------------------------------------------------
@@ -342,11 +299,8 @@ if ( ! function_exists( 'bs_label' )) {
 		return "<span class=\"label label-{$type}\">{$content}</span>";
 	}
 }
+// -----------------------------------------------------------------------------
 
-/**
- * Because the Theme library comes with Bootstrap 4 alert template,
- * we make sure to change the template to use Bootstrap 3 alert.
- */
 add_filter('alert_template', function($output) {
 	$output =<<<EOT
 	<div class="{class} alert-dismissible fade show" role="alert">
@@ -357,10 +311,8 @@ add_filter('alert_template', function($output) {
 	return $output;
 });
 
-/**
- * Because the Theme library comes with Bootstrap 4 alert template,
- * we make sure to change the template to use Bootstrap 3 alert.
- */
+// -----------------------------------------------------------------------------
+
 add_filter('alert_template_js', function($output) {
 	$output =<<<EOT
 	'<div class="{class} alert-dismissible fade show" role="alert">

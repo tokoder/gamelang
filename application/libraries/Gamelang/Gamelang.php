@@ -102,7 +102,7 @@ class Gamelang extends CI_Driver_Library
 	 * @param 	int 	$limit
 	 * @param 	int 	$offset
 	 * @param 	string 	$type 		The type of search: users, groups, objects OR null.
-	 * @return 	object 	it 			returns the DB object so that the method can be chainable.
+	 * @return 	object 	it returns the DB object so that the method can be chainable.
 	 */
 	public function find($field, $match = null, $limit = 0, $offset = 0, $type = null)
 	{
@@ -274,64 +274,61 @@ class Gamelang extends CI_Driver_Library
 
 	/**
 	 * Database WHERE clause generator.
-	 * @param mixed $field
-	 * @param mixed $match
-	 * @param integer $limit
-	 * @param integer $offset
-	 * @return void it return the db object so that the method can be chainable.
+	 * @param 	mixed 	$field
+	 * @param 	mixed 	$match
+	 * @param 	int 	$limit
+	 * @param 	int 	$offset
+	 * @return 	object 	it returns the DB object so that the method can be chainable.
 	 */
 	public function where($field = null, $match = null, $limit = 0, $offset = 0)
 	{
-		if ($field !== null)
+		// Make sure $field is an array.
+		(is_array($field)) OR $field = array($field => $match);
+
+		// Let's generate the WHERE clause.
+		foreach ($field as $key => $val)
 		{
-			// Make sure $field is an array.
-			(is_array($field)) OR $field = array($field => $match);
-
-			// Let's generate the WHERE clause.
-			foreach ($field as $key => $val)
+			// We make sure to ignore empty key.
+			if (empty($key) OR is_int($key))
 			{
-				// We make sure to ignore empty key.
-				if (empty($key) OR is_int($key))
+				continue;
+			}
+
+			// The default method to call.
+			$method = 'where';
+
+			// In case $val is an array.
+			if (is_array($val))
+			{
+				// The default method to call is "where_in".
+				$method = 'where_in';
+
+				// Should we use the "or_where_not_in"?
+				if (strpos($key, 'or:!') === 0)
 				{
-					continue;
+					$method = 'or_where_not_in';
+					$key    = str_replace('or:!', '', $key);
 				}
-
-				// The default method to call.
-				$method = 'where';
-
-				// In case $val is an array.
-				if (is_array($val))
-				{
-					// The default method to call is "where_in".
-					$method = 'where_in';
-
-					// Should we use the "or_where_not_in"?
-					if (strpos($key, 'or:!') === 0)
-					{
-						$method = 'or_where_not_in';
-						$key    = str_replace('or:!', '', $key);
-					}
-					// Should we use the "or_where_in"?
-					elseif (strpos($key, 'or:') === 0)
-					{
-						$method = 'or_where_in';
-						$key    = str_replace('or:', '', $key);
-					}
-					// Should we use the "where_not_in"?
-					elseif (strpos($key, '!') === 0)
-					{
-						$method = 'where_not_in';
-						$key    = str_replace('!', '', $key);
-					}
-				}
+				// Should we use the "or_where_in"?
 				elseif (strpos($key, 'or:') === 0)
 				{
-					$method = 'or_where';
+					$method = 'or_where_in';
 					$key    = str_replace('or:', '', $key);
 				}
-
-				$this->ci->db->{$method}($key, $val);
+				// Should we use the "where_not_in"?
+				elseif (strpos($key, '!') === 0)
+				{
+					$method = 'where_not_in';
+					$key    = str_replace('!', '', $key);
+				}
 			}
+			elseif (strpos($key, 'or:') === 0)
+			{
+				$method = 'or_where';
+				$key    = str_replace('or:', '', $key);
+			}
+
+			$this->ci->db->{$method}($key, $val);
 		}
 
 		if ($limit > 0)
@@ -423,7 +420,7 @@ class Gamelang extends CI_Driver_Library
 		$message .= $this->ci->load->view('emails/_footer', null, true);
 
 		// TODO : fixed sending email with API Email
-		$this->ci->load->library('email');
+		(class_exists('CI_Email', false)) OR $this->ci->load->library('email');
 		// return $this->ci->email->send_email($email, $subject, $message, $alt_message);
 	}
 }

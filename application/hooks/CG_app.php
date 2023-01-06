@@ -14,6 +14,20 @@
 defined('BASEPATH') OR exit('No direct script access allowed');
 
 /**
+ * Domain Main
+ *
+ * @var	string
+ */
+const ROUTE_DOMAIN_NAME = 'master-ci3.test';
+
+/**
+ * CodeIgniter Gamelang Version
+ *
+ * @var	string
+ */
+const CG_VERSION = '1.0.0-beta.3';
+
+/**
  * Bootstrap File.
  *
  * File ini mendaftarkan class agar dapat dengan mudah dimuat/diperpanjang.
@@ -24,40 +38,23 @@ defined('BASEPATH') OR exit('No direct script access allowed');
 class CG_app
 {
 	/**
-	 * CI_Config
-	 *
-	 * @var	CI_Config
-	 */
-	public $config;
-
-	/**
-	 * CI_Loader
-	 *
-	 * @var	CI_Loader
-	 */
-	public $load;
-
-	/**
 	 * Class constructor
 	 * @return	void
 	 */
 	public function __construct()
 	{
-		$this->config =& load_class('Config', 'core');
-		$this->load =& load_class('Loader', 'core');
-
 		// mari kita cek file htaccess
 		if ( ! file_exists(FCPATH . ".htaccess"))
 		{
 			// tampilkan informasi tentang htaccess
-			self::htaccess();
-		}
-
-		// mari kita cek file config
-		if ( ! $this->config->load('cg_config', true, true))
-		{
-			// jalankan installasi
-			self::install();
+			echo ".htaccess file does not exist on main directory of your site. You can find this file in the main directory of script files. You need to upload this file to your site.<br>";
+			echo "Depending on the operating system you are using, such setting files may be hidden in your computer. In this case, you may not see this file.<br><br>";
+			echo "If you can't see this file, you can create a new file named \".htaccess\" in the main directory of your site and you can paste the following codes to your .htaccess file.<br><br>";
+			echo "<strong>RewriteEngine On<br>";
+			echo "RewriteCond %{REQUEST_FILENAME} !-f<br>";
+			echo "RewriteCond %{REQUEST_FILENAME} !-d<br>";
+			echo "RewriteRule ^(.*)$ index.php?/$1 [L]</strong>";
+			exit();
 		}
 	}
 
@@ -68,11 +65,14 @@ class CG_app
 	 */
 	function init()
 	{
+		$_config =& load_class('Config', 'core');
+		$_load =& load_class('Loader', 'core');
+
 		// Setup default constants.
 		self::constants();
 
 		// Load some base functions that we added to CodeIgniter.
-		$this->load->helper(['string', 'array', 'path']);
+		$_load->helper(['string', 'array', 'path']);
 
 		/**
 		 * Site contexts.
@@ -82,16 +82,16 @@ class CG_app
 		 * Back-end context (controllers) - extend the CG_Controller_Admin class.
 		 */
 		global $back_contexts, $front_contexts;
-		$front_contexts = array('ajax', 'process', 'api');
-		$back_contexts  = array('settings', 'user', 'content', 'reports', 'help');
+		$back_contexts  = array('report', 'setting', 'user', 'content', 'help');
+		$front_contexts = array('ajax', 'api');
 
 		// Muat file config
-        $config_file = $this->config->config['cg_config'];
+		$_config->load('cg_config', true);
+        $config_file = $_config->config['cg_config'];
 
 		// Muat table options
 		$db_options = self::DB()->get('options')->result();
-		foreach ($db_options as $option)
-		{
+		foreach ($db_options as $option) {
 			// Kami menetapkan opsi basis data ke dalam konfigurasi
 			$config_file[$option->name] = from_bool_or_serialize($option->value);
 		}
@@ -129,10 +129,30 @@ class CG_app
 	/**
 	 * Guna mengambil beberapa data yang di butuhkan diawal eksekusi.
 	 */
-	public static function DB() {
-
+	public static function DB()
+	{
 		// buat result menjadi object
 		static $DB;
+
+		// Is the config file in the environment folder
+		if ( file_exists($file_path = APPPATH.'config/'.ENVIRONMENT.'/database.php')
+			OR file_exists($file_path = APPPATH.'config/database.php'))
+		{
+			include($file_path);
+
+			$hostname = $db['default']['hostname'];
+			$database = $db['default']['database'];
+			$username = $db['default']['username'];
+
+			if (empty($hostname)
+				|| empty($database)
+				|| empty($username)
+			) {
+				$_error =& load_class('Exceptions', 'core');
+				echo $_error->show_error('Codeigniter Gamelang', '', 'cg_install');
+				exit();
+			}
+		}
 
 		// jika variable belum ditetapkan
 		if (empty($DB))
@@ -147,38 +167,5 @@ class CG_app
 		}
 
 		return $DB;
-	}
-
-	// -----------------------------------------------------------------------------
-
-	/**
-	 * Format informasi tentang htaccess
-	 */
-	public static function htaccess()
-	{
-		echo ".htaccess file does not exist on main directory of your site. You can find this file in the main directory of script files. You need to upload this file to your site.<br>";
-		echo "Depending on the operating system you are using, such setting files may be hidden in your computer. In this case, you may not see this file.<br><br>";
-		echo "If you can't see this file, you can create a new file named \".htaccess\" in the main directory of your site and you can paste the following codes to your .htaccess file.<br><br>";
-		echo "<strong>RewriteEngine On<br>";
-		echo "RewriteCond %{REQUEST_FILENAME} !-f<br>";
-		echo "RewriteCond %{REQUEST_FILENAME} !-d<br>";
-		echo "RewriteRule ^(.*)$ index.php?/$1 [L]</strong>";
-		exit();
-	}
-
-	// -----------------------------------------------------------------------------
-
-	/**
-	 * Laman instalasi
-	 */
-	public static function install()
-	{
-		$install_url = config_item('base_url');
-		$install_url .= 'install';
-
-		echo '<h1>Apps not installed</h1>';
-		echo '<p>1. To you use the automatic Apps installation tool click <a href="' . $install_url . '">here (' . $install_url . ')</a> (maintenance)</p>';
-		echo '<p>2. If you are installing manually rename the config file located in application/config/cg_config.php.dist to cg_config.php and populate the defined fields.</p>';
-		die();
 	}
 }

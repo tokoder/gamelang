@@ -14,12 +14,12 @@ body {
     height: 100%;
 }
 
-body {
+/* body {
     font: 400 14px/24px "Open Sans", sans-serif;
     height: 100%;
     background-color: #eee;
     padding-top: 72px
-}
+} */
 
 .wrapper { margin-bottom: 65px; }
 
@@ -57,10 +57,10 @@ textarea {
 }
 
 .avatar-male {
-    background-image: url(../img/profile-m.jpg);
+    background-image: url(../default/assets/img/profile-m.jpg);
 }
 .avatar-female {
-    background-image: url(../img/profile-f.jpg);
+    background-image: url(../default/assets/img/profile-f.jpg);
 }
 
 

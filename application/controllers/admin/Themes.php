@@ -314,12 +314,12 @@ class Themes extends CG_Controller_Admin {
 				}
 			}
 
-			set_alert(sprintf(__('lang_success_activate'), $theme), 'success');
+			set_alert(sprintf(__('lang_success_activate_%s'), $folder), 'success');
 			redirect(admin_url('themes'));
 			exit;
 		}
 
-		set_alert(sprintf(__('lang_error_activate'), $theme), 'error');
+		set_alert(sprintf(__('lang_error_activate_%s'), $folder), 'error');
 		redirect(admin_url('themes'));
 		exit;
 	}
@@ -357,12 +357,12 @@ class Themes extends CG_Controller_Admin {
 			delete_option('theme_images_'.$folder);
 			delete_option('theme_menus_'.$folder);
 
-			set_alert(sprintf(__('lang_success_delete'), $theme['name']), 'success');
+			set_alert(sprintf(__('lang_success_delete_%s'), $theme['name']), 'success');
 			redirect(admin_url('themes'));
 			exit;
 		}
 
-		set_alert(sprintf(__('lang_error_delete'), $theme['name']), 'error');
+		set_alert(sprintf(__('lang_error_delete_%s'), $theme['name']), 'error');
 		redirect(admin_url('themes'));
 		exit;
 	}
@@ -423,7 +423,7 @@ class Themes extends CG_Controller_Admin {
 				), fa_icon('upload').__('lang_upload'));
 
 				// Back button.
-				$this->_btn_back('themes');
+				$this->_btn_back();
 
 			});
 		}

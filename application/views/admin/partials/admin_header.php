@@ -36,60 +36,59 @@ defined('BASEPATH') OR exit('No direct script access allowed');
 			<ul class="navbar-nav me-auto">
 				<?php
 				// 1. Settings dropdown.
-				echo '<li class="nav-item dropdown">',
-					html_tag('a', array(
-						'href'        => '#',
-						'class'       => 'nav-link dropdown-toggle',
-						'data-bs-toggle' => 'dropdown',
-					), __('lang_settings')),
-					'<div class="dropdown-menu">',
+				if ( user_permission('settings') ) {
+					echo '<li class="nav-item dropdown">',
+						html_tag('a', array(
+							'href'        => '#',
+							'class'       => 'nav-link dropdown-toggle',
+							'data-bs-toggle' => 'dropdown',
+						), __('lang_settings')),
+						'<div class="dropdown-menu">';
 
-						// Global settings.
-						admin_anchor(
-							'settings',
-							__('lang_global_settings'),
-							'class="dropdown-item"'
-						),
+							// Global settings.
+							if ($this->auth->is_admin()) {
+								echo admin_anchor(
+									'settings',
+									__('lang_global_settings'),
+									'class="dropdown-item"'
+								);
+							}
 
-						// System Information
-						admin_anchor(
-							'settings/sysinfo',
-							__('lang_system_information'),
-							'class="dropdown-item"'
-						);
-
-						/**
-						 * Fires inside the settings menu.
-						 */
-						if ( has_action('_settings_menu')) {
-							echo '<div class="dropdown-divider"></div>';
-							do_action('_settings_menu');
-						}
-				// Closing tag (settings menu)
-				echo '</div></li>';
+							/**
+							 * Fires inside the settings menu.
+							 */
+							if ( has_action('_setting_menu')) {
+								echo '<div class="dropdown-divider"></div>';
+								do_action('_setting_menu');
+							}
+					// Closing tag (settings menu)
+					echo '</div></li>';
+				}
 
 				// 2. Users menu.
-				echo '<li class="nav-item dropdown">',
-					admin_anchor('users', __('lang_users'), array(
-						'class' => 'nav-link dropdown-toggle',
-						'data-bs-toggle' => 'dropdown',
-					)),
-					'<div class="dropdown-menu">',
-						// Manage users.
-						html_tag('a', array(
-							'href'  => admin_url('users'),
-							'class' => 'dropdown-item',
-						), __('lang_users_manage'));
+				if ( user_permission('users') ) {
+					echo '<li class="nav-item dropdown">',
+						admin_anchor('users', __('lang_users'), array(
+							'class' => 'nav-link dropdown-toggle',
+							'data-bs-toggle' => 'dropdown',
+						)),
+						'<div class="dropdown-menu">',
+							// Manage users.
+							html_tag('a', array(
+								'href'  => admin_url('users'),
+								'class' => 'dropdown-item',
+							), __('lang_users_manage'));
 
-						/**
-						 * Fires inside users menu.
-						 */
-						if ( has_action('_user_menu')) {
-							echo '<div class="dropdown-divider"></div>';
-							do_action('_user_menu');
-						}
-				// Closing tag (users menu).
-				echo '</div></li>';
+							/**
+							 * Fires inside users menu.
+							 */
+							if ( has_action('_user_menu')) {
+								echo '<div class="dropdown-divider"></div>';
+								do_action('_user_menu');
+							}
+					// Closing tag (users menu).
+					echo '</div></li>';
+				}
 
 				/**
 				 * Fires right after users dropdown menu.
@@ -133,21 +132,23 @@ defined('BASEPATH') OR exit('No direct script access allowed');
 				}
 
 				// 5. Extensions menu.
-				echo '<li class="nav-item dropdown">',
-					html_tag('a', array(
-						'href' => '#',
-						'class' => 'nav-link dropdown-toggle',
-						'data-bs-toggle' => 'dropdown',
-					), __('lang_extensions')),
-					'<div class="dropdown-menu">',
-					admin_anchor('packages', __('lang_packages'), 'class="dropdown-item"'),
-					admin_anchor('themes', __('lang_themes'), 'class="dropdown-item"'),
-					admin_anchor('languages', __('lang_languages'), 'class="dropdown-item"');
-				// Closing tag (extensions menu).
-				echo '</div></li>';
+				if ( user_permission('extensions') ) {
+					echo '<li class="nav-item dropdown">',
+						html_tag('a', array(
+							'href' => '#',
+							'class' => 'nav-link dropdown-toggle',
+							'data-bs-toggle' => 'dropdown',
+						), __('lang_extensions')),
+						'<div class="dropdown-menu">',
+						admin_anchor('packages', __('lang_packages'), 'class="dropdown-item"'),
+						admin_anchor('themes', __('lang_themes'), 'class="dropdown-item"'),
+						admin_anchor('languages', __('lang_languages'), 'class="dropdown-item"');
+					// Closing tag (extensions menu).
+					echo '</div></li>';
+				}
 
 				// 6. Display menu for packages with reports controller.
-				if ( has_action('_reports_menu')) {
+				if ( has_action('_report_menu')) {
 					// Menu opening tag.
 					echo '<li class="nav-item dropdown">',
 					html_tag('a', array(
@@ -161,13 +162,13 @@ defined('BASEPATH') OR exit('No direct script access allowed');
 					'<div class="dropdown-divider"></div>';
 
 					// Do the actual action.
-					do_action('_reports_menu');
+					do_action('_report_menu');
 
 					'</div></li>';
-				} else {
-					echo '<li class="nav-item dropdown">',
-					admin_anchor('reports', __('lang_reports'), 'class="nav-link"'),
-					'</li>';
+				} elseif ( $this->auth->is_admin() ) {
+					echo html_tag('li', array(
+						'class' => 'nav-item dropdown',
+					), admin_anchor('reports', __('lang_reports'), 'class="nav-link"'));
 				}
 
 				// 7. Help menu.
@@ -177,13 +178,20 @@ defined('BASEPATH') OR exit('No direct script access allowed');
 						'class'       => 'nav-link dropdown-toggle',
 						'data-bs-toggle' => 'dropdown',
 					), __('lang_help')),
-					'<div class="dropdown-menu">';
+					'<div class="dropdown-menu">',
+						// System Information
+						admin_anchor(
+							'about',
+							__('lang_about'),
+							'class="dropdown-item"'
+						);
+
 						// documentation.
 						$wiki_url = apply_filters('wiki_url', 'https://github.com/tokoder/gamelang/wiki');
 						if ( ! empty($wiki_url)) {
 							echo html_tag('a', array(
-								'href'   => $wiki_url,
-								'class'  => 'dropdown-item',
+								'href' => $wiki_url,
+								'class' => 'dropdown-item'.(ENVIRONMENT !== 'production' ? '': ' disabled'),
 								'target' => '_blank',
 							), __('lang_documentation'));
 						}
@@ -239,7 +247,7 @@ defined('BASEPATH') OR exit('No direct script access allowed');
 					// Language list.
 					foreach ($site_languages as $folder => $lang) {
 						echo html_tag('a', array(
-							'href' => site_url('resource/language/'.$folder.'?next='.current_url()),
+							'href' => 'gamelang/lang/'.$folder.'?next='.current_url(),
 							'class' => 'dropdown-item',
 						), $lang['name_en'].html_tag('span', array(
 							'class' => 'text-muted float-end'
@@ -265,16 +273,28 @@ defined('BASEPATH') OR exit('No direct script access allowed');
 				echo '<li class="nav-item dropdown user-menu">',
 
 					html_tag('a', array(
-						'href' => '#',
-						'class' => 'nav-link dropdown-toggle',
+						'href'           => '#',
+						'class'          => 'nav-link dropdown-toggle',
 						'data-bs-toggle' => 'dropdown',
 					), fa_icon('user'));
 
 					$user_menu[] = array(
 						'parent' => NULL,
+						'id'     => 'profile',
+						'slug'   => 'profile/'.$c_user->username,
+						'name'   => __('lang_profile'),
+					);
+					$user_menu[] = array(
+						'parent' => NULL,
 						'id'     => 'settings',
-						'slug'  => admin_url('users/edit/'.($c_user ? $c_user->id : 0)),
-						'name' => __('lang_settings'),
+						'slug'   => 'settings',
+						'name'   => __('update_profile'),
+					);
+					$user_menu[] = array(
+						'parent' => NULL,
+						'id'     => 'change_password',
+						'slug'   => 'settings/change-password',
+						'name'   => __('change_password')
 					);
 					$user_menu[] = array(
 						'parent' => NULL,
@@ -297,7 +317,7 @@ defined('BASEPATH') OR exit('No direct script access allowed');
     </div>
 </nav>
 
-<header class="header bg-light" id="header" role="banner">
+<header class="header bg-light border-bottom" id="header" role="banner">
     <div class="container py-2 d-flex justify-content-between align-items-center">
         <?php
 		/**
@@ -342,7 +362,8 @@ defined('BASEPATH') OR exit('No direct script access allowed');
 			 */
 			echo '<div class="my-2 my-lg-0 ms-auto">';
 
-			if (isset($package['has_help']) && true === $package['has_help']) {
+			if (isset($package['has_help'])
+				&& true === $package['has_help']) {
 				echo html_tag('a', array(
 					'href'   => (true === $package['contexts']['help'] ? admin_url('help/'.$package['folder']) : $package['contexts']['help']),
 					'target' => '_blank',
@@ -356,9 +377,12 @@ defined('BASEPATH') OR exit('No direct script access allowed');
 				), fa_icon('question-circle').__('lang_help'));
 			}
 
-			if (isset($package['has_settings']) && true === $package['has_settings'] && $this->router->fetch_class() !== 'settings') {
+			if (isset($package['has_setting'])
+				&& true === $package['has_setting']
+				&& $this->router->fetch_class() !== 'setting'
+				&& user_permission('setting')) {
 				echo html_tag('a', array(
-					'href'  => admin_url('settings/'.$package['folder']),
+					'href'  => admin_url('setting/'.$package['folder']),
 					'class' => 'btn btn-secondary btn-sm btn-icon ms-2',
 				), fa_icon('cog').__('lang_settings'));
 			}

@@ -155,6 +155,34 @@ if ( ! function_exists('_transfigure'))
 	}
 }
 
+// ------------------------------------------------------------------------
+
+if ( ! function_exists('form_label'))
+{
+	/**
+	 * Form Label Tag
+	 *
+	 * @param	string	The text to appear onscreen
+	 * @param	string	The id the label applies to
+	 * @param	mixed	Additional attributes
+	 * @return	string
+	 */
+	function form_label($label_text = '', $id = '', $attributes = array())
+	{
+
+		$label = '<label';
+
+		if ($id !== '')
+		{
+			$label .= ' for="'.$id.'"';
+		}
+
+		$label .= _attributes_to_string($attributes);
+
+		return $label.'>'._transfigure($label_text).'</label>';
+	}
+}
+
 // -----------------------------------------------------------------------------
 
 if ( ! function_exists('form_nonce'))

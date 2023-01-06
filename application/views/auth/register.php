@@ -13,8 +13,6 @@
  */
 defined('BASEPATH') OR exit('No direct script access allowed');
 
-add_script('auth.js');
-
 // Form opening tag and nonce.
 echo form_open('register', 'role="form" id="register" autocomplete="off"'),
 form_nonce('user-register');

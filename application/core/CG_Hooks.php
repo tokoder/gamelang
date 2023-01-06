@@ -13,6 +13,8 @@
  */
 defined('BASEPATH') OR exit('No direct script access allowed');
 
+require_once(APPPATH.'libraries/CG_Hooks.php');
+
 /**
  * CG_Hooks Class
  *
@@ -22,8 +24,6 @@ defined('BASEPATH') OR exit('No direct script access allowed');
  * @category 	Core
  * @author		Tokoder Team
  */
-require_once(APPPATH.'libraries/CG_Hooks.php');
-
 class CG_Hooks extends CI_Hooks
 {
 	/**

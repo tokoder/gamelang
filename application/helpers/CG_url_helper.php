@@ -158,7 +158,7 @@ if ( ! function_exists('admin_anchor'))
 	{
 		if ('' === $uri)
 		{
-			return anchor(config_item('app_admin'), $title, $attrs);
+			return anchor(config_item('site_admin'), $title, $attrs);
 		}
 
 		$CI =& get_instance();
@@ -185,7 +185,7 @@ if ( ! function_exists('admin_anchor'))
 			}
 		}
 
-		return anchor(config_item('app_admin').'/'.$uri, $title, $attrs);
+		return anchor(config_item('site_admin').'/'.$uri, $title, $attrs);
 	}
 }
 
@@ -206,11 +206,12 @@ if ( ! function_exists('admin_url'))
 	{
 		if ('' === $uri)
 		{
-			return site_url(config_item('app_admin'), $protocol);
+			return site_url(config_item('site_admin'), $protocol);
 		}
 
 		$CI =& get_instance();
 
+		is_array($uri) && $uri = implode('/', $uri);
 		$exp = explode('/', $uri);
 
 		if (count($exp) === 1)
@@ -233,7 +234,7 @@ if ( ! function_exists('admin_url'))
 			}
 		}
 
-		return site_url(config_item('app_admin').'/'.$uri, $protocol);
+		return site_url(config_item('site_admin').'/'.$uri, $protocol);
 	}
 }
 
@@ -253,7 +254,7 @@ if ( ! function_exists('nonce_admin_url'))
 	{
 		if ('' === $uri)
 		{
-			return nonce_url(config_item('app_admin'), $action);
+			return nonce_url(config_item('site_admin'), $action);
 		}
 
 		$CI =& get_instance();
@@ -280,7 +281,7 @@ if ( ! function_exists('nonce_admin_url'))
 			}
 		}
 
-		return nonce_url(config_item('app_admin').'/'.$uri, $action);
+		return nonce_url(config_item('site_admin').'/'.$uri, $action);
 	}
 }
 

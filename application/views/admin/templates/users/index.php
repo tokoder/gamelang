@@ -13,7 +13,7 @@
  */
 defined('BASEPATH') OR exit('No direct script access allowed');
 
-add_script('users.js');
+add_script(get_theme_path('assets/js/users.js'));
 ?>
 
 <div class="table-responsive">

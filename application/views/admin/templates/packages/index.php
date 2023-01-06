@@ -13,7 +13,7 @@
  */
 defined('BASEPATH') OR exit('No direct script access allowed');
 
-add_script('packages.js');
+add_script(get_theme_path('assets/js/packages.js'));
 
 // Form opening tag.
 echo form_open(admin_url('packages'), 'class="form-inline card"'),

@@ -26,7 +26,7 @@ defined('BASEPATH') OR exit('No direct script access allowed');
 		 * Filters the "Thank you" text displayed in the dashboard footer.
 		 * This line can be removed/overridden using the "admin_footer_text".
 		 */
-		$thankyou = sprintf(__('lang_footer_text'), 'https://github.com/tokoder/gamelang');
+		$thankyou = sprintf(__('lang_footer_%s'), 'https://github.com/tokoder/gamelang');
 		$thankyou = apply_filters('admin_footer_text', $thankyou);
 		if ( ! empty($thankyou))
 		{
@@ -40,7 +40,7 @@ defined('BASEPATH') OR exit('No direct script access allowed');
 		 * Footer version text.
 		 * Can be removed or overridden using the "admin_version_text" fitler.
 		 */
-		$version = sprintf(__('lang_version_text'), config_item('app_version'));
+		$version = sprintf(__('lang_version_%s'), config_item('app_version'));
 		$version = apply_filters('admin_version_text', $version);
 		if ( ! empty($version))
 		{
