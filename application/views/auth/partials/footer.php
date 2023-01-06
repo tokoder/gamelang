@@ -24,7 +24,7 @@
                 <strong>{theme_time}</strong>.
                 <?php endif; ?>
                 <abbr title="Version">Version</abbr>:
-                <strong><a href="<?=site_url('about')?>" class="text-decoration-none text-secondary"><?=config_item('app_version')?></a></strong>.
+                <strong><a href="<?=site_url('about')?>" class="text-decoration-none text-secondary"><?=CG_VERSION?></a></strong>.
             </span>
         </div>
     </nav>

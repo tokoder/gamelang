@@ -41,8 +41,6 @@ class Assets extends CI_Driver_Library {
 
     protected $static_cache = FALSE;
 
-    protected $static_cache = FALSE;
-
     protected $auto_update  = TRUE;
 
     protected $cache        = NULL;

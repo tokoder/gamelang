@@ -45,9 +45,6 @@ class Default_theme {
 		// Register theme thumbnails sizes and names.
 		add_action( 'theme_images', array( $this, 'theme_images' ) );
 
-		// Theme layout manager.
-		add_filter( 'theme_layout', array( $this, 'theme_layout' ) );
-
 		// Enqueue our assets.
 		add_action( 'after_theme_setup', array( $this, 'after_theme_setup' ), 0);
 

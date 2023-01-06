@@ -56,12 +56,6 @@ class Auth extends CG_Controller
 		$this->themes->set_theme()->set_layout('auth');
 
 		/**
-		 * Filters the host user.
-		 */
-		$this->host_user = apply_filters('host_user', false);
-		$this->themes->set('host_user', $this->host_user, true);
-
-		/**
 		 * If the view does not exists within the theme's folder,
 		 * we make sure to use our default one.
 		 */
