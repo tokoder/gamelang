@@ -510,18 +510,7 @@ class Assets extends CI_Driver_Library {
         else
         {
             // local path, include original file location
-            $dir = '';
-            if ($pos = strrpos($path, DIRECTORY_SEPARATOR))
-            {
-                // file is in sub-folder
-                $dir = substr($path, 0, $pos + 1);
-                $filename = strrchr($path, DIRECTORY_SEPARATOR);
-            }
-            else
-            {
-                $filename = $path;
-            }
-
+            $filename = $path;
             return strrpos($filename, '.min')
                 ? $filename
                 : substr($filename, 0, strrpos($filename, '.')) . '.min.' . $type;
@@ -801,8 +790,8 @@ class Assets extends CI_Driver_Library {
             $read_f = $this->read_file($path);
             $path_f = rtrim(str_replace(normalize_path(APPPATH), 'gamelang/', $path), '/');
 
-            $result = str_replace('../', '/'.$path_f.'/../../', $read_f);
-            $result = str_replace('"./', '"/'.$path_f.'/../', $result);
+            $result = str_replace('../webfonts/', '/'.$path_f.'/../../webfonts/', $read_f);
+            $result = str_replace('font/', '/'.$path_f.'/../font/', $result);
         }
 
         return $result;

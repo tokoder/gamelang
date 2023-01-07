@@ -180,8 +180,8 @@ class CG_Controller extends CI_Controller
 			{
 				// Make sure to use _query_validate() method on admin.
 				add_action( 'after_theme_setup', function () {
-					add_script('assets/vendor/jquery-validation/jquery.validate.js');
-					add_script('assets/vendor/jquery-validation/additional-methods.js');
+					add_script('assets/vendor/jquery-validation/jquery.validate.min.js');
+					add_script('assets/vendor/jquery-validation/additional-methods.min.js');
 				} );
 
 				// Different language?
@@ -189,7 +189,7 @@ class CG_Controller extends CI_Controller
 				if ('en' !== $code)
 				{
 					add_action( 'after_theme_setup', function () use ($code) {
-						add_script('assets/vendor/jquery-validation/localization/messages_'.$code.'.js');
+						add_script('assets/vendor/jquery-validation/localization/messages_'.$code.'.min.js');
 					} );
 				}
 
