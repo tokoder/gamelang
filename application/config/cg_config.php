@@ -70,7 +70,6 @@ $config['smtp_pass']     = '';
 | Language settings.
 |--------------------------------------------------------------------------
 */
-$config['language'] = 'indonesia';
 $config['languages'] = array('indonesia');
 
 /*

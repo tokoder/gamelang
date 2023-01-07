@@ -25,7 +25,7 @@ const ROUTE_DOMAIN_NAME = 'master-ci3.test';
  *
  * @var	string
  */
-const CG_VERSION = '1.0.0-beta.3';
+const CG_VERSION = '1.0.0-beta.4';
 
 /**
  * Bootstrap File.

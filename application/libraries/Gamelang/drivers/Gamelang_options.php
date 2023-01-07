@@ -41,8 +41,6 @@ class Gamelang_options extends CI_Driver implements Gamelang_crud_interface
 	 */
 	public function initialize()
 	{
-		$this->ci->load->database();
-
 		log_message('info', 'Gamelang_options Class Initialized');
 	}
 
