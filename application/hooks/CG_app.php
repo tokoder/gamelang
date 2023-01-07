@@ -14,13 +14,6 @@
 defined('BASEPATH') OR exit('No direct script access allowed');
 
 /**
- * Domain Main
- *
- * @var	string
- */
-const ROUTE_DOMAIN_NAME = 'master-ci3.test';
-
-/**
  * CodeIgniter Gamelang Version
  *
  * @var	string
@@ -138,6 +131,9 @@ class CG_app
 		defined('WEEK_IN_SECONDS')      OR define('WEEK_IN_SECONDS',    7 * DAY_IN_SECONDS);
 		defined('MONTH_IN_SECONDS')     OR define('MONTH_IN_SECONDS',  30 * DAY_IN_SECONDS);
 		defined('YEAR_IN_SECONDS')      OR define('YEAR_IN_SECONDS',  365 * DAY_IN_SECONDS);
+
+		// Domain Main
+		defined('ROUTE_DOMAIN_NAME') 	OR define('ROUTE_DOMAIN_NAME',	config_item('cgdomain'));
 	}
 
 	// -----------------------------------------------------------------------------

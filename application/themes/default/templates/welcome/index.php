@@ -1,11 +1,9 @@
 <div class="row g-3">
     <div class="col-xs-12 col-sm-6 col-md-9">
-        <div class="bg-light p-3 p-md-5 mb-3 rounded">
-            <h1>Welcome to CodeIgniter <?=config_item('site_name')?>!</h1>
+        <div class="bg-light p-5 mb-3 rounded">
+            <h1>Welcome to <?=config_item('site_name')?>!</h1>
 
-            <p class="lead">
-                The page you are looking at is being generated dynamically by CodeIgniter <?=config_item('site_name')?>.
-            </p>
+            <p class="lead">The page you are looking at is being generated dynamically by CodeIgniter Gamelang.</p>
 
             <p>
                 The corresponding controller for this page is found at:
