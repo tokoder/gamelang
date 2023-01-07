@@ -13,7 +13,7 @@ add_filter( 'body_class', function ( $class ) {
 
 <?= get_partial('header'); ?>
 
-<main class="my-5 pt-4">
+<main class="pt-4">
 	<div class="container">
 		<?php the_alert(); ?>
 

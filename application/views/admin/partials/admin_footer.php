@@ -14,7 +14,7 @@
 defined('BASEPATH') OR exit('No direct script access allowed');
 ?>
 
-<footer class="footer navbar mt-auto py-0 bg-light">
+<footer class="footer navbar mt-auto bg-light">
     <div class="container-fluid">
         <?php
 		/**

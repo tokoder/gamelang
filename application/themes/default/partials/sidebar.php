@@ -1,5 +1,5 @@
 <div class="position-sticky" style="top: 2rem;">
-	<div class="mb-3 p-4 bg-light rounded">
+	<div class="mb-3">
 		<h4 class="fst-italic">About</h4>
 		<p class="mb-0"><?=get_option('site_description')?></p>
 	</div>

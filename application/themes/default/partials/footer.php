@@ -1,4 +1,4 @@
-<footer class="footer navbar mt-auto bg-light py-0">
+<footer class="footer navbar mt-auto bg-light">
     <div class="container">
         <span class="navbar-text">
             <?php echo anchor('', get_option('site_name')) ?>
@@ -12,7 +12,7 @@
             <strong>{theme_time}</strong>.
             <?php endif; ?>
             <abbr title="Version">Version</abbr>:
-            <strong><a href="<?=site_url('about')?>" class="text-decoration-none text-secondary"><?=config_item('app_version')?></a></strong>.
+            <strong><a href="<?=site_url('about')?>" class="text-decoration-none text-secondary"><?=CG_VERSION?></a></strong>.
         </span>
     </div>
 </footer>
