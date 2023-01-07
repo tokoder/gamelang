@@ -18,8 +18,7 @@ application/cache/captcha/*
 
 # Remove configs file.
 #-------------------------
-application/config/cg_encryption_key.php
-application/config/production/*
+application/config/gamelang/encryption_key.php
 
 # Ignore packages files.
 #-------------------------

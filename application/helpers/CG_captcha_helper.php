@@ -55,10 +55,10 @@ if ( ! function_exists('generate_captcha'))
 
 		// Load captcha config file.
 		get_instance()->themes->load_functions();
-		get_instance()->load->config('cg_captcha', true);
+		get_instance()->load->config('captcha', true);
 
 		// Generate the new captcha.
-		$cap = create_captcha(get_instance()->config->item('cg_captcha'));
+		$cap = create_captcha(get_instance()->config->item('captcha'));
 		if( ! $cap) {
 			return show_error('create_captcha():');
 			exit;
@@ -81,7 +81,7 @@ if ( ! function_exists('generate_captcha'))
 				'name'        => 'captcha',
 				'id'          => 'captcha-input',
 				'placeholder' => __('Type the text you see'),
-				'maxlength'   => get_instance()->config->item('word_length', 'cg_captcha'),
+				'maxlength'   => get_instance()->config->item('word_length', 'captcha'),
 				'required' 	  => '',
 			),
 		);

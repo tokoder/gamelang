@@ -106,7 +106,7 @@ class Ajax extends CG_Controller_Ajax
 	{
 		$this->load->helper('captcha');
 		$generate_captcha = generate_captcha();
-		$img_url = $this->config->item('img_url', 'cg_captcha');
+		$img_url = $this->config->item('img_url', 'captcha');
 
 		$this->response->header  = self::HTTP_OK;
 		$this->response->results = path_join($img_url, $generate_captcha['filename']);

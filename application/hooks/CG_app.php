@@ -91,8 +91,8 @@ class CG_app
 		$front_contexts = array('ajax', 'api');
 
 		// Muat file config
-		$_config->load('cg_config', true);
-        $options_to_config = $_config->config['cg_config'];
+		$_config->load('apps', true);
+        $options_to_config = $_config->config['apps'];
 
 		// Muat table options
 		$db_options = self::DB()->get('options')->result();

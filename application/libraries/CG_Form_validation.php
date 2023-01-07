@@ -336,8 +336,8 @@ class CG_Form_validation extends CI_Form_validation
 
 		if (empty($usernames))
 		{
-			$usernames = $CFG->load('cg_usernames', true, true)
-				? $CFG->config['cg_usernames']
+			$usernames = $CFG->load('usernames', true, true)
+				? $CFG->config['usernames']
 				: [];
 		}
 

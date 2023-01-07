@@ -57,8 +57,8 @@ $config['log_threshold'] = [1];
 | Encryption Key
 |--------------------------------------------------------------------------
 */
-$encryption_path_dist = APPPATH.'config/cg_encryption_key.php.dist';
-$encryption_path = APPPATH.'config/cg_encryption_key.php';
+$encryption_path_dist = APPPATH.'config/gamelang/encryption_key.php.dist';
+$encryption_path = APPPATH.'config/gamelang/encryption_key.php';
 if ( ! file_exists($encryption_path))
 {
 	$encryption_file = fopen($encryption_path, 'w');

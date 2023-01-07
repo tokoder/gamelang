@@ -174,7 +174,7 @@ class Users extends CG_Controller_Admin {
 		{
 			$name = $field;
 			$inputs[$name] = array_merge(
-				$this->config->item($name, 'cg_inputs'),
+				$this->config->item($name, 'inputs'),
 				array(
 					'value' => set_value($name, $this->input->post($name, false))
 				)
@@ -348,7 +348,7 @@ class Users extends CG_Controller_Admin {
 			 * Jika string dilewatkan, kami memastikannya ada terlebih dahulu,
 			 * if it does, we add it. Otherwise, we set error.
 			 */
-			elseif ($item = $this->config->item($name, 'cg_inputs'))
+			elseif ($item = $this->config->item($name, 'inputs'))
 			{
 				$inputs[$name] = array_merge($item, array('value' => set_value($name, $value)));
 			}
@@ -358,10 +358,10 @@ class Users extends CG_Controller_Admin {
 		 * Bidang di bawah ini adalah bidang default juga, jadi kami tidak memberikan
 		 * plugin atau tema hak untuk mengubahnya.
 		 */
-		$inputs['password']  = $this->config->item('password', 'cg_inputs');
-		$inputs['cpassword'] = $this->config->item('cpassword', 'cg_inputs');
+		$inputs['password']  = $this->config->item('password', 'inputs');
+		$inputs['cpassword'] = $this->config->item('cpassword', 'inputs');
 		$inputs['gender']    = array_merge(
-			$this->config->item('gender', 'cg_inputs'),
+			$this->config->item('gender', 'inputs'),
 			array('selected' => $this->data['user']->gender)
 		);
 

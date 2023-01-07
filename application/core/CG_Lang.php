@@ -373,8 +373,8 @@ class CG_Lang extends CI_Lang
 		// Not cached? Cache them if found.
 		if (empty($languages))
 		{
-			$languages = $CFG->load('cg_translate', true, true)
-				? $CFG->config['cg_translate']
+			$languages = $CFG->load('translate', true, true)
+				? $CFG->config['translate']
 				: [];
 		}
 

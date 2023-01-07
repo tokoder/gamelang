@@ -167,7 +167,7 @@ class CG_Controller extends CI_Controller
 		}
 
 		// Load inputs config file.
-		$this->load->config('cg_inputs', true);
+		$this->load->config('inputs', true);
 
 		// Are there any rules to apply?
 		if (is_array($rules) && ! empty($rules))

@@ -110,14 +110,17 @@ class CG_Router extends CI_Router
 		// Load the routes.php file. It would be great if we could
 		// skip this for enable_query_strings = TRUE, but then
 		// default_controller would be empty ...
-		if (file_exists(APPPATH.'config/routes.php'))
+		$file = 'routes';
+		foreach (array($file, ENVIRONMENT.DIRECTORY_SEPARATOR.$file, 'gamelang'.DIRECTORY_SEPARATOR.$file) as $location)
 		{
-			include(APPPATH.'config/routes.php');
-		}
+			$file_path = APPPATH.'config/'.$location.'.php';
 
-		if (file_exists(APPPATH.'config/'.ENVIRONMENT.'/routes.php'))
-		{
-			include(APPPATH.'config/'.ENVIRONMENT.'/routes.php');
+			if ( ! file_exists($file_path))
+			{
+				continue;
+			}
+
+			include($file_path);
 		}
 
     	// Package routes.
