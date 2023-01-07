@@ -507,3 +507,15 @@ $lang['lang_min_width_tip'] = "Min width tip";
 $lang['lang_min_height_tip'] = "Min height tip";
 $lang['lang_max_width_tip'] = "Max width tip";
 $lang['lang_max_height_tip'] = "Max height tip";
+
+$lang['lang_application'] = "Application";
+$lang['lang_custom_domain'] = "Custom domain";
+$lang['application'] = "Application";
+$lang['lang_manage_custom_domain'] = "Manage custom domain";
+$lang['lang_domain'] = "Domain";
+$lang['lang_success_deactivate_%s'] = "Success deactivate %s";
+$lang['lang_manage_author'] = "Manage author";
+$lang['instructor_application_form'] = "Instructor application form";
+$lang['heads_up'] = "Heads up";
+$lang['lang_add_author'] = "Add author";
+$lang['lang_tab_application'] = "Tab application";

@@ -62,6 +62,13 @@ class Gamelang_packages extends CI_Driver
 					continue;
 				}
 
+				// Include their main file if found.
+				$file = $packages[$p]."main.php";
+				require_once($file);
+
+				// Fire the "package_activate_{folder}" action.
+				do_action('package_activate_'.$p);
+
 				// Add it to active packages and update database.
 				$active[] = $p;
 			}
@@ -74,6 +81,13 @@ class Gamelang_packages extends CI_Driver
 		{
 			return false;
 		}
+
+		// Include their main file if found.
+		$file = $packages[$name]."main.php";
+		require_once($file);
+
+		// Fire the "package_activate_{folder}" action.
+		do_action('package_activate_'.$name);
 
 		// Add it to active packages and update database.
 		$active[] = $name;
@@ -259,18 +273,6 @@ class Gamelang_packages extends CI_Driver
 
 			// Include their main file if found.
 			require_once($m['full_path']."main.php");
-
-			/**
-			 * If a "package_activate_" action was registered, we fire
-			 * it and make sure to add the "enabled" file. This way we
-			 * avoid firing it again.
-			 */
-			if (has_action('package_activate_'.$folder)
-				&& ! is_file($m['full_path'].'enabled'))
-			{
-				do_action('package_activate_'.$folder);
-				@touch($m['full_path'].'enabled');
-			}
 
 			// We always fire this action.
 			do_action('package_loaded_'.$folder);

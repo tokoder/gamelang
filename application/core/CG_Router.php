@@ -719,12 +719,11 @@ class CG_Router extends CI_Router
 
 			/**
 			 * Because we are automatically assigning options from database
-			 * to $assign_to_config array, we see if we have the item
+			 * to config array, we see if we have the item
 			 */
-			global $assign_to_config;
-			if (! empty($assign_to_config['active_packages']))
+			if (! empty(config_item('active_packages')))
 			{
-				$packages = $assign_to_config['active_packages'];
+				$packages = config_item('active_packages');
 			}
 
 			// We make sure it's an array before finally caching it.

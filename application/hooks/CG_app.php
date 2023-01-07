@@ -68,6 +68,18 @@ class CG_app
 		$_config =& load_class('Config', 'core');
 		$_load =& load_class('Loader', 'core');
 
+		// Gabungkan nilai konfigurasi
+		global $assign_to_config;
+
+		// Do we have any manually set config items in the index.php file?
+		if (isset($assign_to_config) && is_array($assign_to_config))
+		{
+			foreach ($assign_to_config as $key => $value)
+			{
+				$_config->set_item($key, $value);
+			}
+		}
+
 		// Setup default constants.
 		self::constants();
 
@@ -87,19 +99,23 @@ class CG_app
 
 		// Muat file config
 		$_config->load('cg_config', true);
-        $config_file = $_config->config['cg_config'];
+        $options_to_config = $_config->config['cg_config'];
 
 		// Muat table options
 		$db_options = self::DB()->get('options')->result();
 		foreach ($db_options as $option) {
 			// Kami menetapkan opsi basis data ke dalam konfigurasi
-			$config_file[$option->name] = from_bool_or_serialize($option->value);
+			$options_to_config[$option->name] = from_bool_or_serialize($option->value);
 		}
 
-		// Gabungkan nilai konfigurasi
-		global $assign_to_config;
-		is_array($assign_to_config) OR $assign_to_config = array();
-		$assign_to_config = array_merge($assign_to_config, $config_file);
+		// Do we have any manually set config items in the database
+		if (isset($options_to_config) && is_array($options_to_config))
+		{
+			foreach ($options_to_config as $key => $value)
+			{
+				$_config->set_item($key, $value);
+			}
+		}
 	}
 
 	// -----------------------------------------------------------------------------
