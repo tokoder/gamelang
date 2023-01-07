@@ -234,7 +234,7 @@ class Themes extends CG_Controller_Admin {
 		// Did the user provide a valid file?
 		if (empty($_FILES['themezip']['name']))
 		{
-			set_alert(__('lang_ERROR_UPLOAD'), 'error');
+			set_alert(__('lang_ERROR_file_not_exists'), 'error');
 			redirect(admin_url('themes/install'));
 			exit;
 		}
@@ -243,14 +243,14 @@ class Themes extends CG_Controller_Admin {
 		$this->load->helper('file');
 		if ( ! function_exists('unzip_file'))
 		{
-			set_alert(__('lang_ERROR_UPLOAD'), 'error');
+			set_alert(__('lang_ERROR_unzip'), 'error');
 			redirect(admin_url('themes/install'));
 			exit;
 		}
 
 		// Load upload library.
 		$this->load->library('upload', array(
-			'upload_path'   => VIEWPATH.'temp/',
+			'upload_path'   => get_upload_path('temp'),
 			'allowed_types' => 'zip',
 		));
 
@@ -258,7 +258,7 @@ class Themes extends CG_Controller_Admin {
 		if (false === $this->upload->do_upload('themezip')
 			OR ! class_exists('ZipArchive', false))
 		{
-			set_alert(__('lang_ERROR_UPLOAD'), 'warning');
+			set_alert($this->upload->display_errors('', ''), 'warning');
 			redirect(admin_url('themes/install'));
 			exit;
 		}
@@ -267,7 +267,7 @@ class Themes extends CG_Controller_Admin {
 		$data = $this->upload->data();
 
 		// Catch the upload status and delete the temporary file anyways.
-		$status = unzip_file($data['full_path'], VIEWPATH.'themes/');
+		$status = unzip_file($data['full_path'], APPPATH.'themes/');
 		@unlink($data['full_path']);
 
 		// Successfully installed?
@@ -299,7 +299,6 @@ class Themes extends CG_Controller_Admin {
 	{
 		$themes = $this->themes->list_themes(true);
 		$db_theme  = $this->options->get('theme');
-		$theme    = $themes[$db_theme->value];
 
 		// Successfully updated?
 		if (false !== $db_theme->update('value', $folder))
@@ -346,23 +345,22 @@ class Themes extends CG_Controller_Admin {
 			return;
 		}
 
-		$theme = $themes[$folder];
 		unset($themes[$folder]);
 
 		function_exists('directory_delete') OR $this->load->helper('directory');
 
 		if (false !== directory_delete($this->themes->themes_path($folder))
-			&& false !== $themes->update('value', $themes))
+			&& false !== $db_theme->update('value', $folder))
 		{
 			delete_option('theme_images_'.$folder);
 			delete_option('theme_menus_'.$folder);
 
-			set_alert(sprintf(__('lang_success_delete_%s'), $theme['name']), 'success');
+			set_alert(sprintf(__('lang_success_delete_%s'), $folder), 'success');
 			redirect(admin_url('themes'));
 			exit;
 		}
 
-		set_alert(sprintf(__('lang_error_delete_%s'), $theme['name']), 'error');
+		set_alert(sprintf(__('lang_error_delete_%s'), $folder), 'error');
 		redirect(admin_url('themes'));
 		exit;
 	}

@@ -279,7 +279,7 @@ class Packages extends CG_Controller_Admin {
 		// Did the user provide a valid file?
 		if (empty($_FILES['packagezip']['name']))
 		{
-			set_alert(__('error_upload'), 'error');
+			set_alert(__('lang_ERROR_file_not_exists'), 'error');
 			redirect(admin_url('packages/install'));
 			exit;
 		}
@@ -288,7 +288,7 @@ class Packages extends CG_Controller_Admin {
 		$this->load->helper('file');
 		if ( ! function_exists('unzip_file'))
 		{
-			set_alert(__('error_upload'), 'error');
+			set_alert(__('lang_ERROR_unzip'), 'error');
 			redirect(admin_url('packages/install'));
 			exit;
 		}
@@ -303,7 +303,7 @@ class Packages extends CG_Controller_Admin {
 		if (false === $this->upload->do_upload('packagezip')
 			OR ! class_exists('ZipArchive', false))
 		{
-			set_alert(__('error_upload'), 'error');
+			set_alert($this->upload->display_errors('', ''), 'warning');
 			redirect(admin_url('packages/install'));
 			exit;
 		}

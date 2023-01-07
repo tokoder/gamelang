@@ -790,8 +790,10 @@ class Assets extends CI_Driver_Library {
             $read_f = $this->read_file($path);
             $path_f = rtrim(str_replace(normalize_path(APPPATH), 'gamelang/', $path), '/');
 
-            $result = str_replace('../webfonts/', '/'.$path_f.'/../../webfonts/', $read_f);
-            $result = str_replace('font/', '/'.$path_f.'/../font/', $result);
+            $result = str_replace('url("./' ,   'url("/'.$path_f.'/../',    $read_f);
+            $result = str_replace('url("../',   'url("/'.$path_f.'/../../', $result);
+            $result = str_replace('url(../' ,   'url(/'.$path_f.'/../../',  $result);
+            $result = str_replace('url(font',   'url(/'.$path_f.'/../font', $result);
         }
 
         return $result;
