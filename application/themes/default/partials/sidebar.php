@@ -7,8 +7,8 @@
 	<div class="mb-3">
 		<h4 class="fst-italic">Archives</h4>
 		<ol class="list-unstyled mb-0">
-			<li><a href="#"><?= date('M Y', strtotime('12/27/17'))?></a></li>
-			<li><a href="#"><?= date('M Y')?></a></li>
+			<li><a href="#"><?= date('F Y', strtotime('12/27/17'))?></a></li>
+			<li><a href="#"><?= date('F Y')?></a></li>
 		</ol>
 	</div>
 
