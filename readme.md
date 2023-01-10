@@ -48,9 +48,6 @@ Untuk menjalankan aplikasi ini anda dapat menginstall XAMPP dan setidaknya memil
 # Clone atau download repository ini
 $ git clone https://github.com/tokoder/gamelang.git
 
-# Run composer install, di folder application
-$ composer install --prefer-dist
-
 # Buka browser
 http://localhost/gamelang
 

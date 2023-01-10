@@ -10,21 +10,16 @@ config/gamelang/encryption_key.php
 
 # Ignore packages files.
 #-------------------------
-# packages/*
+packages/*
 !packages/index.html
 
 # Ignore themes files.
 #-------------------------
-# themes/*
+themes/*
 !themes/default
 !themes/index.html
 
 # Ignore uploads files.
 #-------------------------
-# uploads/*
+uploads/*
 !uploads/index.html
-
-# Ignore vendor files.
-#-------------------------
-vendor/
-composer.lock

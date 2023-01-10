@@ -50,7 +50,7 @@ class About extends CG_Controller_Admin
             'database_type'       => $this->db->platform(),
             'database_version'    => $this->db->version(),
             'web_server'          => isset($_SERVER['SERVER_SOFTWARE']) ? $_SERVER['SERVER_SOFTWARE'] : getenv('SERVER_SOFTWARE'),
-            'app_version'         => CG_VERSION,
+            'gamelang_version'    => CG_VERSION,
             'codeigniter_version' => CI_VERSION,
             'user_agent'          => $this->agent->agent_string(),
         );
