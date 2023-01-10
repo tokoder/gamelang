@@ -68,7 +68,7 @@ defined('BASEPATH') OR exit('No direct script access allowed');
 				// 2. Users menu.
 				if ( user_permission('users') ) {
 					echo '<li class="nav-item dropdown">',
-						admin_anchor('users', __('lang_users'), array(
+						admin_anchor('users', __('users'), array(
 							'class' => 'nav-link dropdown-toggle',
 							'data-bs-toggle' => 'dropdown',
 						)),

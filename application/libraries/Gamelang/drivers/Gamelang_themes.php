@@ -153,6 +153,12 @@ class Gamelang_themes extends CI_Driver
 	protected $controller = null;
 
 	/**
+	 * Holds the currently accessed method.
+	 * @var string
+	 */
+	protected $method = null;
+
+	/**
 	 * Holds the currently used layout.
 	 * @var string
 	 */
@@ -313,8 +319,9 @@ class Gamelang_themes extends CI_Driver
 		$this->user_agent = $this->_set_user_agent();
 
 		// Store information about package, controller and method.
-		$this->package    = $this->ci->router->fetch_package();
+		$this->package = $this->ci->router->fetch_package();
 		$this->controller = $this->ci->router->fetch_class();
+		$this->method = $this->ci->router->fetch_method();
 
 		// Overridden output compression.
 		$this->compress = $this->ci->config->item('theme_compress');
@@ -490,6 +497,7 @@ class Gamelang_themes extends CI_Driver
 				break;
 		}
 
+		$this->package = $this->ci->router->fetch_package();
 		isset($packpath) OR $packpath = $this->ci->router->package_path($this->package);
 
 		if ( ! $this->_is_admin() OR 'view' !== $type)
@@ -816,8 +824,9 @@ class Gamelang_themes extends CI_Driver
 		}
 
 		$this->package && $this->body_classes[] = $this->package;
+		$this->method = $this->ci->router->fetch_method();
 		$this->body_classes[] = $this->controller;
-		('index' !== $this->ci->router->fetch_method()) && $this->body_classes[] = $this->ci->router->fetch_method();
+		('index' !== $this->method) && $this->body_classes[] = $this->method;
 
 		if ('login' !== $this->controller && 'rtl' === $this->language('direction'))
 		{
@@ -1375,7 +1384,8 @@ class Gamelang_themes extends CI_Driver
 		$title[] = $this->package;
 		$title[] = $this->controller;
 
-		($this->ci->router->fetch_method() !== 'index') && $title[] = $this->ci->router->fetch_method();
+		$this->method = $this->ci->router->fetch_method();
+		($this->method !== 'index') && $title[] = $this->method;
 
 		$title = array_clean(array_map('ucwords', $title));
 
@@ -1736,7 +1746,8 @@ class Gamelang_themes extends CI_Driver
 
 		if ($this->_is_admin())
 		{
-			$view = str_replace(config_item('site_admin').'/', '', isset($this->view) ? $this->view : $this->ci->router->fetch_method());
+			$this->method = $this->ci->router->fetch_method();
+			$view = str_replace(config_item('site_admin').'/', '', isset($this->view) ? $this->view : $this->method);
 			$packpath = $this->ci->router->package_path($this->package);
 			$this->view = ($this->package && false !== $packpath) ? config_item('site_admin').'/'.$view : $view;
 		}
@@ -1767,7 +1778,8 @@ class Gamelang_themes extends CI_Driver
 			$view[] = $this->controller;
 		}
 
-		$view[] = $this->ci->router->fetch_method();
+		$this->method = $this->ci->router->fetch_method();
+		$view[] = $this->method;
 
 		return implode('/', array_clean($view));
 	}

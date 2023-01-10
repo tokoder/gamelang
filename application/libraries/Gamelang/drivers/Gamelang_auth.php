@@ -325,14 +325,10 @@ class Gamelang_auth extends CI_Driver
 			return true;
 		}
 
+		$role_permission = apply_filters('role_permission', ['admin_panel']);
 		$package = ($package!=null)
 			? strtolower($package)
 			: $this->ci->router->fetch_package();
-
-		$this->package = $package;
-		$role = $this->user()->subtype;
-		$user_role = $this->_parent->groups->get($role);
-		$role_permission = apply_filters('role_permission', ['admin_panel', 'posts']);
 
 		if(in_array($package, $role_permission)) {
 			return true;
@@ -665,8 +661,9 @@ if ( ! function_exists('user_permission'))
 
 if ( ! function_exists('user_online'))
 {
-	function user_online($timestamp)
+	function user_online($timestamp = null)
 	{
+		$timestamp OR $timestamp = time();
 		$time_ago = strtotime($timestamp);
 		$current_time = time();
 		$time_difference = $current_time - $time_ago;

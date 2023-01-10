@@ -151,7 +151,7 @@ class Users extends CG_Controller_Admin {
 					'rules' => 'trim|required|max_length[32]'),
 			array(	'field' => 'last_name',
 					'label' => 'lang:lang_last_name',
-					'rules' => 'trim|required|max_length[32]'),
+					'rules' => 'trim|max_length[32]'),
 			array(	'field' => 'email',
 					'label' => 'lang:lang_email_address',
 					'rules' => 'trim|required|valid_email|unique_email'),
@@ -261,7 +261,7 @@ class Users extends CG_Controller_Admin {
 					'rules' => 'trim|required|min_length[1]|max_length[32]'),
 			array(	'field' => 'last_name',
 					'label' => 'lang:lang_last_name',
-					'rules' => 'trim|required|min_length[1]|max_length[32]'),
+					'rules' => 'trim|min_length[1]|max_length[32]'),
 		);
 
 		// Using a new email address?

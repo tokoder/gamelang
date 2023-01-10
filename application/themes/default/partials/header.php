@@ -46,7 +46,7 @@ defined('BASEPATH') OR exit('No direct script access allowed');
                     <?php if ($this->auth->online()): ?>
                     <li class="nav-item user-menu dropdown">
                         <a class="nav-link dropdown-toggle" href="#" role="button" data-bs-toggle="dropdown" aria-expanded="false">
-                            <?= user_avatar(24, $c_user->id, 'class="img-fluid rounded-circle"'); ?>
+                            <?= user_avatar(24, $c_user->id, 'class="rounded-circle" height="25"'); ?>
                         </a>
                         <?php
                         $user_menu[] = array(

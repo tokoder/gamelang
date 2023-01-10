@@ -26,7 +26,7 @@ defined('BASEPATH') OR exit('No direct script access allowed');
 		 * Filters the "Thank you" text displayed in the dashboard footer.
 		 * This line can be removed/overridden using the "admin_footer_text".
 		 */
-		$thankyou = sprintf(__('Thank your for creating with <a href="%s" target="_blank">%s</a>.'), 'https://github.com/tokoder/gamelang', get_option('site_name'));
+		$thankyou = sprintf(__('Thank your for creating with <a href="%s" target="_blank">%s</a>'), 'https://github.com/tokoder/gamelang', get_option('site_name'));
 		$thankyou = apply_filters('admin_footer_text', $thankyou);
 		if ( ! empty($thankyou))
 		{

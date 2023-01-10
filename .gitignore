@@ -8,39 +8,6 @@ application/logs/*
 
 !application/*/.htaccess
 
-# Remove caches file.
-#-------------------------
-public/cache/*
-!public/cache/index.html
-application/cache/captcha/*
-!application/cache/captcha/fonts
-!application/cache/captcha/index.html
-
-# Remove configs file.
-#-------------------------
-application/config/gamelang/encryption_key.php
-
-# Ignore packages files.
-#-------------------------
-application/packages/*
-!application/packages/index.html
-
-# Ignore themes files.
-#-------------------------
-application/themes/*
-!application/themes/default
-!application/themes/index.html
-
-# Ignore uploads files.
-#-------------------------
-application/uploads/*
-!application/uploads/index.html
-
-# Ignore vendor files.
-#-------------------------
-application/vendor/
-application/composer.lock
-
 composer.lock
 tests/mocks/database/ci_test.sqlite
 

@@ -51,7 +51,7 @@ class Settings extends CG_Controller_Admin
 
 		// Email Settings.
 		'email' => array(
-			'admin_email',
+			'contact_email',
 			'server_email',
 			'mail_protocol',
 			'sendmail_path',
@@ -121,7 +121,7 @@ class Settings extends CG_Controller_Admin
 
 		if ('general' !== $tab)
 		{
-			$this->data['page_title'] = sprintf(__('lang_name_%s'), __('lang_tab_'.strtoupper($tab)));
+			$this->data['page_title'] = sprintf(__('lang_name_%s'), __('lang_'.strtoupper($tab)));
 		}
 
 		list($this->data['inputs'], $rules) = $this->_prep_settings($tab);
@@ -315,27 +315,27 @@ class Settings extends CG_Controller_Admin
 			html_tag('a', array(
 				'href' => admin_url('settings'),
 				'class' => 'btn btn-'.('general' === $tab ? 'primary' : 'outline-primary'),
-			), __('lang_tab_general')),
+			), __('lang_general')),
 
 			html_tag('a', array(
 				'href' => admin_url('settings?tab=users'),
 				'class' => 'btn btn-'.('users' === $tab ? 'primary' : 'outline-primary'),
-			), __('lang_tab_users')),
+			), __('lang_users')),
 
 			html_tag('a', array(
 				'href' => admin_url('settings?tab=email'),
 				'class' => 'btn btn-'.('email' === $tab ? 'primary' : 'outline-primary'),
-			), __('lang_tab_email')),
+			), __('lang_email')),
 
 			html_tag('a', array(
 				'href' => admin_url('settings?tab=captcha'),
 				'class' => 'btn btn-'.('captcha' === $tab ? 'primary' : 'outline-primary'),
-			), __('lang_tab_captcha')),
+			), __('lang_captcha')),
 
 			html_tag('a', array(
 				'href' => admin_url('settings?tab=upload'),
 				'class' => 'btn btn-'.('upload' === $tab ? 'primary' : 'outline-primary'),
-			), __('lang_tab_upload')),
+			), __('lang_upload')),
 
 			'</div>';
 		});

@@ -5,6 +5,6 @@
 	"homepage": "https://github.com/tokoder",
 	"license": "MIT",
 	"require": {
-		"nesbot/carbon": "^2.57"
+		"nesbot/carbon": "^2.65"
 	}
 }

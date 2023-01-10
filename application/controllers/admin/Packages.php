@@ -118,13 +118,6 @@ class Packages extends CG_Controller_Admin {
 				continue;
 			}
 
-			$headers = $this->router->package_header($folder);
-			if ( $headers['enabled'] )
-			{
-				unset($packages[$folder]);
-				continue;
-			}
-
 			// add details.
 			$p['details'] = array();
 
@@ -157,11 +150,11 @@ class Packages extends CG_Controller_Admin {
 			}
 
 			// Add package actions.
-			$p['actions'] = array();
+			$actions = array();
 
 			if (true === $p['enabled'])
 			{
-				$p['actions'][] = html_tag('button', array(
+				$actions[] = html_tag('button', array(
 					'type' => 'button',
 					'data-endpoint' => esc_url(nonce_admin_url(
 						'packages?action=deactivate&package='.$folder,
@@ -173,7 +166,7 @@ class Packages extends CG_Controller_Admin {
 			}
 			else
 			{
-				$p['actions'][] = html_tag('button', array(
+				$actions[] = html_tag('button', array(
 					'type' => 'button',
 					'data-endpoint' => esc_url(nonce_admin_url(
 						'packages?action=activate&package='.$folder,
@@ -187,7 +180,7 @@ class Packages extends CG_Controller_Admin {
 			// add button settings
 			if (true === $p['enabled'] && true === $p['has_setting'])
 			{
-				$p['actions'][] = html_tag('a', array(
+				$actions[] = html_tag('a', array(
 					'href'  => admin_url('setting/'.$folder),
 					'class' => 'btn btn-secondary btn-sm btn-icon ms-2',
 					'aria-label' => sprintf(__('lang_settings_%s'), $p['name']),
@@ -197,7 +190,7 @@ class Packages extends CG_Controller_Admin {
 			// add button delete
 			if (true !== $p['enabled'])
 			{
-				$p['actions'][] = html_tag('button', array(
+				$actions[] = html_tag('button', array(
 					'type' => 'button',
 					'data-endpoint' => esc_url(nonce_admin_url(
 						'packages?action=delete&package='.$folder,
@@ -207,6 +200,9 @@ class Packages extends CG_Controller_Admin {
 					'aria-label' => sprintf(__('lang_delete_%s'), $p['name']),
 				), fa_icon('trash').__('lang_delete'));
 			}
+
+			$headers = $this->router->package_header($folder);
+			$p['actions'] = ( $headers['enabled'] ) ? array() : $actions;
 		}
 
 		/**

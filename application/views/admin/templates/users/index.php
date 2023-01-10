@@ -21,7 +21,7 @@ add_script(get_theme_path('assets/js/users.js'));
         <thead>
             <tr>
                 <th class="w-5">ID</th>
-                <th class="w-20"><?php _e('lang_username') ?></th>
+                <th class="w-20"><?php _e('lang_fullname') ?></th>
                 <th class="w-15"><?php _e('lang_username') ?></th>
                 <th class="w-15"><?php _e('lang_email_address') ?></th>
                 <th class="w-10"><?php _e('lang_users_role') ?></th>

@@ -69,17 +69,17 @@ class Admin_theme
 	 */
 	public function after_theme_setup()
 	{
-		add_styles('assets/vendor/bootstrap/css/bootstrap.min.css');
-		add_styles('assets/vendor/fontawesome-free/css/all.min.css');
-		add_styles('assets/vendor/summernote/summernote-bs5.min.css');
-		add_styles('assets/vendor/sweetalert2/sweetalert2.min.css');
+		add_styles('assets/vendor/bootstrap/css/bootstrap.css');
+		add_styles('assets/vendor/fontawesome-free/css/all.css');
+		add_styles('assets/vendor/summernote/summernote-bs5.css');
+		add_styles('assets/vendor/sweetalert2/sweetalert2.css');
 		add_styles(get_theme_path('assets/css/admin.css'));
 
-		add_script('assets/vendor/jquery/jquery.min.js');
-		add_script('assets/vendor/bootstrap/js/bootstrap.bundle.min.js');
-		add_script('assets/vendor/summernote/summernote-bs5.min.js');
-		add_script('assets/vendor/sweetalert2/sweetalert2.min.js');
-		add_script('assets/vendor/js-cookie/js.cookie.min.js');
+		add_script('assets/vendor/jquery/jquery.js');
+		add_script('assets/vendor/bootstrap/js/bootstrap.bundle.js');
+		add_script('assets/vendor/summernote/summernote-bs5.js');
+		add_script('assets/vendor/js-cookie/js.cookie.js');
+		add_script('assets/vendor/sweetalert2/sweetalert2.js');
 		add_script('assets/vendor/bootbox/bootbox.min.js');
 		add_script(get_theme_path('assets/js/admin.js'));
 	}

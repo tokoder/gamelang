@@ -312,13 +312,6 @@ class CG_Controller_Admin extends CG_Controller
 				continue;
 			}
 
-			// header
-			$headers = $this->router->package_header($folder);
-			if ( $headers['enabled'])
-			{
-				continue;
-			}
-
 			/**
 			 * Jika modul dilengkapi dengan item menu tingkat atas menggunakan
 			 * "admin_navbar-name" atau "admin_navbar_right-name",

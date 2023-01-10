@@ -1,0 +1,4 @@
+# Remove caches file.
+#-------------------------
+cache/*
+!cache/index.html
