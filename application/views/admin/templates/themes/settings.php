@@ -14,4 +14,4 @@
 defined('BASEPATH') OR exit('No direct script access allowed');
 
 // We simply do the action.
-do_action('package_settings_'.$package['folder'], $package);
+do_action('theme_settings_'.$theme['folder'], $theme);

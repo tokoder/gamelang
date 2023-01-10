@@ -2217,103 +2217,100 @@ class Gamelang_themes extends CI_Driver
 		static $cached = array();
 		$folder OR $folder = $this->current_theme();
 
-		if ( ! isset($cached[$folder]))
+		if ( isset($cached[$folder]))
 		{
-			if ( ! $folder)
-			{
-				return false;
-			}
-
-			$manifest_file = 'manifest.json';
-			$manifest_dist = 'manifest.json.dist';
-
-			$found = false;
-			if (false !== is_file($manifest = $this->themes_path($folder.'/'.$manifest_file)))
-			{
-				$manifest = json_read_file($manifest);
-				$found = true;
-
-				// Create the distribution file just in case the file was edited.
-				if (false === $this->themes_path($folder.'/'.$manifest_dist))
-				{
-					$theme_path = $this->themes_path($folder);
-					@copy($theme_path.'/'.$manifest_file, $theme_path.'/'.$manifest_dist);
-				}
-			}
-
-			if (true !== $found
-				&& false !== is_file($manifest = $this->themes_path($folder.'/'.$manifest_dist)))
-			{
-				$manifest = json_read_file($manifest);
-				$found = true;
-
-				// Copy the distribution file.
-				if (false === $this->themes_path($folder.'/'.$manifest_file))
-				{
-					$theme_path = $this->themes_path($folder);
-					@copy($theme_path.'/'.$manifest_dist, $theme_path.'/'.$manifest_file);
-				}
-			}
-
-			if (true !== $found OR false === $manifest)
-			{
-				return false;
-			}
-
-			$details = $this->_details();
-			foreach ($details as $key => $val)
-			{
-				if (isset($manifest[$key]))
-				{
-					$details[$key] = $manifest[$key];
-				}
-			}
-
-			if (empty($details['screenshot']))
-			{
-				$details['screenshot'] = base_url('gamelang/views/assets/img/blank.png');
-				foreach (array('.png', '.jpg', '.jpeg', '.gif') as $ext)
-				{
-					if (false !== $this->themes_path($folder.'/screenshot'.$ext))
-					{
-						$details['screenshot'] = base_url('gamelang/themes/'.$folder.'/screenshot'.$ext);
-						break;
-					}
-				}
-			}
-
-			// Add extra stuff.
-			$details['folder'] = $folder;
-			$details['full_path'] = $this->themes_path($folder);
-			empty($details['textdomain']) && $details['textdomain'] = $folder;
-			empty($details['domainpath']) && $details['domainpath'] = 'language';
-
-			// Cache it first.
-			$cached[$folder] = $details;
+			return $cached[$folder];
 		}
 
-		return $cached[$folder];
-	}
+		if ( ! $folder)
+		{
+			return false;
+		}
 
-	// ------------------------------------------------------------------------
+		$manifest_file = 'manifest.json';
+		$manifest_dist = 'manifest.json.dist';
 
-	/**
-	 * Returns array of default themes details.
-	 * @access 	protected
-	 * @param 	none
-	 * @return 	array
-	 */
-	protected function _details()
-	{
+		$found = false;
+		if (false !== is_file($manifest = $this->themes_path($folder.'/'.$manifest_file)))
+		{
+			$manifest = json_read_file($manifest);
+			$found = true;
+
+			// Create the distribution file just in case the file was edited.
+			if (false === $this->themes_path($folder.'/'.$manifest_dist))
+			{
+				$theme_path = $this->themes_path($folder);
+				@copy($theme_path.'/'.$manifest_file, $theme_path.'/'.$manifest_dist);
+			}
+		}
+
+		if (true !== $found
+			&& false !== is_file($manifest = $this->themes_path($folder.'/'.$manifest_dist)))
+		{
+			$manifest = json_read_file($manifest);
+			$found = true;
+
+			// Copy the distribution file.
+			if (false === $this->themes_path($folder.'/'.$manifest_file))
+			{
+				$theme_path = $this->themes_path($folder);
+				@copy($theme_path.'/'.$manifest_dist, $theme_path.'/'.$manifest_file);
+			}
+		}
+
+		if (true !== $found OR false === $manifest)
+		{
+			return false;
+		}
+
 		/**
-		 * Allow users to filter default themes details.
+		 * Allow users to filter default themes headers.
 		 */
-		$details = apply_filters('themes_details', $this->_headers);
+		$headers = apply_filters('themes_headers', $this->_headers);
 
-		// We fall-back to default details if empty.
-		empty($details) && $details = $this->_headers;
+		// We fall-back to default headers if empty.
+		empty($headers) && $headers = $this->_headers;
 
-		return $details;
+		foreach ($headers as $key => $val)
+		{
+			if (isset($manifest[$key]))
+			{
+				$headers[$key] = $manifest[$key];
+			}
+		}
+
+		// Format license.
+		if (false !== stripos($headers['license'], 'mit') && empty($headers['license_uri']))
+		{
+			$headers['license_uri'] = 'http://opensource.org/licenses/MIT';
+		}
+
+		if (empty($headers['screenshot']))
+		{
+			$headers['screenshot'] = base_url('gamelang/views/assets/img/blank.png');
+			foreach (array('.png', '.jpg', '.jpeg', '.gif') as $ext)
+			{
+				if (false !== $this->themes_path($folder.'/screenshot'.$ext))
+				{
+					$headers['screenshot'] = base_url('gamelang/themes/'.$folder.'/screenshot'.$ext);
+					break;
+				}
+			}
+		}
+
+		// Add extra stuff.
+		$headers['folder']       = $folder;
+		$headers['full_path']    = $this->themes_path($folder);
+
+		// Is the theme enabled?
+		$headers['enabled'] = ($folder === get_option('theme', 'default'));
+
+		// Send default language folder and index.
+		empty($headers['textdomain']) && $headers['textdomain'] = $folder;
+		empty($headers['domainpath']) && $headers['domainpath'] = 'language';
+
+		// Cache it first.
+		return $cached[$folder] = $headers;
 	}
 }
 

@@ -78,6 +78,13 @@ class Themes extends CG_Controller_Admin {
 					'data-name' => $t['name'],
 				), __('lang_activate'));
 			}
+			else {
+				$t['actions'][] = html_tag('a', array(
+					'href'  => admin_url('themes/settings/'.$folder),
+					'class' => 'btn btn-default btn-xs btn-icon ml-2',
+					'aria-label' => sprintf(__('lang_settings_%s'), $folder),
+				), fa_icon('cogs').__('lang_settings'));
+			}
 
 			// Details button.
 			$t['actions'][] = html_tag('a', array(
@@ -105,9 +112,6 @@ class Themes extends CG_Controller_Admin {
 		{
 			$get   = $theme;
 			$theme = $themes[$theme];
-
-			// Is the theme enabled?
-			$theme['enabled'] = ($get === get_option('theme', 'default'));
 
 			// The theme has a URI?
 			$theme['name_uri'] = $theme['name'];
@@ -186,6 +190,65 @@ class Themes extends CG_Controller_Admin {
 			->set_title(__('lang_themes'))
 			->render($this->data);
 
+	}
+
+	// ------------------------------------------------------------------------
+
+	/**
+	 * Display theme's settings page.
+	 * @access 	public
+	 * @param 	string 	$theme 	the theme's name.
+	 * @return 	void
+	 */
+	public function settings($theme = null)
+	{
+		// Get the theme first.
+		$theme = $this->themes->get_theme_details($theme);
+
+		// The theme does not exists?
+		if ( ! $theme)
+		{
+			set_alert(__('themes_ERROR_theme_MISSING'), 'error');
+			redirect('admin/themes');
+			exit;
+		}
+
+		// Disabled? It needs to be enabled first.
+		if ( ! $theme['enabled'])
+		{
+			set_alert(__('themes_ERROR_SETTINGS_DISABLED'), 'error');
+			redirect('admin/themes');
+			exit;
+		}
+
+		require_once($theme['full_path'].'/functions.php');
+
+		// It does not have a settings page?
+		if ( ! has_filter('theme_settings_'.$theme['name']))
+		{
+			set_alert(__('themes_ERROR_SETTINGS_MISSING'), 'error');
+			redirect('admin/themes');
+			exit;
+		}
+
+		// Add link to theme's help and donation.
+		if ( ! empty($theme['theme_uri']))
+		{
+			$this->data['page_help'] = $theme['theme_uri'];
+		}
+
+		if ( ! empty($theme['donation_uri']))
+		{
+			$this->data['page_donate'] = $theme['donation_uri'];
+		}
+
+		$this->data['page_title'] = sprintf(__('themes_%s_SETTINGS'), $theme['name']);
+		$this->data['theme']      = $theme;
+
+		// Set page title and render view.
+		$this->themes
+			->set_title($this->data['page_title'])
+			->render($this->data);
 	}
 
 	// ------------------------------------------------------------------------
@@ -405,13 +468,10 @@ class Themes extends CG_Controller_Admin {
 	 */
 	protected function _subhead()
 	{
-		if ('install' === $this->router->fetch_method())
-		{
-			$this->data['page_title'] = __('lang_add');
+		add_action('admin_subhead', function() {
 
-			// Subhead.
-			add_action('admin_subhead', function() {
-
+			if ('install' === $this->router->fetch_method())
+			{
 				// Upload theme button.
 				echo html_tag('button', array(
 					'role' => 'button',
@@ -422,19 +482,20 @@ class Themes extends CG_Controller_Admin {
 
 				// Back button.
 				$this->_btn_back();
-
-			});
-		}
-		else
-		{
-			add_action('admin_subhead', function() {
+			}
+			elseif ('index' === $this->router->fetch_method())
+			{
 				// Add theme button.
 				echo html_tag('a', array(
 					'href' => admin_url('themes/install'),
 					'class' => 'btn btn-success btn-sm btn-icon'
 				), fa_icon('plus-circle').__('lang_add'));
-			});
-		}
+			}
+			else {
+				// Back button.
+				$this->_btn_back();
+			}
+		});
 	}
 
 }

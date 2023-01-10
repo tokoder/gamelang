@@ -17,10 +17,10 @@ $config['site_name']        = 'CodeIgniter Gamelang';
 | DATABASE settings.
 |--------------------------------------------------------------------------
 */
-$config['hostname'] = 'localhost';
-$config['username'] = 'root';
+$config['hostname'] = '';
+$config['username'] = '';
 $config['password'] = '';
-$config['database'] = 'gamelang_test';
+$config['database'] = '';
 
 /*
 |--------------------------------------------------------------------------
