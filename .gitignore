@@ -1,48 +1,12 @@
 .DS_Store
 
-application/cache/assets/*
-!application/cache/assets/index.html
-application/cache/captcha/*
-!application/cache/captcha/fonts
-!application/cache/captcha/index.html
+application/cache/*
+!application/cache/index.html
 
 application/logs/*
 !application/logs/index.html
 
 !application/*/.htaccess
-
-# Remove generated encryption key file.
-#-------------------------
-application/config/cg_config.php
-application/config/cg_encryption_key.php
-application/config/production/*
-
-# Ignore packages files.
-#-------------------------
-application/packages/*
-!application/packages/index.html
-
-# Ignore themes files.
-#-------------------------
-application/themes/*
-!application/themes/default
-!application/themes/index.html
-!application/themes/theme-blank.png
-
-# Ignore uploads files.
-#-------------------------
-application/uploads/*
-!application/uploads/index.html
-!application/uploads/default.png
-
-# Ignore vendor files.
-#-------------------------
-application/vendor/
-application/composer.lock
-
-# Public files.
-#-------------------------
-public/assets/yarn.lock
 
 composer.lock
 tests/mocks/database/ci_test.sqlite

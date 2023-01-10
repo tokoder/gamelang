@@ -1,11 +1,8 @@
 (function ($, window, document, undefined) {
     "use strict";
 
-    // Prepare globals.
-    var cg = window.cg = window.cg || {};
-    cg.i18n = cg.i18n || {};
+    // Prepare globals.]
     cg.themes = cg.themes || {};
-    cg.i18n.themes = cg.i18n.themes || {};
     var themesURL = cg.config.currentURL,
         themeModalContainer = "#theme-details",
         themeModal = "#theme-modal";

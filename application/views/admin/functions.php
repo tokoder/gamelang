@@ -70,15 +70,18 @@ class Admin_theme
 	public function after_theme_setup()
 	{
 		add_styles('assets/vendor/bootstrap/css/bootstrap.css');
-		add_styles('assets/vendor/sweetalert2/sweetalert2.css');
 		add_styles('assets/vendor/fontawesome-free/css/all.css');
+		add_styles('assets/vendor/summernote/summernote-bs5.css');
+		add_styles('assets/vendor/sweetalert2/sweetalert2.css');
+		add_styles(get_theme_path('assets/css/admin.css'));
 
 		add_script('assets/vendor/jquery/jquery.js');
 		add_script('assets/vendor/bootstrap/js/bootstrap.bundle.js');
-		add_script('assets/vendor/sweetalert2/sweetalert2.js');
+		add_script('assets/vendor/summernote/summernote-bs5.js');
 		add_script('assets/vendor/js-cookie/js.cookie.js');
+		add_script('assets/vendor/sweetalert2/sweetalert2.js');
 		add_script('assets/vendor/bootbox/bootbox.min.js');
-		add_script('admin.js');
+		add_script(get_theme_path('assets/js/admin.js'));
 	}
 
 	// ----------------------------------------------------------------------------
@@ -107,14 +110,14 @@ class Admin_theme
 	{
 		// Default configuration.
 		$config = array(
-			'siteURL'     => site_url(),
-			'baseURL'     => base_url(),
-			'adminURL'    => admin_url(),
-			'currentURL'  => current_url(),
-			'ajaxURL'     => ajax_url(),
-			'tokenName'   => config_item('csrf_token_name'),
-			'tokenCookie' => config_item('csrf_cookie_name'),
-			'lang'        => get_instance()->lang->lang_lists(get_instance()->session->language),
+			'baseURL'      => base_url(),
+			'adminURL'     => admin_url(),
+			'currentURL'   => current_url(),
+			'ajaxURL'      => ajax_url(),
+			'site_url'     => site_url(),
+			'token_name'   => config_item('csrf_token_name'),
+			'token_cookie' => config_item('csrf_cookie_name'),
+			'lang'         => get_instance()->lang->lang_lists(get_instance()->session->language),
 		);
 
 		// Generic language lines.
@@ -133,9 +136,9 @@ class Admin_theme
 
 		$output .= '<script type="text/javascript">';
 		$output .= 'var cg = window.cg = window.cg || {};';
-		$output .= ' cg.config = '.json_encode($config).';';
-		$output .= ' cg.i18n = cg.i18n || {};';
-		$output .= ' cg.i18n.default = '.json_encode($lines).';';
+		$output .= 'cg.config = '.json_encode($config).';';
+		$output .= 'cg.i18n = cg.i18n || {};';
+		$output .= 'cg.i18n.default = '.json_encode($lines).';';
 		$output .= '</script>';
 
 		return $output;

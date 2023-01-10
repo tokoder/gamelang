@@ -21,8 +21,8 @@ defined('BASEPATH') OR exit('No direct script access allowed');
  * @category 	Libraries
  * @author		Tokoder Team
  */
-class CG_URI extends CI_URI {
-
+class CG_URI extends CI_URI
+{
 	/**
 	 * Class constructor
 	 *

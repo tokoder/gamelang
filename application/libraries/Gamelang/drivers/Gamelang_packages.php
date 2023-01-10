@@ -33,142 +33,142 @@ class Gamelang_packages extends CI_Driver
 	 */
 	public function initialize()
 	{
-		log_message('info', 'Gamelang_packages Class Initialize');
-
 		// Register the action after controller constructor.
 		add_action('post_controller_constructor', array($this, '_load_packages'));
+
+		log_message('info', 'Gamelang_packages Class Initialize');
 	}
 
 	// ------------------------------------------------------------------------
 
 	/**
-	 * Returns details about the selected plugin.
+	 * Activate the selected package.
 	 * @access 	public
-	 * @param 	string 	$name 	The plugin's name.
-	 * @return 	array if found, else false.
-	 */
-	public function get_package($name)
-	{
-		$packages = $this->ci->router->list_packages();
-		return (isset($packages[$name])) ? $packages[$name] : false;
-	}
-
-	// ------------------------------------------------------------------------
-
-	/**
-	 * Activate the selected plugin.
-	 * @access 	public
-	 * @param 	string 	$name 	The plugin's folder name.
+	 * @param 	string 	$name 	The package's folder name.
 	 * @return 	boolean
 	 */
 	public function activate($name)
 	{
-		$packages       = $this->ci->router->list_packages();
-		$active_packages = $this->ci->router->get_package_active();
+		$packages = $this->ci->router->list_packages();
+		$active = $this->ci->router->active_packages();
 
 		if (is_array($name))
 		{
 			foreach ($name as $i => $p)
 			{
-				if ( ! isset($packages[$p]) OR in_array($p, $active_packages))
+				// package don't exists or already enabled? Nothing to do...
+				if ( ! isset($packages[$p]) OR in_array($p, $active))
 				{
 					continue;
 				}
 
 				// Include their main file if found.
-				$file = $packages[$p]['full_path']."main.php";
+				$file = $packages[$p]."main.php";
 				require_once($file);
 
-				// Do the action related to each plugin.
+				// Fire the "package_activate_{folder}" action.
 				do_action('package_activate_'.$p);
-				$active_packages[] = $p;
+
+				// Add it to active packages and update database.
+				$active[] = $p;
 			}
 
-			return $this->_set_packages($active_packages);
+			return $this->_set_packages($active);
 		}
 
-		if (isset($packages[$name]) && ! in_array($name, $active_packages))
+		// package don't exists or already enabled? Nothing to do...
+		if ( ! isset($packages[$name]) OR in_array($name, $active))
 		{
-			// Include their main file if found.
-			$file = $packages[$name]['full_path']."main.php";
-			require_once($file);
-
-			// Do the action related to each plugin.
-			do_action('package_activate_'.$name);
-
-			$active_packages[] = $name;
-			return $this->_set_packages($active_packages);
+			return false;
 		}
 
-		return false;
+		// Include their main file if found.
+		$file = $packages[$name]."main.php";
+		require_once($file);
+
+		// Fire the "package_activate_{folder}" action.
+		do_action('package_activate_'.$name);
+
+		// Add it to active packages and update database.
+		$active[] = $name;
+
+		return $this->_set_packages($active);
 	}
 
 	// ------------------------------------------------------------------------
 
 	/**
-	 * Deactivate the selected plugin.
+	 * Deactivate the selected package.
 	 * @access 	public
-	 * @param 	string 	$name 	The plugin's folder name.
+	 * @param 	string 	$name 	The package's folder name.
 	 * @return 	boolean
 	 */
 	public function deactivate($name)
 	{
-		$packages        = $this->ci->router->list_packages();
-		$active_packages = $this->ci->router->get_package_active();
+		$packages = $this->ci->router->list_packages();
+		$active = $this->ci->router->active_packages();
 
 		if (is_array($name))
 		{
 			foreach ($name as $i => $p)
 			{
+				// The package must exists and must be enabled to proceed.
 				if ( ! isset($packages[$p])
-					OR ! in_array($p, $active_packages)
-					OR false === ($key = array_search($p, $active_packages)))
+					OR ! in_array($p, $active)
+					OR false === ($key = array_search($p, $active)))
 				{
 					continue;
 				}
 
 				// Include their main file if found.
-				$file = $packages[$p]['full_path']."main.php";
+				$file = $packages[$p]."main.php";
 				require_once($file);
 
+				// Fire the "package_deactivate_{folder}" action.
 				do_action('package_deactivate_'.$p);
-				unset($active_packages[$key]);
+
+				// we use the $i (index) to remove the package.
+				unset($active[$key]);
 			}
 
-			return $this->_set_packages($active_packages);
+			return $this->_set_packages($active);
 		}
 
-		if (isset($packages[$name])
-			&& in_array($name, $active_packages)
-			&& false !== ($key = array_search($name, $active_packages)))
+		// The package must exists and must be enabled to proceed.
+		if ( ! isset($packages[$name])
+			OR ! in_array($name, $active)
+			OR false === ($key = array_search($name, $active)))
 		{
-			// Include their main file if found.
-			$file = $packages[$name]['full_path']."main.php";
-			require_once($file);
-
-			do_action('package_deactivate_'.$name);
-			unset($active_packages[$key]);
-			return $this->_set_packages($active_packages);
+			return false;
 		}
 
+		// Include their main file if found.
+		$file = $packages[$name]."main.php";
+		require_once($file);
 
-		return false;
+		// Fire the "package_deactivate_{folder}" action.
+		do_action('package_deactivate_'.$name);
+
+		// we use the $i (index) to remove the package.
+		unset($active[$key]);
+
+		return $this->_set_packages($active);
 	}
 
 	// ------------------------------------------------------------------------
 
 	/**
-	 * Delete the selected plugin.
+	 * Delete the selected package.
 	 *
 	 * @access 	public
-	 * @param 	string 	$name 	The plugin's folder name.
+	 * @param 	string 	$name 	The package's folder name.
 	 * @return 	boolean
 	 */
 	public function delete($name)
 	{
 		// Make sure the packages exists.
-		$packages = $this->ci->router->list_packages(false);
-		$active_packages = $this->ci->router->get_package_active();
+		$packages = $this->ci->router->list_packages();
+		$active = $this->ci->router->active_packages();
 
 		if (is_array($name))
 		{
@@ -183,12 +183,12 @@ class Gamelang_packages extends CI_Driver
 			return true;
 		}
 
-		if ( ! isset($packages[$name]) OR in_array($name, $active_packages))
+		if ( ! isset($packages[$name]) OR in_array($name, $active))
 		{
 			return false;
 		}
 
-		// Proceed to plugin deletion after deactivation.
+		// Proceed to package deletion after deactivation.
 		$this->deactivate($name);
 
 		if (false !== is_dir($packages[$name]))
@@ -200,45 +200,44 @@ class Gamelang_packages extends CI_Driver
 		return true;
 	}
 
-	// -----------------------------------------------------------------------------
+	// ----------------------------------------------------------------------------
 
 	/**
-	 * Returns the full path to the currently active package,
+	 * Returns the URL to the currently active package, whether it's the front-end
+	 * package or the dashboard package.
+	 * @access 	public
+	 * @param 	string 	$uri
+	 * @param 	string 	$protocol
+	 * @return 	string
 	 */
-	public function package_path($uri = '', $package = null)
+	public function package_url($uri = '', $protocol = null, $package = null)
 	{
-		static $path, $cached_paths = array();
+		static $base_url, $_protocol, $cached_uris;
 
 		$package OR $package = $this->ci->router->fetch_package();
 
-		if (is_null($path))
+		if (empty($base_url) OR $_protocol !== $protocol)
 		{
-			$this->ci->load->helper('path');
-			$path = APPPATH.'packages';
-			$path = path_join($path, $package);
+			$_protocol = $protocol;
+			$base_url = path_join(base_url('gamelang/packages', $_protocol), $package);
 		}
 
-		$return = $path;
+		$return = $base_url;
 
 		if ( ! empty($uri))
 		{
-			if ( ! isset($cached_paths[$uri]))
+			if ( ! isset($cached_uris[$uri]))
 			{
-				$return = file_exists($path.'/'.$uri) ? normalize_path($path.'/'.$uri) : false;
-				$cached_paths[$uri] = $return;
+				$cached_uris[$uri] = $return.'/'.$uri;
 			}
 
-			$return = $cached_paths[$uri];
-		}
-		else
-		{
-			$return = file_exists($path) ? normalize_path($path) : false;
+			$return = $cached_uris[$uri];
 		}
 
 		return $return;
 	}
 
-	// -----------------------------------------------------------------------------
+	// ------------------------------------------------------------------------
 
 	/**
 	 * Load all packages in order to do all their actions.
@@ -248,34 +247,35 @@ class Gamelang_packages extends CI_Driver
 	public function _load_packages()
 	{
 		// Get the list of active packages.
-		$packages = $this->ci->router->get_package_active(true);
+		$active = $this->ci->router->active_packages(true);
+		if (empty($active))
+		{
+			return;
+		}
 
 		// Lopp through all packages.
-		if ( ! empty($packages))
+		foreach ($active as $folder => $m)
 		{
-			foreach ($packages as $pack)
+			// package enabled but folder missing? Nothing to do.
+			if ( ! is_dir($m['full_path']))
 			{
-				// package enabled but folder missing? Nothing to do.
-				if ( ! is_dir($pack['full_path']))
-				{
-					continue;
-				}
-
-				// "main.php" not found? Nothing to do.
-				if ( ! is_file($pack['full_path'].'main.php'))
-				{
-					continue;
-				}
-
-				// Include their main file if found.
-				$this->ci->load->add_package_path($pack['full_path']);
-
-				// Include their main file if found.
-				require_once($pack['full_path']."main.php");
-
-				// Do the action related to each plugin.
-				do_action('package_install_'.$pack['folder']);
+				continue;
 			}
+
+			// "main.php" not found? Nothing to do.
+			if ( ! is_file($m['full_path'].'main.php'))
+			{
+				continue;
+			}
+
+			// Include their main file if found.
+			$this->ci->load->add_package_path($m['full_path']);
+
+			// Include their main file if found.
+			require_once($m['full_path']."main.php");
+
+			// We always fire this action.
+			do_action('package_loaded_'.$folder);
 		}
 	}
 
@@ -295,54 +295,10 @@ class Gamelang_packages extends CI_Driver
 			$packages = array_values($packages);
 		}
 
-		// Check if the option exists first.
-		$found = $this->_parent->options->get('active_packages');
-
-		// If found and updated, return TRUE.
-		if ($found && $this->_parent->options->set_item('active_packages', $packages))
+		// Update an option item if it exists or create it if it does not.
+		if ($this->_parent->options->set_item('active_packages', $packages))
 		{
 			return true;
-		}
-
-		// Create it because it was not found.
-		$this->_parent->options->create(
-			'active_packages', $packages, 'packages'
-		);
-		return true;
-	}
-
-	// ------------------------------------------------------------------------
-
-	/**
-	 * Returns TRUE if the selected plugin is valid.
-	 *
-	 * @access 	private
-	 * @param 	string 	$name
-	 * @return 	boolean
-	 */
-	public function _is_valid($name)
-	{
-    	// First, we remove the extension and trim slashes.
-        $class = str_replace('.php', '', trim($name, '/'));
-
-        // Catch the position of the first slash.
-        $first_slash = strpos($class, '/');
-
-        // If there is a slash, proceed.
-        if (FALSE === $first_slash)
-        {
-			// Nothing found?
-			return FALSE;
-        }
-
-		// Get the package and class from $class.
-		$package = substr($class, 0, $first_slash);
-		$class  = substr($class, $first_slash + 1);
-
-		// Make sure the package exits before returning the result.
-		if ($this->ci->router->package_realpath($package) !== FALSE)
-		{
-			return array($package, $class);
 		}
 	}
 }
@@ -355,13 +311,26 @@ if ( ! function_exists('get_package_path'))
 {
 	/**
 	 * Returns the full path to the given package.
-	 *
-	 * @param 	string 	$name 	The package's name.
-	 * @return 	the package's path if found, else false.
 	 */
 	function get_package_path($name = null)
 	{
-		return get_instance()->packages->package_path($name);
+		return get_instance()->router->package_path($name);
+	}
+}
+
+// -----------------------------------------------------------------------------
+
+if ( ! function_exists('get_package_url'))
+{
+	/**
+	 * Returns the URL to the package folder.
+	 * @param   string  $uri    string to be appended.
+	 * @param   string  $protocol
+	 * @return  string.
+	 */
+	function get_package_url($uri = '', $protocol = null, $package = null)
+	{
+		return get_instance()->packages->package_url($uri, $protocol, $package);
 	}
 }
 
@@ -382,6 +351,8 @@ if ( ! function_exists('package_details'))
 	}
 }
 
+// -----------------------------------------------------------------------------
+
 if ( ! function_exists('package_is_active'))
 {
 	/**
@@ -393,5 +364,34 @@ if ( ! function_exists('package_is_active'))
 	function package_is_active($name = null)
 	{
 		return get_instance()->router->is_enabled($name);
+	}
+}
+
+// -----------------------------------------------------------------------------
+
+if ( ! function_exists('is_package'))
+{
+	/**
+	 * Checks if the page belongs to a given package. If no argument is passed,
+	 * it checks if we areusing a package.
+	 * You may pass a single string, multiple comma- separated packages or an array.
+	 */
+	function is_package($packages = null)
+	{
+		$package = get_instance()->router->fetch_package();
+
+		if (null === $packages)
+		{
+			return ($package !== null);
+		}
+
+		if ( ! is_array($packages))
+		{
+			$packages = explode(',', $packages);
+		}
+
+		$packages = array_clean($packages);
+
+		return in_array($package, $packages);
 	}
 }

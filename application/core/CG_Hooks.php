@@ -13,6 +13,8 @@
  */
 defined('BASEPATH') OR exit('No direct script access allowed');
 
+require_once(APPPATH.'libraries/CG_Hooks.php');
+
 /**
  * CG_Hooks Class
  *
@@ -22,8 +24,6 @@ defined('BASEPATH') OR exit('No direct script access allowed');
  * @category 	Core
  * @author		Tokoder Team
  */
-require_once(APPPATH.'libraries/CG_Hooks.php');
-
 class CG_Hooks extends CI_Hooks
 {
 	/**
@@ -32,7 +32,38 @@ class CG_Hooks extends CI_Hooks
 	 */
 	public function __construct()
 	{
-		parent::__construct();
+		$CFG =& load_class('Config', 'core');
+		log_message('info', 'Hooks Class Initialized');
+
+		// If hooks are not enabled in the config file
+		// there is nothing else to do
+		if ($CFG->item('enable_hooks') === FALSE)
+		{
+			return;
+		}
+
+		// Grab the "hooks" definition file.
+		$file = 'hooks';
+		foreach (array($file, ENVIRONMENT.DIRECTORY_SEPARATOR.$file, 'gamelang'.DIRECTORY_SEPARATOR.$file) as $location)
+		{
+			$file_path = APPPATH.'config/'.$location.'.php';
+
+			if ( ! file_exists($file_path))
+			{
+				continue;
+			}
+
+			include($file_path);
+		}
+
+		// If there are no hooks, we're done.
+		if ( ! isset($hook) OR ! is_array($hook))
+		{
+			return;
+		}
+
+		$this->hooks =& $hook;
+		$this->enabled = TRUE;
 	}
 
 	// ------------------------------------------------------------------------

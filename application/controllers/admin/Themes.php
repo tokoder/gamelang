@@ -66,7 +66,7 @@ class Themes extends CG_Controller_Admin {
 			$t['actions'] = array();
 
 			// Activation button.
-			if ($folder !== $this->config->item('theme'))
+			if ($folder !== config_item('theme'))
 			{
 				$t['actions'][] = html_tag('a', array(
 					'href' => esc_url(nonce_admin_url(
@@ -77,6 +77,13 @@ class Themes extends CG_Controller_Admin {
 					'class' => 'btn btn-info btn-sm theme-activate me-2',
 					'data-name' => $t['name'],
 				), __('lang_activate'));
+			}
+			else {
+				$t['actions'][] = html_tag('a', array(
+					'href'  => admin_url('themes/settings/'.$folder),
+					'class' => 'btn btn-default btn-xs btn-icon ml-2',
+					'aria-label' => sprintf(__('lang_settings_%s'), $folder),
+				), fa_icon('cogs').__('lang_settings'));
 			}
 
 			// Details button.
@@ -105,9 +112,6 @@ class Themes extends CG_Controller_Admin {
 		{
 			$get   = $theme;
 			$theme = $themes[$theme];
-
-			// Is the theme enabled?
-			$theme['enabled'] = ($get === get_option('theme', 'default'));
 
 			// The theme has a URI?
 			$theme['name_uri'] = $theme['name'];
@@ -191,6 +195,65 @@ class Themes extends CG_Controller_Admin {
 	// ------------------------------------------------------------------------
 
 	/**
+	 * Display theme's settings page.
+	 * @access 	public
+	 * @param 	string 	$theme 	the theme's name.
+	 * @return 	void
+	 */
+	public function settings($theme = null)
+	{
+		// Get the theme first.
+		$theme = $this->themes->get_theme_details($theme);
+
+		// The theme does not exists?
+		if ( ! $theme)
+		{
+			set_alert(__('themes_ERROR_theme_MISSING'), 'error');
+			redirect('admin/themes');
+			exit;
+		}
+
+		// Disabled? It needs to be enabled first.
+		if ( ! $theme['enabled'])
+		{
+			set_alert(__('themes_ERROR_SETTINGS_DISABLED'), 'error');
+			redirect('admin/themes');
+			exit;
+		}
+
+		require_once($theme['full_path'].'/functions.php');
+
+		// It does not have a settings page?
+		if ( ! has_filter('theme_settings_'.$theme['name']))
+		{
+			set_alert(__('themes_ERROR_SETTINGS_MISSING'), 'error');
+			redirect('admin/themes');
+			exit;
+		}
+
+		// Add link to theme's help and donation.
+		if ( ! empty($theme['theme_uri']))
+		{
+			$this->data['page_help'] = $theme['theme_uri'];
+		}
+
+		if ( ! empty($theme['donation_uri']))
+		{
+			$this->data['page_donate'] = $theme['donation_uri'];
+		}
+
+		$this->data['page_title'] = sprintf(__('themes_%s_SETTINGS'), $theme['name']);
+		$this->data['theme']      = $theme;
+
+		// Set page title and render view.
+		$this->themes
+			->set_title($this->data['page_title'])
+			->render($this->data);
+	}
+
+	// ------------------------------------------------------------------------
+
+	/**
 	 * install
 	 *
 	 * Method for installing themes from future server or upload ZIP themes.
@@ -234,7 +297,7 @@ class Themes extends CG_Controller_Admin {
 		// Did the user provide a valid file?
 		if (empty($_FILES['themezip']['name']))
 		{
-			set_alert(__('lang_ERROR_UPLOAD'), 'error');
+			set_alert(__('lang_ERROR_file_not_exists'), 'error');
 			redirect(admin_url('themes/install'));
 			exit;
 		}
@@ -243,14 +306,14 @@ class Themes extends CG_Controller_Admin {
 		$this->load->helper('file');
 		if ( ! function_exists('unzip_file'))
 		{
-			set_alert(__('lang_ERROR_UPLOAD'), 'error');
+			set_alert(__('lang_ERROR_unzip'), 'error');
 			redirect(admin_url('themes/install'));
 			exit;
 		}
 
 		// Load upload library.
 		$this->load->library('upload', array(
-			'upload_path'   => VIEWPATH.'temp/',
+			'upload_path'   => get_upload_path('temp'),
 			'allowed_types' => 'zip',
 		));
 
@@ -258,7 +321,7 @@ class Themes extends CG_Controller_Admin {
 		if (false === $this->upload->do_upload('themezip')
 			OR ! class_exists('ZipArchive', false))
 		{
-			set_alert(__('lang_ERROR_UPLOAD'), 'warning');
+			set_alert($this->upload->display_errors('', ''), 'warning');
 			redirect(admin_url('themes/install'));
 			exit;
 		}
@@ -267,7 +330,7 @@ class Themes extends CG_Controller_Admin {
 		$data = $this->upload->data();
 
 		// Catch the upload status and delete the temporary file anyways.
-		$status = unzip_file($data['full_path'], VIEWPATH.'themes/');
+		$status = unzip_file($data['full_path'], APPPATH.'themes/');
 		@unlink($data['full_path']);
 
 		// Successfully installed?
@@ -299,7 +362,6 @@ class Themes extends CG_Controller_Admin {
 	{
 		$themes = $this->themes->list_themes(true);
 		$db_theme  = $this->options->get('theme');
-		$theme    = $themes[$db_theme->value];
 
 		// Successfully updated?
 		if (false !== $db_theme->update('value', $folder))
@@ -314,12 +376,12 @@ class Themes extends CG_Controller_Admin {
 				}
 			}
 
-			set_alert(sprintf(__('lang_success_activate'), $theme), 'success');
+			set_alert(sprintf(__('lang_success_activate_%s'), $folder), 'success');
 			redirect(admin_url('themes'));
 			exit;
 		}
 
-		set_alert(sprintf(__('lang_error_activate'), $theme), 'error');
+		set_alert(sprintf(__('lang_error_activate_%s'), $folder), 'error');
 		redirect(admin_url('themes'));
 		exit;
 	}
@@ -346,23 +408,22 @@ class Themes extends CG_Controller_Admin {
 			return;
 		}
 
-		$theme = $themes[$folder];
 		unset($themes[$folder]);
 
 		function_exists('directory_delete') OR $this->load->helper('directory');
 
 		if (false !== directory_delete($this->themes->themes_path($folder))
-			&& false !== $themes->update('value', $themes))
+			&& false !== $db_theme->update('value', $folder))
 		{
 			delete_option('theme_images_'.$folder);
 			delete_option('theme_menus_'.$folder);
 
-			set_alert(sprintf(__('lang_success_delete'), $theme['name']), 'success');
+			set_alert(sprintf(__('lang_success_delete_%s'), $folder), 'success');
 			redirect(admin_url('themes'));
 			exit;
 		}
 
-		set_alert(sprintf(__('lang_error_delete'), $theme['name']), 'error');
+		set_alert(sprintf(__('lang_error_delete_%s'), $folder), 'error');
 		redirect(admin_url('themes'));
 		exit;
 	}
@@ -388,8 +449,7 @@ class Themes extends CG_Controller_Admin {
 			'upload'   => __('confirm_UPLOAD'),
 		);
 		$output .= '<script type="text/javascript">';
-		$output .= 'cg.i18n = cg.i18n || {};';
-		$output .= ' cg.i18n.themes = '.json_encode($lines).';';
+		$output .= 'cg.i18n.themes = '.json_encode($lines).';';
 		$output .= '</script>';
 
 		return $output;
@@ -408,13 +468,10 @@ class Themes extends CG_Controller_Admin {
 	 */
 	protected function _subhead()
 	{
-		if ('install' === $this->router->fetch_method())
-		{
-			$this->data['page_title'] = __('lang_add');
+		add_action('admin_subhead', function() {
 
-			// Subhead.
-			add_action('admin_subhead', function() {
-
+			if ('install' === $this->router->fetch_method())
+			{
 				// Upload theme button.
 				echo html_tag('button', array(
 					'role' => 'button',
@@ -424,20 +481,21 @@ class Themes extends CG_Controller_Admin {
 				), fa_icon('upload').__('lang_upload'));
 
 				// Back button.
-				$this->_btn_back('themes');
-
-			});
-		}
-		else
-		{
-			add_action('admin_subhead', function() {
+				$this->_btn_back();
+			}
+			elseif ('index' === $this->router->fetch_method())
+			{
 				// Add theme button.
 				echo html_tag('a', array(
 					'href' => admin_url('themes/install'),
 					'class' => 'btn btn-success btn-sm btn-icon'
 				), fa_icon('plus-circle').__('lang_add'));
-			});
-		}
+			}
+			else {
+				// Back button.
+				$this->_btn_back();
+			}
+		});
 	}
 
 }

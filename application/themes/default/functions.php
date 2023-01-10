@@ -35,6 +35,10 @@ class Default_theme {
 		// Let's first change paths to layouts, partials and views.
 		$this->set_views_paths();
 
+		// Add IE8 support.
+		add_filter( 'extra_head', array( $this, 'globals' ), 0 );
+		add_filter( 'extra_head', array( $this, 'extra_head' ), 99 );
+
 		// Register theme menus.
 		add_action( 'theme_menus', array( $this, 'theme_menus' ) );
 
@@ -47,21 +51,11 @@ class Default_theme {
 		// Add some meta tags.
 		add_action( 'enqueue_meta', array( $this, 'enqueue_meta' ) );
 
-		// Add IE8 support.
-		add_filter( 'extra_head', array( $this, 'extra_head' ) );
-
 		// Partials enqueue for caching purpose.
 		add_action( 'enqueue_partials', array( $this, 'enqueue_partials' ) );
 
-		// Theme layout manager.
-		add_filter( 'theme_layout', array( $this, 'theme_layout' ) );
-
 		// pagination
 		add_filter( 'pagination', array( $this, 'pagination' ) );
-
-		// class
-		add_filter( 'html_class', array( $this, 'html_class' ) );
-		add_filter( 'body_class', array( $this, 'body_class' ) );
 	}
 
 	// ------------------------------------------------------------------------
@@ -144,13 +138,48 @@ class Default_theme {
 
 		add_script('assets/vendor/jquery/jquery.js');
 		add_script('assets/vendor/bootstrap/js/bootstrap.bundle.js');
+	}
+
+	/**
+	 * globals
+	 *
+	 * Method for adding JS global before anything else.
+	 *
+	 * @access 	public
+	 * @param 	string 	$output 	StyleSheets output.
+	 * @return 	void
+	 */
+	public function globals($output)
+	{
+		$config = array(
+			'ajaxURL'      => ajax_url(),
+			'site_url'     => site_url(),
+			'token_name'   => config_item('csrf_token_name'),
+			'token_cookie' => config_item('csrf_cookie_name'),
+		);
 
 		$output = '<script>';
-		$output .= 'var site_url = "'.site_url().'";';
-		$output .= 'var token_name = "'.config_item('csrf_token_name').'";';
-		$output .= 'var token_cookie = "'.config_item('csrf_cookie_name').'";';
+		$output .= 'var cg = window.cg = window.cg || {};';
+		$output .= 'cg.i18n = cg.i18n || {};';
+		$output .= 'cg.config = '.json_encode($config).';';
 		$output .= '</script>';
-		add_inline('js', $output, true);
+
+		return $output;
+	}
+
+	/**
+	 * extra_head
+	 *
+	 * Method for adding extra stuff to output before closing </head> tag.
+	 *
+	 * @access 	public
+	 * @param 	string 	$output 	The head output.
+	 * @return 	void
+	 */
+	public function extra_head($output)
+	{
+		add_ie9_support($output, (ENVIRONMENT !== 'development'));
+		return $output;
 	}
 
 	/**
@@ -163,16 +192,6 @@ class Default_theme {
 	}
 
 	/**
-	 * Add output before closing </head>
-	 * @access 	public
-	 */
-	public function extra_head( $output ) {
-		// We add support for old browsers.
-		add_ie9_support($output, (ENVIRONMENT !== 'development'));
-		return $output;
-	}
-
-	/**
 	 * We enqueue our partial views so they get cached.
 	 * @access 	public
 	 */
@@ -180,46 +199,6 @@ class Default_theme {
 		add_partial( 'header' );
 		add_partial( 'sidebar' );
 		add_partial( 'footer' );
-	}
-
-	/**
-	 * Handle our theme layouts.
-	 * @access 	public
-	 * @param 	string 	$layout 	The layout to use.
-	 * @return 	string 	The layout to be used.
-	 */
-	public function theme_layout( $layout ) {
-		// Change layout of Auth controller.
-		if ( is_package( 'users' ) ) {
-			$layout = 'clean';
-		}
-		// In case of admin area.
-		elseif ( is_controller( CG_ADMIN ) ) {
-			return 'admin';
-		}
-
-		// Always return the layout.
-		return $layout;
-	}
-
-	/**
-	 * Handle our body class
-	 * @access 	public
-	 */
-	public function body_class( $class ) {
-		$class[] = 'd-flex flex-column h-100';
-		// Always return the layout.
-		return $class;
-	}
-
-	/**
-	 * Handle our html class
-	 * @access 	public
-	 */
-	public function html_class( $class ) {
-		$class[] = 'h-100';
-		// Always return the layout.
-		return $class;
 	}
 
 	// ------------------------------------------------------------------------
@@ -317,11 +296,8 @@ if ( ! function_exists( 'bs_label' )) {
 		return "<span class=\"label label-{$type}\">{$content}</span>";
 	}
 }
+// -----------------------------------------------------------------------------
 
-/**
- * Because the Theme library comes with Bootstrap 4 alert template,
- * we make sure to change the template to use Bootstrap 3 alert.
- */
 add_filter('alert_template', function($output) {
 	$output =<<<EOT
 	<div class="{class} alert-dismissible fade show" role="alert">
@@ -332,10 +308,8 @@ add_filter('alert_template', function($output) {
 	return $output;
 });
 
-/**
- * Because the Theme library comes with Bootstrap 4 alert template,
- * we make sure to change the template to use Bootstrap 3 alert.
- */
+// -----------------------------------------------------------------------------
+
 add_filter('alert_template_js', function($output) {
 	$output =<<<EOT
 	'<div class="{class} alert-dismissible fade show" role="alert">

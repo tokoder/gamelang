@@ -13,6 +13,8 @@
  */
 defined('BASEPATH') OR exit('No direct script access allowed');
 
+require APPPATH . "third_party/carbon/vendor/autoload.php";
+
 /**
  * Gamelang date Helpers
  *

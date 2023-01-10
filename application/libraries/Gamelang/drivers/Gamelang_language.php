@@ -33,6 +33,8 @@ class Gamelang_language extends CI_Driver
 	 */
 	public function initialize()
 	{
+		$this->ci->load->helper('language');
+
 		// Dapatkan daftar semua detail bahasa terlebih dahulu.
 		$languages = $this->ci->lang->lang_lists($this->ci->config->item('languages'));
 

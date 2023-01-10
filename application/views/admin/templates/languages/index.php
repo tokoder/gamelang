@@ -13,7 +13,7 @@
  */
 defined('BASEPATH') OR exit('No direct script access allowed');
 
-add_script('language.js');
+add_script(get_theme_path('assets/js/language.js'));
 
 echo '<div class="table-responsive-sm">',
 	'<table class="table table-striped table-hover mb-0">',

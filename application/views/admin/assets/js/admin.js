@@ -1,20 +1,12 @@
 (function ($, window, document, undefined) {
     "use strict";
 
-    // Prepare globals.
-    var cg = window.cg = window.cg || {};
-    cg.i18n = cg.i18n || {};
-
     /**
      * Different packages.
      */
     cg.languages = cg.languages || {};
     cg.packages = cg.packages || {};
     cg.themes = cg.themes || {};
-    cg.i18n.languages = cg.i18n.languages || {};
-    cg.i18n.packages = cg.i18n.packages || {};
-    cg.i18n.themes = cg.i18n.themes || {};
-
     /**
      * BootBox default configuration.
      */
@@ -185,6 +177,32 @@
                         this.removeAttribute("data-src");
                     };
                 }
+            }
+        },
+
+        initSummerNote: function(ids) {
+            for(var i = 0; i < ids.length; i++){
+                ! function(o) {
+                    "use strict";
+                    var e = function() {
+                        this.$body = o("body")
+                    };
+                    e.prototype.init = function() {
+                        o(ids[i]).summernote({
+                            placeholder: "",
+                            height: 200,
+                            callbacks: {
+                                onInit: function(e) {
+                                    o(e.editor).find(".custom-control-description").addClass("custom-control-label").parent().removeAttr("for")
+                                },
+                            },
+                        });
+                    }, o.Summernote = new e, o.Summernote.Constructor = e
+                }(window.jQuery),
+                function(o) {
+                    "use strict";
+                    o.Summernote.init()
+                }(window.jQuery);
             }
         }
     };

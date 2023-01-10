@@ -686,9 +686,6 @@ class Gamelang_users extends CI_Driver implements Gamelang_crud_interface
 			return false;
 		}
 
-		// Load users language file.
-		$this->ci->load->library('email');
-
 		// User successfully created?
 		if (false === ($guid = $this->create($data)))
 		{
@@ -827,7 +824,6 @@ class Gamelang_users extends CI_Driver implements Gamelang_crud_interface
 		{
 			// TODO: Log the activity.
 			log_activity($user->id, 'Requested new activation link.');
-			$this->ci->load->library('email');
 
 			$this->_parent->send_email(
 				$user,
@@ -902,7 +898,6 @@ class Gamelang_users extends CI_Driver implements Gamelang_crud_interface
 		{
 			// TODO: Log the activity.
 			log_activity($user->id, 'Restored account.');
-			$this->ci->load->library('email');
 
 			$this->_parent->send_email(
 				$user,
@@ -1010,7 +1005,6 @@ class Gamelang_users extends CI_Driver implements Gamelang_crud_interface
 		{
 			// TODO: Log the activity.
 			log_activity($user->id, 'Request password reset.');
-			$this->ci->load->library('email');
 
 			$this->_parent->send_email(
 				$user,
@@ -1104,7 +1098,6 @@ class Gamelang_users extends CI_Driver implements Gamelang_crud_interface
 		{
 			// TODO: Log the activity.
 			log_activity($user->id, 'Reset password.');
-			$this->ci->load->library('email');
 
 			$this->_parent->send_email(
 				$guid,
@@ -1176,7 +1169,6 @@ class Gamelang_users extends CI_Driver implements Gamelang_crud_interface
 		{
 			// TODO: Log the activity.
 			log_activity($user->id, 'Activated account.');
-			$this->ci->load->library('email');
 
 			$this->_parent->send_email(
 				$user,
@@ -1346,29 +1338,6 @@ class Gamelang_users extends CI_Driver implements Gamelang_crud_interface
 
 		return $_data;
 	}
-
-	// -----------------------------------------------------------------------------
-	// Permission
-	// -----------------------------------------------------------------------------
-
-    public static function can($permission)
-    {
-		return true;
-    }
-
-	// -----------------------------------------------------------------------------
-
-    public static function in_group($group_name)
-    {
-		return true;
-    }
-
-	// -----------------------------------------------------------------------------
-
-    public static function cannot($permission)
-    {
-		return false;
-    }
 }
 
 // ------------------------------------------------------------------------
@@ -1776,8 +1745,13 @@ if ( ! function_exists('user_avatar')):
 		}
 		elseif ( ! file_exists($avatar_path))
 		{
-			$avatar_url = "https://www.gravatar.com/avatar/{$hash}?r=g&amp;d=mm";
-			($size >= 1) && $avatar_url .= "&amp;s={$size}";
+			$avatar_url = $CI->themes->theme_url("assets/img/user.png");
+			$uri = "http://www.gravatar.com/avatar/".$hash."?d=404";
+			$headers = @get_headers($uri);
+			if ( is_array($headers) && ! preg_match("|200|", $headers[0])){
+				$avatar_url = "https://www.gravatar.com/avatar/{$hash}?r=g&amp;d=mm";
+				($size >= 1) && $avatar_url .= "&amp;s={$size}";
+			}
 		}
 		else
 		{
@@ -1796,6 +1770,72 @@ if ( ! function_exists('user_avatar')):
 		return img($avatar_url, false, $attrs);
 	}
 endif; // End of: user_avatar.
+
+// ------------------------------------------------------------------------
+
+if ( ! function_exists('user_anchor')) :
+	/**
+	 * user_anchor
+	 *
+	 * Function fro generating an HTML anchor for the user's profile page.
+	 *
+	 * @param 	mixed 	$id
+	 * @param 	string 	$title
+	 * @param 	mixed 	$attrs
+	 * @return 	string
+	 */
+	function user_anchor($id = 0, $title = '', $attrs = array())
+	{
+		$user = ($id instanceof CG_User) ? $id : get_user($id);
+
+		if (false === $user)
+		{
+			return null;
+		}
+
+		// No title provided? Use full name.
+		if ('' === $title)
+		{
+			$title = isset($user->full_name) ? $user->full_name  : $user->username;
+		}
+		// Display the avatar?
+		elseif (0 === strpos($title, 'user.avatar') && isset($user->avatar))
+		{
+			$title = (1 === sscanf($title, 'user.avatar.%d', $size))
+				? user_avatar($size, $user->avatar)
+				: user_avatar(50, $user->avatar);
+		}
+		// Any other key?
+		elseif (1 === sscanf($title, 'user.%s', $key) && isset($user->{$key}))
+		{
+			$title = $user->{$key};
+		}
+		// Translatable string?
+		elseif (1 === sscanf($title, 'lang:%s', $line))
+		{
+			$title = __($line);
+		}
+
+		// Add required attributes first.
+		$attributes = array(
+			'href' => site_url($user->username),
+			'data-userid' => $user->id,
+		);
+
+		// Merge all attributes.
+		if (is_array($attrs))
+		{
+			$attributes = array_merge($attributes, $attrs);
+		}
+		else
+		{
+			$attributes = $attrs._stringify_attributes($attributes);
+		}
+
+		// Render the final anchor tag.
+		return html_tag('a', $attributes, $title);
+	}
+endif; // End of: user_anchor.
 
 // ------------------------------------------------------------------------
 
@@ -1905,7 +1945,7 @@ class CG_User
 		 * Allow package or themes define the role used as
 		 * the admin role.
 		 */
-		$admin_role = apply_filters('users_admin_role', 'administrator');
+		$admin_role = apply_filters('users_admin_role', 'admin');
 
 		// Whether the user is an admin or not.
 		$this->data->admin = ($admin_role === $user->subtype);

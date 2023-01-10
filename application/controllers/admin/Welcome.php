@@ -38,24 +38,14 @@ class Welcome extends CG_Controller_Admin
 	public function index()
 	{
 		// EDIT THIS METHOD TO SUIT YOUR NEEDS.
-		add_action('admin_index_stats', array($this, '_stats'), 0);
+		if ($this->auth->is_admin()) {
+			add_action('admin_index_stats', array($this, '_stats'), 0);
+		}
 
 		// Set page title and render view.
 		$this->themes
 			->set_title(__('lang_panel'))
 			->render($this->data);
-	}
-
-    // -----------------------------------------------------------------------------
-
-	/**
-	 * Index Page for this controller.
-	 */
-	public function page_mising()
-	{
-		$this->themes
-			->set_view('welcome/404')
-			->render();
 	}
 
 	// ------------------------------------------------------------------------
@@ -69,6 +59,8 @@ class Welcome extends CG_Controller_Admin
 	 */
 	public function _stats()
 	{
+		$this->load->helper('number');
+
 		$output = '<div class="row">';
 		$output .= '<div class="col-xs-6 col-sm-6 col-md-3">';
 
@@ -77,7 +69,7 @@ class Welcome extends CG_Controller_Admin
 		if ($users_count > 0)
 		{
 			$boxes[] = info_box(
-				$users_count,
+				number_format_short($users_count),
 				__('lang_users'),
 				'users',
 				admin_url('users'),
@@ -90,7 +82,7 @@ class Welcome extends CG_Controller_Admin
 		if ($themes_count > 0)
 		{
 			$boxes[] = info_box(
-				$themes_count,
+				number_format_short($themes_count),
 				__('lang_themes'),
 				'paint-brush',
 				admin_url('themes'),
@@ -103,7 +95,7 @@ class Welcome extends CG_Controller_Admin
 		if ($packages_count > 0)
 		{
 			$boxes[] = info_box(
-				$packages_count,
+				number_format_short($packages_count),
 				__('lang_packages'),
 				'plug',
 				admin_url('packages'),
@@ -112,11 +104,11 @@ class Welcome extends CG_Controller_Admin
 		}
 
 		// Languages count.
-		$langs_count = count($this->config->item('languages'));
+		$langs_count = count(config_item('languages'));
 		if ($langs_count >= 1)
 		{
 			$boxes[] = info_box(
-				$langs_count,
+				number_format_short($langs_count),
 				__('lang_languages'),
 				'globe',
 				admin_url('languages'),

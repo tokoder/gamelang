@@ -13,7 +13,7 @@
  */
 defined('BASEPATH') OR exit('No direct script access allowed');
 
-add_script('reports.js');
+add_script(get_theme_path('assets/js/reports.js'));
 
 echo '<div class="table-responsive-sm">',
 	'<table class="table mb-0 table-hover table-striped">',
@@ -44,7 +44,8 @@ echo '<div class="table-responsive-sm">',
 						html_tag('button', array(
 							'type' => 'button',
 							'data-endpoint' => nonce_ajax_url(
-								CG_ADMIN.'/reports/delete/'.$report->id, 'delete-report_'.$report->id
+								'gamelang/reports/delete/'.$report->id,
+								'delete-report_'.$report->id
 							),
 							'class' => 'btn btn-outline-danger btn-sm btn-icon report-delete',
 						), fa_icon('trash').__('lang_delete')),

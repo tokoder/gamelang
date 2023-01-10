@@ -1,4 +1,4 @@
-<footer class="footer navbar mt-auto bg-light py-0">
+<footer class="footer navbar mt-auto bg-light">
     <div class="container">
         <span class="navbar-text">
             <?php echo anchor('', get_option('site_name')) ?>

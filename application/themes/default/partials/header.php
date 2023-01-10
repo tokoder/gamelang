@@ -2,7 +2,7 @@
 defined('BASEPATH') OR exit('No direct script access allowed');
 ?>
 <header>
-    <nav class="navbar navbar-expand-md navbar-dark fixed-top bg-primary">
+    <nav class="navbar navbar-expand-md navbar-dark bg-primary">
         <div class="container-fluid">
             <?php
             $brand = anchor('', get_option('site_name'), 'class="navbar-brand"');
@@ -33,7 +33,7 @@ defined('BASEPATH') OR exit('No direct script access allowed');
                         <ul class="dropdown-menu">
                             <?php foreach($site_languages as $folder => $lang): ?>
                             <li>
-                            <?php echo anchor('resource/language/'.$folder,
+                            <?php echo anchor('gamelang/lang/'.$folder.'?next='.rawurlencode(uri_string()),
                                 $lang['name_en'].'<small class="text-muted ms-auto">'.$lang['name'].'</small>',
                                 'class="dropdown-item d-flex align-items-center"'
                             ) ?>
@@ -46,15 +46,20 @@ defined('BASEPATH') OR exit('No direct script access allowed');
                     <?php if ($this->auth->online()): ?>
                     <li class="nav-item user-menu dropdown">
                         <a class="nav-link dropdown-toggle" href="#" role="button" data-bs-toggle="dropdown" aria-expanded="false">
-                            <?= $c_user->full_name; ?>
-                            <?= user_avatar(24, $c_user->id, 'class="img-circle"'); ?>
+                            <?= user_avatar(24, $c_user->id, 'class="rounded-circle" height="25"'); ?>
                         </a>
                         <?php
                         $user_menu[] = array(
                             'parent' => NULL,
+                            'id'     => 'dashboard',
+                            'slug'   => config_item('site_admin'),
+                            'name'   => __('lang_dashboard'),
+                        );
+                        $user_menu[] = array(
+                            'parent' => NULL,
                             'id'     => 'profile',
-                            'slug'   => $c_user->admin ? CG_ADMIN : user_url(),
-                            'name'   => __('my_profile'),
+                            'slug'   => 'profile/'.$c_user->username,
+                            'name'   => __('lang_profile'),
                         );
                         $user_menu[] = array(
                             'parent' => NULL,

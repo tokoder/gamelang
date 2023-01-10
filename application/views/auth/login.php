@@ -13,8 +13,6 @@
  */
 defined('BASEPATH') OR exit('No direct script access allowed');
 
-add_script('auth.js');
-
 // Form open tag.
 echo form_open('login', 'id="login"'),
 form_nonce('user-login');
@@ -84,15 +82,26 @@ endif;
  */
 do_action('auth-form-after');
 
+if (ENVIRONMENT == 'development') :
 echo '<div class="form-group mb-3">';
 echo '<div class="list-group">',
-	'<li class="list-group-item disabled">Akun Demo</li>',
+	'<li class="list-group-item list-group-item-secondary">Akun Demo</li>',
 	html_tag('a', array(
-		'href' => 'javascript:void(0)',
-		'onclick'=> 'copy(\'admin\', \'admin123\')',
-		'class' => 'list-group-item list-group-item-action',
-	), __('Admin'));
+			'href' => 'javascript:void(0)',
+			'onclick'=> 'copy(\'administrator\', \'admin123\')',
+			'class' => 'list-group-item d-flex justify-content-between align-items-start list-group-item-action',
+		),
+		html_tag('div', ['class'=>'me-auto'], __('Admin')).
+		html_tag('span', ['class'=>'badge bg-primary'], __('click here'))
+	);
 echo '</div>';
+echo '</div>';
+endif;
+
+// Password field.
+echo '<div class="form-group mb-3">',
+	form_checkbox('remember', 1, FALSE, 'class="form-check-input"'),
+	form_label(__('lang_remember'), 'remember', 'class="form-check-label"');
 echo '</div>';
 
 // Display registration page if enabled.

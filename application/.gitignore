@@ -1,0 +1,25 @@
+# Remove caches file.
+#-------------------------
+cache/captcha/*
+!cache/captcha/fonts
+!cache/captcha/index.html
+
+# Remove configs file.
+#-------------------------
+config/gamelang/encryption_key.php
+
+# Ignore packages files.
+#-------------------------
+packages/*
+!packages/index.html
+
+# Ignore themes files.
+#-------------------------
+themes/*
+!themes/default
+!themes/index.html
+
+# Ignore uploads files.
+#-------------------------
+uploads/*
+!uploads/index.html

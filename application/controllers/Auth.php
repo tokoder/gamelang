@@ -52,42 +52,42 @@ class Auth extends CG_Controller
 	 */
 	public function _remap($method, $params = array())
 	{
-		/**
-		 * Filters the host user.
-		 */
-		$this->host_user = apply_filters('host_user', false);
-		$this->themes->set('host_user', $this->host_user, true);
+		// set layouts.
+		$this->themes->set_theme()->set_layout('auth');
 
 		/**
 		 * If the view does not exists within the theme's folder,
 		 * we make sure to use our default one.
 		 */
-		$this->themes->set_theme()->set_layout('auth');
 		if (false == $this->themes->view_exists())
 		{
-			remove_all_filters();
-			remove_all_actions('enqueue_partials');
+			remove_all_actions('extra_head');
 
 			// Enqueue our assets.
 			add_action( 'extra_head', function ($output) {
 				$config = array(
-					'siteURL'     => site_url(),
-					'tokenName'   => config_item('csrf_token_name'),
-					'tokenCookie' => config_item('csrf_cookie_name'),
+					'site_url'     => site_url(),
+					'token_name'   => config_item('csrf_token_name'),
+					'token_cookie' => config_item('csrf_cookie_name'),
 				);
 				$output .= '<script type="text/javascript">';
-				$output .= 'config = '.json_encode($config).';';
+				$output .= 'var cg = window.cg = window.cg || {};';
+				$output .= 'cg.config = '.json_encode($config).';';
 				$output .= '</script>';
 				return $output;
 			});
 
+			remove_all_actions('after_theme_setup');
+
 			// Enqueue our assets.
 			add_action( 'after_theme_setup', function () {
-				add_styles('assets/vendor/bootstrap/css/bootstrap.min.css');
-				add_styles('assets/vendor/fontawesome-free/css/all.min.css');
+				add_styles('assets/vendor/bootstrap/css/bootstrap.css');
+				add_styles('assets/vendor/fontawesome-free/css/all.css');
 				add_script('assets/vendor/jquery/jquery.js');
 				add_script('assets/vendor/bootstrap/js/bootstrap.bundle.js');
 			});
+
+			remove_all_actions('enqueue_partials');
 
 			// Fixed views and layouts if theme doesn't have theme.
 			add_filter('theme_layouts_path', function($path) {
@@ -102,8 +102,9 @@ class Auth extends CG_Controller
 				return VIEWPATH;
 			});
 
-			// Separated dashboard header and footer to allow different layouts.
+			// Separated footer to allow different layouts.
 			add_partial('footer');
+			add_partial('script');
 		}
 
 		// Call the method.
@@ -207,7 +208,7 @@ class Auth extends CG_Controller
 		{
 			$name = $field;
 			$inputs[$name] = array_merge(
-				$this->config->item($name, 'cg_inputs'),
+				$this->config->item($name, 'inputs'),
 				array( 'value' => set_value($name, $this->input->post($name, false)) )
 			);
 		}
@@ -314,7 +315,7 @@ class Auth extends CG_Controller
 
 		// Prepare form fields.
 		$this->data['identity'] = array_merge(
-			$this->config->item('identity', 'cg_inputs'),
+			$this->config->item('identity', 'inputs'),
 			array('value' => set_value('identity'))
 		);
 
@@ -380,9 +381,9 @@ class Auth extends CG_Controller
 		}
 
 		// Prepare form fields.
-		$this->data['password'] = $this->config->item('password', 'cg_inputs');
+		$this->data['password'] = $this->config->item('password', 'inputs');
 		$this->data['identity'] = array_merge(
-			$this->config->item('identity', 'cg_inputs'),
+			$this->config->item('identity', 'inputs'),
 			array('value' => set_value('identity'))
 		);
 
@@ -482,10 +483,10 @@ class Auth extends CG_Controller
 		}
 
 		// Prepare form fields.
-		$this->data['password'] = $this->config->item('password', 'cg_inputs');
+		$this->data['password'] = $this->config->item('password', 'inputs');
 		$this->data['login_type'] = $login_type;
 		$this->data['login'] = array_merge(
-			$this->config->item($login_type, 'cg_inputs'),
+			$this->config->item($login_type, 'inputs'),
 			array('value' => set_value($login_type))
 		);
 
@@ -571,7 +572,7 @@ class Auth extends CG_Controller
 
 		// Prepare form fields.
 		$this->data['email'] = array_merge(
-			$this->config->item('email', 'cg_inputs'),
+			$this->config->item('email', 'inputs'),
 			array('value' => set_value('email'))
 		);
 
@@ -645,8 +646,8 @@ class Auth extends CG_Controller
 
 		// Prepare form fields.
 		$this->data['code'] = $code;
-		$this->data['npassword'] = $this->config->item('npassword', 'cg_inputs');
-		$this->data['cpassword'] = $this->config->item('cpassword', 'cg_inputs');
+		$this->data['npassword'] = $this->config->item('npassword', 'inputs');
+		$this->data['cpassword'] = $this->config->item('cpassword', 'inputs');
 
 		// Set page title and render view.
 		$this->themes
@@ -654,7 +655,9 @@ class Auth extends CG_Controller
 			->render($this->data);
 	}
 
-	// --------------------------------------------------------------------------------
+	// ------------------------------------------------------------------------
+	// Captcha methods.
+	// ------------------------------------------------------------------------
 
 	/**
 	 * Check captcha.

@@ -61,7 +61,7 @@ class Languages extends CG_Controller_Admin
 		$this->data['language'] = $this->options->item('language');
 
 		// Get site's available languages.
-		$this->data['available_languages'] = $this->config->item('languages') ?: array();
+		$this->data['available_languages'] = config_item('languages') ?: array();
 
 		// Get all languages details.
 		$this->data['languages'] = $this->lang->lang_lists();
@@ -228,7 +228,7 @@ class Languages extends CG_Controller_Admin
 		}
 
 		// Get database languages for later use.
-		$languages = $this->config->item('languages');
+		$languages = config_item('languages');
 		$languages OR $languages = array();
 
 		// Already enabled? Nothing to do..
@@ -280,7 +280,7 @@ class Languages extends CG_Controller_Admin
 		}
 
 		// Get database languages for later use.
-		$languages = $this->config->item('languages');
+		$languages = config_item('languages');
 		$languages OR $languages = array();
 
 		// Already disabled? Nothing to do..
@@ -340,7 +340,7 @@ class Languages extends CG_Controller_Admin
 		ctype_lower($folder) OR $folder = strtolower($folder);
 
 		// Get database languages for later use.
-		$languages = $this->config->item('languages');
+		$languages = config_item('languages');
 		$languages OR $languages = array();
 
 		// If the language is not enabled, we make sure to enable it first.
@@ -387,7 +387,7 @@ class Languages extends CG_Controller_Admin
 	 * @param 	none
 	 * @return	 void
 	 */
-	public function _subhead()
+	protected function _subhead()
 	{
 		add_action('admin_subhead', function () {
 			echo html_tag('span', array(), fa_icon('info-circle text-primary me-1').__('lang_tip'));
@@ -414,8 +414,7 @@ class Languages extends CG_Controller_Admin
 		);
 
 		$output .= '<script type="text/javascript">';
-		$output .= 'cg.i18n = cg.i18n || {};';
-		$output .= ' cg.i18n.languages = '.json_encode($lines).';';
+		$output .= 'cg.i18n.languages = '.json_encode($lines).';';
 		$output .= '</script>';
 		return $output;
 	}

@@ -13,8 +13,6 @@
  */
 defined('BASEPATH') OR exit('No direct script access allowed');
 
-add_script('auth.js');
-
 // Restore tip.
 echo '<p class="mb-3">', __('lang_RESTORE_tip'), '</p>',
 

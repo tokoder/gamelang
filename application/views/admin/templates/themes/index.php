@@ -13,13 +13,13 @@
  */
 defined('BASEPATH') OR exit('No direct script access allowed');
 
-add_script('themes.js');
+add_script(get_theme_path('assets/js/themes.js'));
 
 $theme_item_temp =<<<EOT
 <div class="col-sm-6 col-md-4 theme-item mb-3" id="theme-{folder}" data-name="{name}">
-	<div class="card theme-inner">
+	<div class="card theme-inner h-100">
 		<img src="{screenshot}" alt="{name}" class="theme-screenshot img-fluid" />
-		<div class="theme-caption clearfix p-2">
+		<div class="theme-caption clearfix p-2 mt-auto">
 			<h3 class="theme-title m-0">{name}<span class="theme-action float-end">{actions}</span></h3>
 		</div>
 	</div>

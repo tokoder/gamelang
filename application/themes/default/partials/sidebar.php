@@ -1,5 +1,5 @@
 <div class="position-sticky" style="top: 2rem;">
-	<div class="mb-3 p-4 bg-light rounded">
+	<div class="mb-3">
 		<h4 class="fst-italic">About</h4>
 		<p class="mb-0"><?=get_option('site_description')?></p>
 	</div>
@@ -7,8 +7,8 @@
 	<div class="mb-3">
 		<h4 class="fst-italic">Archives</h4>
 		<ol class="list-unstyled mb-0">
-			<li><a href="#">December 2017</a></li>
-			<li><a href="#">November 2022</a></li>
+			<li><a href="#"><?= date('F Y', strtotime('12/27/17'))?></a></li>
+			<li><a href="#"><?= date('F Y')?></a></li>
 		</ol>
 	</div>
 

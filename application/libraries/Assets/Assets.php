@@ -31,13 +31,13 @@ class Assets extends CI_Driver_Library {
      */
     public $valid_drivers = array('css', 'js');
 
-    protected $assets_dirs  = [FCPATH];
+    protected $cache_dir    = 'cache/';
 
     protected $script_dirs  = 'assets/js/';
 
     protected $style_dirs   = 'assets/css/';
 
-    protected $cache_dir    = 'cache/assets/';
+    protected $assets_dirs  = array();
 
     protected $static_cache = FALSE;
 
@@ -91,7 +91,7 @@ class Assets extends CI_Driver_Library {
 	protected function _delete_cache()
 	{
 		// Prepare the path to to assets folder.
-		$path = realpath(APPPATH . $this->cache_dir);
+		$path = realpath(FCPATH . $this->cache_dir);
 
 		// Let's open the folder to read.
 		if ($handle = opendir($path))
@@ -350,9 +350,9 @@ class Assets extends CI_Driver_Library {
      **/
     private function get_links($type, $assets, $media = NULL)
     {
-        return (ENVIRONMENT == 'development')
-            ? $this->get_combined_link($type, $assets, $media)
-            : $this->get_combined_minified_link($type, $assets, $media);
+        return (ENVIRONMENT !== 'development')
+            ? $this->get_combined_minified_link($type, $assets, $media)
+            : $this->get_combined_link($type, $assets, $media);
     }
 
     // --------------------------------------------------------------------
@@ -372,7 +372,7 @@ class Assets extends CI_Driver_Library {
         // check for cached file
         $filename = $this->get_cache_filename($type, $assets);
         $modified = $this->get_last_modified($type, $assets);
-        $filepath = APPPATH . $this->cache_dir . $filename;
+        $filepath = FCPATH . $this->cache_dir . $filename;
         if ( ! is_file($filepath)
             || ($this->static_cache && $modified) > filemtime($filepath)
         ){
@@ -425,7 +425,7 @@ class Assets extends CI_Driver_Library {
         }
         // check for cached file
         $filename = $this->get_cache_filename($type, $min_assets);
-        $filepath = APPPATH . $this->cache_dir . $filename;
+        $filepath = FCPATH . $this->cache_dir . $filename;
         if ( ! is_file($filepath)
             || ($this->static_cache && $this->get_last_modified($type,$assets) > filemtime($filepath))
         ) {
@@ -460,8 +460,9 @@ class Assets extends CI_Driver_Library {
             if ( ! isset($a['min']))
             {
                 // have we minified this file in the past
-                $min_path = $this->get_minified_path($type, $a['path']);
                 $dir = $this->get_path($a['path'],$type);
+                $min_path = $this->get_minified_path($type, $a['path']);
+                $min_path = str_replace($dir, '', $min_path);
                 if ( ! is_file($dir . $min_path))
                 {
                     // minify the file and write to path
@@ -469,9 +470,11 @@ class Assets extends CI_Driver_Library {
                 }
                 else
                 {
+                    $orig_path = str_replace($dir, '', $a['path']);
+
                     // is the original file newer
-                    $min_info = get_file_info($dir . $min_path);
-                    $orig_info = get_file_info($dir . $a['path']);
+                    $min_info  = get_file_info($dir . $min_path);
+                    $orig_info = get_file_info($dir . $orig_path);
                     if ($orig_info['date'] > $min_info['date'])
                     {
                         // re-minify the file and write to path
@@ -507,18 +510,7 @@ class Assets extends CI_Driver_Library {
         else
         {
             // local path, include original file location
-            $dir = '';
-            if ($pos = strrpos($path, DIRECTORY_SEPARATOR))
-            {
-                // file is in sub-folder
-                $dir = substr($path, 0, $pos + 1);
-                $filename = strrchr($path, DIRECTORY_SEPARATOR);
-            }
-            else
-            {
-                $filename = $path;
-            }
-
+            $filename = $path;
             return strrpos($filename, '.min')
                 ? $filename
                 : substr($filename, 0, strrpos($filename, '.')) . '.min.' . $type;
@@ -539,8 +531,9 @@ class Assets extends CI_Driver_Library {
      **/
     public function minify($type, $path, $min_path)
     {
-        $contents = $this->get_file($path,$type);
-       // ensure we have some content
+        $contents = $this->get_file($path, $type);
+
+        // ensure we have some content
         if ( ! $contents)
         {
             return FALSE;
@@ -579,7 +572,7 @@ class Assets extends CI_Driver_Library {
             if (is_null($this->cache))
             {
                 $this->cache = array();
-                if ($filedata = $this->read_file(APPPATH . $this->cache_dir . 'store.json'))
+                if ($filedata = $this->read_file(FCPATH . $this->cache_dir . 'store.json'))
                 {
                     $this->cache = json_decode($filedata, TRUE);
                 }
@@ -629,7 +622,7 @@ class Assets extends CI_Driver_Library {
 
         // build the store from file
         $store = array();
-        $filedata = $this->read_file(APPPATH . $this->cache_dir . 'store.json');
+        $filedata = $this->read_file(FCPATH . $this->cache_dir . 'store.json');
         if ($filedata)
         {
             $store = json_decode($filedata, TRUE);
@@ -641,7 +634,7 @@ class Assets extends CI_Driver_Library {
 
         // write it back to file
         $filedata = json_encode($store);
-        write_file(APPPATH . $this->cache_dir . 'store.json', $filedata);
+        write_file(FCPATH . $this->cache_dir . 'store.json', $filedata);
     }
 
     // --------------------------------------------------------------------
@@ -662,10 +655,10 @@ class Assets extends CI_Driver_Library {
             // only check local files
             if ( ! filter_var($a['path'], FILTER_VALIDATE_URL))
             {
-                $path = $this->get_file($a['path'], $type);
-                if (is_file($path . $a['path']))
+                $path = normalize_path($this->get_path($a['path'], $type));
+                if (is_file($path))
                 {
-                    $timestamp = max($timestamp, filemtime($path . $a['path']));
+                    $timestamp = max($timestamp, filemtime($path));
                 }
             }
         }
@@ -702,7 +695,7 @@ class Assets extends CI_Driver_Library {
                 $dir = $this->get_path($path,$type);
             }
 
-            $url = base_url('resource/'.$dir . $path);
+            $url = base_url($dir . $path);
             if ($this->static_cache)
             {
                 $url .= '?cache=' . filemtime($dir . $path);
@@ -792,18 +785,16 @@ class Assets extends CI_Driver_Library {
                 return FALSE;
             }
 
-            $path = is_file($path) ? $path : $path . $file;
+            $path = is_file($file) ? $file : $path . $file;
 
             $read_f = $this->read_file($path);
+            $path_f = rtrim(str_replace(normalize_path(APPPATH), 'gamelang/', $path), '/');
 
-            $load_f = rtrim(str_replace(normalize_path(APPPATH), '/resource/', $path), '/');
-            $load_f = rtrim(str_replace(normalize_path(FCPATH), '', $load_f), '/');
-
-            $result = str_replace('../images/',     $load_f.'/../../images/', $read_f);
-            $result = str_replace('../webfonts/',   $load_f.'/../../webfonts/', $result);
-            $result = str_replace('"./font/',       '"'.$load_f.'/../font/', $result);
-            $result = str_replace('"./fonts/',      '"'.$load_f.'/../fonts/', $result);
-            $result = str_replace('(../fonts/',     '('.$load_f.'/../../fonts/', $result);
+            $result = str_replace('url("./' ,   'url("/'.$path_f.'/../',        $read_f);
+            $result = str_replace('url("../',   'url("/'.$path_f.'/../../',     $result);
+            $result = str_replace('url(\'../',  'url(\'/'.$path_f.'/../../',    $result);
+            $result = str_replace('url(../' ,   'url(/'.$path_f.'/../../',      $result);
+            $result = str_replace('url(font',   'url(/'.$path_f.'/../font',     $result);
         }
 
         return $result;
@@ -836,7 +827,7 @@ class Assets extends CI_Driver_Library {
         {
             if (file_exists($package_path . $file))
             {
-                return $package_path .'/'. $file;
+                return $package_path;
             }
 
             $package_path .= '/'.$dir;
@@ -846,21 +837,24 @@ class Assets extends CI_Driver_Library {
             }
         }
 
-        $this->assets_dirs[] = get_theme_path();
-        foreach ($this->assets_dirs as $path)
+        $path = normalize_path(VIEWPATH);
+
+        if (file_exists($path . $file))
         {
-            $path = normalize_path($path);
+            return $path;
+        }
 
-            if (file_exists($path .'/'. $file))
-            {
-                return $path .'/'. $file;
-            }
+        $path .= $dir;
+        if (file_exists($path . $file))
+        {
+            return $path;
+        }
 
-            $path .= '/'.$dir;
-            if (file_exists($path . $file))
-            {
-                return $path;
-            }
+        $path = get_theme_path('/');
+
+        if (False !== strpos($file, (string)$path))
+        {
+            return get_theme_path('/');
         }
 
         return FALSE;

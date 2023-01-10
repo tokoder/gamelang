@@ -74,6 +74,16 @@ class CG_Lang extends CI_Lang
      */
     public function load($langfile, $idiom = '', $return = FALSE, $add_suffix = TRUE, $alt_path = '')
 	{
+		/**
+		 * The only section of the website we language should ALWAYS be
+		 * english is the dashboard login page.
+		 */
+		if (true === get_instance()->router->is_admin()
+			&& 'login' === get_instance()->router->fetch_class())
+		{
+			$idiom = 'english';
+		}
+
         if (is_array($langfile))
 		{
             foreach ($langfile as $value)
@@ -163,6 +173,8 @@ class CG_Lang extends CI_Lang
 		return TRUE;
     }
 
+	// ----------------------------------------------------------------------------
+
 	/**
 	 * Language line
 	 *
@@ -213,6 +225,8 @@ class CG_Lang extends CI_Lang
         return $value;
 	}
 
+	// ----------------------------------------------------------------------------
+
     /**
      * create a language file
      *
@@ -233,6 +247,8 @@ class CG_Lang extends CI_Lang
             log_message('error', 'Could not create lang file: "' . $file . '"');
         }
     }
+
+	// ----------------------------------------------------------------------------
 
     /**
      * add line to language file array
@@ -266,6 +282,8 @@ class CG_Lang extends CI_Lang
             log_message('error', 'Could not edit lang file: "' . $file . '"');
         }
     }
+
+	// ----------------------------------------------------------------------------
 
     /**
      * Returns the current language
@@ -355,8 +373,8 @@ class CG_Lang extends CI_Lang
 		// Not cached? Cache them if found.
 		if (empty($languages))
 		{
-			$languages = $CFG->load('cg_translate', true, true)
-				? $CFG->config['cg_translate']
+			$languages = $CFG->load('translate', true, true)
+				? $CFG->config['translate']
 				: [];
 		}
 
@@ -450,55 +468,5 @@ class CG_Lang extends CI_Lang
 		$this->details = $languages[$current];
 		$CFG->set_item('current_language', $this->details);
 		$CFG->set_item('language', $current);
-	}
-}
-
-// ------------------------------------------------------------------------
-
-if ( ! function_exists('__'))
-{
-    /**
-     * Alias of CG_Lang::line with optional arguments.
-     *
-     * @param 	string 	$line 		the line the retrieve.
-     * @param 	string 	$index 		whether to look under an index.
-     * @param 	string 	$before 	Whether to put something before the line.
-     * @param 	string 	$after 		Whether to put something after the line.
-     * @return 	string
-     */
-    function __($line, $index = '', $before = '', $after = '')
-    {
-        // Shall we translate the before?
-        if ('' !== $before && 1 === sscanf($before, 'lang:%s', $b_line))
-        {
-            $before = __($b_line, $index);
-        }
-
-        // Shall we translate the after?
-        if ('' !== $after && 1 === sscanf($after, 'lang:%s', $a_line))
-        {
-            $after = __($a_line, $index);
-        }
-
-        return $before.get_instance()->lang->line($line, $index).$after;
-    }
-}
-
-// ------------------------------------------------------------------------
-
-if ( ! function_exists('_e'))
-{
-	/**
-	 * Alias of CG_Lang::line with optional arguments.
-	 *
-	 * @param 	string 	$line 		the line the retrieve.
-	 * @param 	string 	$index 		whether to look under an index.
-	 * @param 	string 	$before 	Whether to put something before the line.
-	 * @param 	string 	$after 		Whether to put something after the line.
-	 * @return 	string
-	 */
-	function _e($line, $index = '', $before = '', $after = '')
-	{
-		echo __($line, $index, $before, $after);
 	}
 }
