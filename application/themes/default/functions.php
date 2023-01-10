@@ -132,12 +132,12 @@ class Default_theme {
 	 */
 	public function after_theme_setup()
 	{
-		add_styles('assets/vendor/bootstrap/css/bootstrap.min.css');
-		add_styles('assets/vendor/fontawesome-free/css/all.min.css');
+		add_styles('assets/vendor/bootstrap/css/bootstrap.css');
+		add_styles('assets/vendor/fontawesome-free/css/all.css');
 		add_styles(get_theme_path('style.css'));
 
-		add_script('assets/vendor/jquery/jquery.min.js');
-		add_script('assets/vendor/bootstrap/js/bootstrap.bundle.min.js');
+		add_script('assets/vendor/jquery/jquery.js');
+		add_script('assets/vendor/bootstrap/js/bootstrap.bundle.js');
 	}
 
 	/**

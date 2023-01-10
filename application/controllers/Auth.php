@@ -81,10 +81,10 @@ class Auth extends CG_Controller
 
 			// Enqueue our assets.
 			add_action( 'after_theme_setup', function () {
-				add_styles('assets/vendor/bootstrap/css/bootstrap.min.css');
-				add_styles('assets/vendor/fontawesome-free/css/all.min.css');
-				add_script('assets/vendor/jquery/jquery.min.js');
-				add_script('assets/vendor/bootstrap/js/bootstrap.bundle.min.js');
+				add_styles('assets/vendor/bootstrap/css/bootstrap.css');
+				add_styles('assets/vendor/fontawesome-free/css/all.css');
+				add_script('assets/vendor/jquery/jquery.js');
+				add_script('assets/vendor/bootstrap/js/bootstrap.bundle.js');
 			});
 
 			remove_all_actions('enqueue_partials');
