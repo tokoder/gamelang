@@ -23,6 +23,7 @@ form_nonce('add-user');
 // Display inputs.
 foreach ($inputs as $name => $input) {
 	echo '<div class="form-group mb-3">',
+	form_label($input['placeholder'], $input['name']),
 	print_input($input, array(
 		'autofocus' => 'autofocus',
 		'class' => 'form-control'.(has_error($name) ? ' is-invalid' : ''),
@@ -34,17 +35,7 @@ foreach ($inputs as $name => $input) {
 echo '<div class="form-group mb-3">',
 // Account status
 form_checkbox('enabled', 1, set_checkbox('enabled', '1', false), 'id="enabled"'),
-html_tag('label', array(
-	'for' => 'enabled',
-), __('lang_active')),
-
-// Account type.
-'<span class="float-end">',
-form_checkbox('admin', 1, set_checkbox('admin', '1', false), 'id="admin"'),
-html_tag('label', array(
-	'for' => 'admin',
-), __('lang_role_admin')),
-'</span>',
+html_tag('label', array('for' => 'enabled'), __('lang_active')),
 '</div>',
 
 // Submit button and cancel.

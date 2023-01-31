@@ -33,200 +33,90 @@ defined('BASEPATH') OR exit('No direct script access allowed');
             <span class="navbar-toggler-icon"></span>
         </button>
         <div class="collapse navbar-collapse" id="navbar-admin">
-			<ul class="navbar-nav me-auto">
-				<?php
-				// 1. Settings dropdown.
-				if ( user_permission('settings') ) {
-					echo '<li class="nav-item dropdown">',
-						html_tag('a', array(
-							'href'        => '#',
-							'class'       => 'nav-link dropdown-toggle',
-							'data-bs-toggle' => 'dropdown',
-						), __('lang_settings')),
-						'<div class="dropdown-menu">';
+			<?php
+			// Settings menu
+			$admin_menu[] = array(
+				'parent'     => NULL,
+				'order'      => 0,
+				'id'         => '_setting_menu',
+				'permission' => 'settings',
+				'slug'       => admin_url('settings'),
+				'name'       => __('lang_settings'),
+			);
 
-							// Global settings.
-							if ($this->auth->is_admin()) {
-								echo admin_anchor(
-									'settings',
-									__('lang_global_settings'),
-									'class="dropdown-item"'
-								);
-							}
+			// users menu
+			$admin_menu[] = array(
+				'parent'     => NULL,
+				'order'      => 2,
+				'id'         => '_user_menu',
+				'permission' => 'users',
+				'slug'       => admin_url('users'),
+				'name'       => __('lang_users'),
+			);
 
-							/**
-							 * Fires inside the settings menu.
-							 */
-							if ( has_action('_setting_menu')) {
-								echo '<div class="dropdown-divider"></div>';
-								do_action('_setting_menu');
-							}
-					// Closing tag (settings menu)
-					echo '</div></li>';
-				}
+			// content menu
+			$admin_menu[] = array(
+				'parent' => NULL,
+				'order'  => 3,
+				'id'     => '_content_menu',
+				'slug'   => admin_url('contents'),
+				'name'   => __('lang_content'),
+			);
 
-				// 2. Users menu.
-				if ( user_permission('users') ) {
-					echo '<li class="nav-item dropdown">',
-						admin_anchor('users', __('users'), array(
-							'class' => 'nav-link dropdown-toggle',
-							'data-bs-toggle' => 'dropdown',
-						)),
-						'<div class="dropdown-menu">',
-							// Manage users.
-							html_tag('a', array(
-								'href'  => admin_url('users'),
-								'class' => 'dropdown-item',
-							), __('lang_users_manage'));
+			// admin menu
+			$admin_menu[] = array(
+				'parent'     => NULL,
+				'order'      => 4,
+				'id'         => '_admin_menu',
+				'permission' => 'components',
+				'slug'       => admin_url('components'),
+				'name'       => __('lang_components'),
+			);
 
-							/**
-							 * Fires inside users menu.
-							 */
-							if ( has_action('_user_menu')) {
-								echo '<div class="dropdown-divider"></div>';
-								do_action('_user_menu');
-							}
-					// Closing tag (users menu).
-					echo '</div></li>';
-				}
+			// Extensions menu.
+			$admin_menu[] = array(
+				'parent'     => NULL,
+				'order'      => 5,
+				'id'         => '_extensions_menu',
+				'permission' => 'extension',
+				'slug'       => admin_url('extensions'),
+				'name'       => __('lang_extensions'),
+			);
 
-				/**
-				 * Fires right after users dropdown menu.
-				 */
-				do_action('_admin_navbar');
+			// Reports menu.
+			$admin_menu[] = array(
+				'parent'     => NULL,
+				'order'      => 6,
+				'id'         => '_report_menu',
+				'permission' => 'reports',
+				'slug'       => admin_url('reports'),
+				'name'       => __('lang_reports'),
+			);
 
-				// 3. Display menu for packages with content controller.
-				if ( has_action('_content_menu')) {
-					// Menu opening tag.
-					echo '<li class="nav-item dropdown">',
-					html_tag('a', array(
-						'href' => '#',
-						'class'       => 'nav-link dropdown-toggle',
-						'data-bs-toggle' => 'dropdown',
-					), __('lang_content')),
-					'<div class="dropdown-menu">';
-
-					// Do the actual action.
-					do_action('_content_menu');
-
-					// Menu closing tag.
-					echo '</div></li>';
-				}
-
-				// 4. Display menu for packages with admin controller.
-				if ( has_action('_admin_menu')) {
-					// Menu opening tag.
-					echo '<li class="nav-item dropdown">',
-					html_tag('a', array(
-						'href' => '#',
-						'class' => 'nav-link dropdown-toggle',
-						'data-bs-toggle' => 'dropdown',
-					), __('lang_components')),
-					'<div class="dropdown-menu">';
-
-					// Do the actual action.
-					do_action('_admin_menu');
-
-					// Menu closing tag.
-					echo '</div></li>';
-				}
-
-				// 5. Extensions menu.
-				if ( user_permission('extensions') ) {
-					echo '<li class="nav-item dropdown">',
-						html_tag('a', array(
-							'href' => '#',
-							'class' => 'nav-link dropdown-toggle',
-							'data-bs-toggle' => 'dropdown',
-						), __('lang_extensions')),
-						'<div class="dropdown-menu">',
-						admin_anchor('packages', __('lang_packages'), 'class="dropdown-item"'),
-						admin_anchor('themes', __('lang_themes'), 'class="dropdown-item"'),
-						admin_anchor('languages', __('lang_languages'), 'class="dropdown-item"');
-					// Closing tag (extensions menu).
-					echo '</div></li>';
-				}
-
-				// 6. Display menu for packages with reports controller.
-				if ( has_action('_report_menu')) {
-					// Menu opening tag.
-					echo '<li class="nav-item dropdown">',
-					html_tag('a', array(
-						'href' => '#',
-						'class'       => 'nav-link dropdown-toggle',
-						'data-bs-toggle' => 'dropdown',
-					), __('lang_reports')),
-					'<div class="dropdown-menu">';
-
-					echo admin_anchor('reports', __('manage_reports'), 'class="dropdown-item"'),
-					'<div class="dropdown-divider"></div>';
-
-					// Do the actual action.
-					do_action('_report_menu');
-
-					'</div></li>';
-				} elseif ( $this->auth->is_admin() ) {
-					echo html_tag('li', array(
-						'class' => 'nav-item dropdown',
-					), admin_anchor('reports', __('lang_reports'), 'class="nav-link"'));
-				}
-
-				// 7. Help menu.
-				echo '<li class="nav-item dropdown">';
-					echo html_tag('a', array(
-						'href'        => '#',
-						'class'       => 'nav-link dropdown-toggle',
-						'data-bs-toggle' => 'dropdown',
-					), __('lang_help')),
-					'<div class="dropdown-menu">',
-						// System Information
-						admin_anchor(
-							'about',
-							__('lang_about'),
-							'class="dropdown-item"'
-						);
-
-						// documentation.
-						$wiki_url = apply_filters('wiki_url', 'https://github.com/tokoder/gamelang/wiki');
-						if ( ! empty($wiki_url)) {
-							echo html_tag('a', array(
-								'href' => $wiki_url,
-								'class' => 'dropdown-item'.(ENVIRONMENT !== 'production' ? '': ' disabled'),
-								'target' => '_blank',
-							), __('lang_documentation'));
-						}
-
-						// Display packages with "Help.php" controllers.
-						if ( has_action('_help_menu')) {
-							echo '<div class="dropdown-divider"></div>';
-							do_action('_help_menu');
-						}
-
-						echo '<div class="dropdown-divider"></div>',
-
-						// Link to extensions page.
-						html_tag('a', array(
-							'href' => 'javascript:void(0)',
-							'class' => 'dropdown-item disabled',
-						), __('lang_extensions')),
-
-						// Link to translations page.
-						html_tag('a', array(
-							'href' => 'javascript:void(0)',
-							'class' => 'dropdown-item disabled',
-						), __('lang_translations')),
-
-						// Link to shop page.
-						html_tag('a', array(
-							'href' => 'javascript:void(0)',
-							'class' => 'dropdown-item disabled',
-						), __('lang_shop'));
-
-				// Menu closing tag.
-				echo '</div></li>';
-				?>
-			</ul>
-			<ul class="navbar-nav">
+			// Helps menu.
+			$admin_menu[] = array(
+				'parent' => NULL,
+				'order'  => 7,
+				'id'     => '_help_menu',
+				'slug'   => admin_url('help'),
+				'name'   => __('lang_help'),
+			);
+            $this->menus->set_divided_items(apply_filters('_admin_menu_divided', []));
+			$this->menus->set_items(apply_filters('_admin_menu', $admin_menu));
+			echo $this->menus->render(array(
+				'nav_tag_open'        => '<ul class="nav navbar-nav">',
+				'parentl1_tag_open'   => '<li class="nav-item dropdown">',
+				'parentl1_anchor'     => '<a class="nav-link dropdown-toggle" data-bs-toggle="dropdown" href="%s">%s</a>',
+				'parent_tag_open'     => '<li class="nav-item dropdown">',
+				'parent_anchor'       => '<a class="dropdown-item dropdown-toggle" href="%s" data-bs-toggle="dropdown">%s</a>',
+				'item_tag_open'       => '<li class="nav-item">',
+				'item_anchor'         => '<a href="%s" class="nav-link">%s</a>',
+				'item_divider'        => '<li><hr class="dropdown-divider"></li>',
+				'children_tag_open'   => '<ul class="dropdown-menu">',
+				'children_anchor'     => '<a href="%s" class="dropdown-item">%s</a>',
+			));
+			?>
+			<ul class="navbar-nav ms-auto">
 				<?php
 				/**
 				 * Fires right after users dropdown menu.
@@ -241,63 +131,62 @@ defined('BASEPATH') OR exit('No direct script access allowed');
 						'href' => '#',
 						'class' => 'nav-link dropdown-toggle',
 						'data-bs-toggle' => 'dropdown',
-					), $current_language['name']),
+					), fa_icon('language').$current_language['name']),
 					'<div class="dropdown-menu dropdown-menu-lg dropdown-menu-end text-small shadow">';
 
 					// Language list.
 					foreach ($site_languages as $folder => $lang) {
 						echo html_tag('a', array(
-							'href' => 'gamelang/lang/'.$folder.'?next='.current_url(),
+							'href' => site_url('gamelang/lang/'.$folder.'?next='.current_url()),
 							'class' => 'dropdown-item',
 						), $lang['name_en'].html_tag('span', array(
 							'class' => 'text-muted float-end'
-						), $lang['name']));
+						), $lang['flag']));
 					}
 					unset($lang);
 
 					echo '</div></li>';
-				} else {
-					echo '<li id="lang-dropdown"></li>';
 				}
-
-				// 2. View site anchor.
-				echo html_tag('li', array(
-					'class' => 'nav-item view-site'
-				), html_tag('a', array(
+				?>
+			</ul>
+			<div class="navbar-nav-wrap mt-3 mt-sm-0 ms-sm-2">
+				<?php
+				// View site anchor.
+				echo html_tag('a', array(
 					'href'   => site_url(),
 					'target' => '_blank',
-					'class'  => 'nav-link',
-				), __('lang_view_site').fa_icon('external-link ms-1')));
+					'class'  => 'btn btn-light view-site me-2',
+				), fa_icon('external-link').__('lang_view_site'));
 
-				// 3. User dropdown.
-				echo '<li class="nav-item dropdown user-menu">',
+				// User dropdown.
+				echo '<div class="dropdown user-menu d-inline-block">',
 
-					html_tag('a', array(
-						'href'           => '#',
-						'class'          => 'nav-link dropdown-toggle',
-						'data-bs-toggle' => 'dropdown',
-					), fa_icon('user'));
+					anchor('#', user_avatar(35, $c_user->id, 'class="rounded-circle border border-3"'), 'data-bs-toggle="dropdown"');
 
 					$user_menu[] = array(
 						'parent' => NULL,
+						'order'  => 2,
 						'id'     => 'profile',
 						'slug'   => 'profile/'.$c_user->username,
 						'name'   => __('lang_profile'),
 					);
 					$user_menu[] = array(
 						'parent' => NULL,
+						'order'  => 3,
 						'id'     => 'settings',
 						'slug'   => 'settings',
 						'name'   => __('update_profile'),
 					);
 					$user_menu[] = array(
 						'parent' => NULL,
+						'order'  => 4,
 						'id'     => 'change_password',
 						'slug'   => 'settings/change-password',
 						'name'   => __('change_password')
 					);
 					$user_menu[] = array(
 						'parent' => NULL,
+						'order'  => 99,
 						'id'     => 'logout',
 						'slug'   => 'logout',
 						'name'   => __('lang_logout'),
@@ -310,15 +199,15 @@ defined('BASEPATH') OR exit('No direct script access allowed');
 					], ['logout'], '<li class="dropdown-divider"></li>');
 
 				// Closing tag (right menu).
-				echo '</li>';
+				echo '</div>';
 				?>
-			</ul>
+			</div>
         </div>
     </div>
 </nav>
 
-<header class="header bg-light border-bottom" id="header" role="banner">
-    <div class="container py-2 d-flex justify-content-between align-items-center">
+<header class="header navbar bg-light border-bottom" id="header" role="banner">
+    <div class="container">
         <?php
 		/**
 		 * Fires on page header.
@@ -379,8 +268,7 @@ defined('BASEPATH') OR exit('No direct script access allowed');
 
 			if (isset($package['has_setting'])
 				&& true === $package['has_setting']
-				&& $this->router->fetch_class() !== 'setting'
-				&& user_permission('setting')) {
+				&& strpos($this->router->fetch_directory(), 'setting') == false) {
 				echo html_tag('a', array(
 					'href'  => admin_url('setting/'.$package['folder']),
 					'class' => 'btn btn-secondary btn-sm btn-icon ms-2',
