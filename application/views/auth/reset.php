@@ -22,7 +22,7 @@ form_nonce('user-reset-password_'.$code),
 print_input($npassword, array(
 	'class' => 'form-control'.(has_error('npassword') ? ' is-invalid' : '')
 )),
-form_label(__('lang_new_password')),
+form_label($npassword['placeholder']),
 form_error('npassword', '<div class="form-text invalid-feedback">', '</div>'),
 '</div>',
 
@@ -31,7 +31,7 @@ form_error('npassword', '<div class="form-text invalid-feedback">', '</div>'),
 print_input($cpassword, array(
 	'class' => 'form-control'.(has_error('cpassword') ? ' is-invalid' : '')
 )),
-form_label(__('confirm_password')),
+form_label($cpassword['placeholder']),
 form_error('cpassword', '<div class="form-text invalid-feedback">', '</div>'),
 '</div>';
 
