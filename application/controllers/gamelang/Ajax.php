@@ -74,7 +74,7 @@ class Ajax extends CG_Controller_Ajax
 		if (( ! is_numeric($id) OR $id < 0) )
 		{
 			$this->response->header  = self::HTTP_NOT_ACCEPTABLE;
-			$this->response->message = __('error_nonce_url');
+			$this->response->message = __('This action did not pass our security controls');
 			return;
 		}
 
@@ -146,7 +146,7 @@ class Ajax extends CG_Controller_Ajax
 		if (true !== check_nonce('user-login'))
 		{
 			$this->response->header  = self::HTTP_NOT_ACCEPTABLE;
-			$this->response->message = __('error_nonce_url');
+			$this->response->message = __('This action did not pass our security controls');
 			return;
 		}
 
@@ -161,7 +161,7 @@ class Ajax extends CG_Controller_Ajax
 			$this->response->header  = self::HTTP_OK;
 		}
 		else {
-			$this->response->message = __('lang_ERROR_ACCOUNT_MISSING');
+			$this->response->message = __('This user does not exist.');
 		}
 	}
 }
