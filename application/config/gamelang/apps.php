@@ -10,27 +10,8 @@ $config['site_description'] = 'An open source codeigniter management system.';
 $config['site_keywords']    = 'these, are, site, keywords';
 $config['site_author']      = 'Tokoder Team';
 $config['site_admin']   	= 'admin';
+$config['site_title']       = '';
 $config['site_name']        = 'CodeIgniter Gamelang';
-
-/*
-|--------------------------------------------------------------------------
-| DATABASE settings.
-|--------------------------------------------------------------------------
-*/
-$config['hostname'] = '';
-$config['username'] = '';
-$config['password'] = '';
-$config['database'] = '';
-
-/*
-|--------------------------------------------------------------------------
-| Packages settings.
-|--------------------------------------------------------------------------
-*/
-$config['package_folder'] = 'packages';
-$config['package_locations'] = array(
-	APPPATH.$config['package_folder']
-);
 
 /*
 |--------------------------------------------------------------------------
@@ -64,22 +45,25 @@ $config['login_type']          = 'both';
 | Email settings.
 |--------------------------------------------------------------------------
 */
-$config['contact_email'] = 'admin@localhost';
-$config['mail_protocol'] = 'mail';
 $config['sendmail_path'] = '/usr/sbin/sendmail';
-$config['server_email']  = '';
-$config['smtp_crypto']   = 'none';
-$config['smtp_host']     = '';
-$config['smtp_port']     = '';
-$config['smtp_user']     = '';
-$config['smtp_pass']     = '';
+$config['mail_protocol'] = 'mail';
+$config['mail_address']  = 'noreply@localhost';
+$config['mail_library']  = 'phpmailer';
+$config['smtp_crypto']   = ''; // tls
+$config['smtp_port']     = ''; // 587
+$config['smtp_host']     = ''; // smtp.gmail.com
+$config['smtp_user']     = ''; // yourusername@gmail.com
+$config['smtp_pass']     = ''; // 2-Step Verification, application password
 
 /*
 |--------------------------------------------------------------------------
-| Language settings.
+| Captcha settings.
 |--------------------------------------------------------------------------
 */
-$config['languages'] = array('indonesia');
+$config['recaptcha_private_key'] = '';
+$config['recaptcha_site_key']    = '';
+$config['use_recaptcha']         = false;
+$config['use_captcha']           = false;
 
 /*
 |--------------------------------------------------------------------------
@@ -116,16 +100,6 @@ $config['min']                   = 5;
 
 /*
 |--------------------------------------------------------------------------
-| Captcha settings.
-|--------------------------------------------------------------------------
-*/
-$config['recaptcha_private_key'] = '';
-$config['recaptcha_site_key']    = '';
-$config['use_recaptcha']         = false;
-$config['use_captcha']           = false;
-
-/*
-|--------------------------------------------------------------------------
 | Date and time format.
 |--------------------------------------------------------------------------
 */
@@ -145,3 +119,30 @@ $config['share_urls'] = array(
 	'linkedin'   => 'http://www.linkedin.com/shareArticle?mini=true&amp;url={url}&amp;title={title}&amp;summary={description}&amp;source={site_name}',
 	'twitter'    => 'http://twitter.com/share?url={url}&amp;text={title}&amp;via={site_name}',
 );
+
+/*
+|--------------------------------------------------------------------------
+| DATABASE settings.
+|--------------------------------------------------------------------------
+*/
+$config['hostname'] = '';
+$config['username'] = '';
+$config['password'] = '';
+$config['database'] = '';
+
+/*
+|--------------------------------------------------------------------------
+| Packages settings.
+|--------------------------------------------------------------------------
+*/
+$config['package_folder'] = 'packages';
+$config['package_locations'] = array(
+	APPPATH.$config['package_folder']
+);
+
+/*
+|--------------------------------------------------------------------------
+| Language settings.
+|--------------------------------------------------------------------------
+*/
+$config['languages'] = array('indonesia');
