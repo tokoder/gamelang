@@ -46,6 +46,9 @@ if ( ! function_exists('meta_tag'))
 			return implode("\n\t", $meta);
 		}
 
+		// The tag by default is "meta"
+		$tag = 'meta';
+
 		$attributes = array();
 		switch ($type)
 		{
@@ -56,7 +59,6 @@ if ( ! function_exists('meta_tag'))
 				break;
 
 			case 'itemprop':
-				$tag                = 'meta';
 				$attributes['itemprop']  = $name;
 				$attributes['href'] = $content;
 				break;
@@ -74,14 +76,10 @@ if ( ! function_exists('meta_tag'))
 					return "<base href=\"{$content}\" />";
 				}
 
-				// The tag by default is "meta"
-
-				$tag = 'meta';
-
 				// In case of using Open Graph tags,
 				// we user 'property' instead of 'name'.
 
-				$type = (false !== strpos($name, 'og:')) ? 'property' : 'name';
+				$type OR $type = 'name';
 
 				if ($content === null)
 				{
@@ -118,29 +116,29 @@ if ( ! function_exists('info_box'))
 	 */
 	function info_box($head = null, $text = null, $icon = null, $url = null, $color = 'primary')
 	{
-		$color && $color = ' text-bg-'.$color;
+		$color && $color = 'bg-'.$color;
 
 		// Opening tag.
-		$output = "<div class=\"card {$color}\">";
-		$output .= '<div class="card-body">';
+		$output = "<div class=\"small-box {$color}\">";
 
 		// Info box content.
 		if ($head OR $text)
 		{
-			$head && $output .= '<h3>'.$head.'</h3>';
-			$text && $output .= '<p>'.$text.'</p>';
+			$output .= '<div class="inner">';
+			$output .= '<h3>'.$head.'</h3>';
+			$output .= '<p>'.$text.'</p>';
+			$output .= '</div>';
 		}
 
 		// Add the icon.
-		$icon && $output .= '<div class="icon">'.fa_icon($icon).'</div>';
-		$output .= '</div>';
+		$icon && $output .= '<div class="icon position-absolute top-0 end-0">'.fa_icon($icon).'</div>';
 
 		if ($url)
 		{
 			$output .= html_tag('a', array(
 				'href'  => $url,
-				'class' => 'card-footer',
-			), __('lang_manage').fa_icon('arrow-right-long ms-1'));
+				'class' => 'small-box-footer',
+			), __('lang_manage').'&nbsp;'.fa_icon('arrow-right-long'));
 		}
 
 		// Closing tag.
@@ -253,20 +251,14 @@ if ( ! function_exists('label_condition'))
 
 // ------------------------------------------------------------------------
 
-if ( ! function_exists('fa_icon'))
-{
+if ( ! function_exists( 'fa_icon' ) ) {
 	/**
-	 * fa_icon
-	 *
-	 * Function for generating FontAwesome icons.
-	 *
-	 * @access 	public
-	 * @param 	none
-	 * @return 	void
+	 * Useful to generate a fontawesome icon.
+	 * @param  string $icon the icon to generate.
+	 * @return string       the full FA tag.
 	 */
-	function fa_icon($class = '')
-	{
-		return "<i class=\"fa fa-fw fa-{$class}\"></i>";
+	function fa_icon( $icon = 'user' ) {
+		return "<i class=\"fa fa-{$icon}\"></i>&nbsp;";
 	}
 }
 
