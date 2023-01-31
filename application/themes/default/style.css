@@ -14,26 +14,13 @@ body {
     height: 100%;
 }
 
-/* body {
-    font: 400 14px/24px "Open Sans", sans-serif;
-    height: 100%;
-    background-color: #eee;
-    padding-top: 72px
-} */
-
 .wrapper { margin-bottom: 65px; }
-
-.form-control,
-input,
-textarea {
-    font-family: "Open Sans", sans-serif;
-    font-size: 13px;
-}
 
 .btn {font-size: 1em}
 .user-menu {
     border-left: 1px solid #eee; /* Fallback */
     border-left: 1px solid rgba(255, 255, 255, 0.1);
+    margin-left: 12px;
 }
 
 .user-menu img {
@@ -75,3 +62,19 @@ textarea {
 .padding-bottom-none {padding-bottom: 0}
 .padding-right-none {padding-right: 0}
 .padding-left-none {padding-left: 0}
+
+hr {
+    opacity: 0.5;
+}
+hr.hr-text::before {
+    content: attr(data-content);
+    display: inline-block;
+    background: #fff;
+    font-size: 0.85rem;
+    color: #222;
+    border-radius: 30rem;
+    padding: 0.2rem 1rem;
+    position: absolute;
+    left: 50%;
+    transform: translate(-50%, -50%);
+}
