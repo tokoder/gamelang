@@ -38,7 +38,7 @@ class Auth extends CG_Controller
 		if ($this->auth->online()
 			&& 'logout' !== $this->router->fetch_method())
 		{
-			set_alert(__('ERROR_LOGGED_IN'), 'error');
+			set_alert(__('You are already logged in'), 'error');
 			redirect('');
 			exit;
 		}
@@ -83,6 +83,8 @@ class Auth extends CG_Controller
 			add_action( 'after_theme_setup', function () {
 				add_styles('assets/vendor/bootstrap/css/bootstrap.css');
 				add_styles('assets/vendor/fontawesome-free/css/all.css');
+				add_styles(get_theme_path('style.css'));
+
 				add_script('assets/vendor/jquery/jquery.js');
 				add_script('assets/vendor/bootstrap/js/bootstrap.bundle.js');
 			});
@@ -104,7 +106,6 @@ class Auth extends CG_Controller
 
 			// Separated footer to allow different layouts.
 			add_partial('footer');
-			add_partial('script');
 		}
 
 		// Call the method.
@@ -167,7 +168,7 @@ class Auth extends CG_Controller
 			$rules[] = array(
 				'field' => 'captcha',
 				'label' => 'lang:lang_captcha',
-				'rules' => 'trim|required|callback_check_captcha'
+				'rules' => 'trim|required|check_captcha'
 			);
 		}
 
@@ -178,7 +179,7 @@ class Auth extends CG_Controller
 		{
 			if (true !== check_nonce('user-register'))
 			{
-				set_alert(__('error_csrf'), 'error');
+				set_alert(__('This form did not pass our security controls'), 'error');
 				redirect('register', 'refresh');
 				exit;
 			}
@@ -219,6 +220,7 @@ class Auth extends CG_Controller
 		// Set page title and render view.
 		$this->themes
 			->set_title(__('lang_register'))
+			->set_alert($this->form_validation->validation_errors_list(), 'error')
 			->render($this->data);
 	}
 
@@ -289,18 +291,18 @@ class Auth extends CG_Controller
 			$rules[] = array(
 				'field' => 'captcha',
 				'label' => 'lang:lang_captcha',
-				'rules' => 'trim|required|callback_check_captcha'
+				'rules' => 'trim|required|check_captcha'
 			);
 		}
 
-		$this->prep_form(apply_filters('auth-validation-data', $rules), '#resend');
+		$this->prep_form(apply_filters('resend-validation-data', $rules), '#resend');
 
 		// After form processing.
 		if ($this->form_validation->run() !== false)
 		{
 			if (true !== check_nonce('user-resend-link'))
 			{
-				set_alert(__('error_csrf'), 'error');
+				set_alert(__('This form did not pass our security controls'), 'error');
 				redirect('resend-link', 'refresh');
 				exit;
 			}
@@ -352,11 +354,11 @@ class Auth extends CG_Controller
 			$rules[] = array(
 				'field' => 'captcha',
 				'label' => 'lang:lang_captcha',
-				'rules' => 'trim|required|callback_check_captcha'
+				'rules' => 'trim|required|check_captcha'
 			);
 		}
 
-		$this->prep_form(apply_filters('auth-validation-data', $rules), '#restore');
+		$this->prep_form(apply_filters('restore-validation-data', $rules), '#restore');
 
 		// After form processing.
 		if ($this->form_validation->run() !== false)
@@ -364,7 +366,7 @@ class Auth extends CG_Controller
 			// Check CSRF token.
 			if ( ! check_nonce('user-restore'))
 			{
-				set_alert(__('error_csrf'), 'error');
+				set_alert(__('This form did not pass our security controls'), 'error');
 				redirect('restore-account', 'refresh');
 				exit;
 			}
@@ -453,19 +455,19 @@ class Auth extends CG_Controller
 			$rules[] = array(
 				'field' => 'captcha',
 				'label' => 'lang:lang_captcha',
-				'rules' => 'trim|required|callback_check_captcha'
+				'rules' => 'trim|required|check_captcha'
 			);
 		}
 
 		// Prepare form validation and pass rules.
-		$this->prep_form(apply_filters('auth-validation-data', $rules), '#login');
+		$this->prep_form(apply_filters('login-validation-data', $rules), '#login');
 
 		// After form processing!
 		if ($this->form_validation->run() !== false)
 		{
 			if (true !== check_nonce('user-login'))
 			{
-				set_alert(__('error_csrf'), 'error');
+				set_alert(__('This form did not pass our security controls'), 'error');
 				redirect('login');
 				exit;
 			}
@@ -545,11 +547,11 @@ class Auth extends CG_Controller
 			$rules[] = array(
 				'field' => 'captcha',
 				'label' => 'lang:lang_captcha',
-				'rules' => 'trim|required|callback_check_captcha'
+				'rules' => 'trim|required|check_captcha'
 			);
 		}
 
-		$this->prep_form(apply_filters('auth-validation-data', $rules), '#forgot');
+		$this->prep_form(apply_filters('forgot-validation-data', $rules), '#forgot');
 
 		// After the form is processed.
 		if ($this->form_validation->run() !== false)
@@ -557,7 +559,7 @@ class Auth extends CG_Controller
 			// Check nonce.
 			if (true !== check_nonce('user-lost-password'))
 			{
-				set_alert(__('error_csrf'), 'error');
+				set_alert(__('This form did not pass our security controls'), 'error');
 				redirect('lost-password', 'refresh');
 				exit;
 			}
@@ -607,7 +609,7 @@ class Auth extends CG_Controller
 		// The code is invalid?
 		if (false === ($guid = $this->users->check_password_code($code)))
 		{
-			set_alert(__('lang_ERROR_RESET_CODE'), 'error');
+			set_alert(__('This password reset link is no longer valid'), 'error');
 			redirect('');
 			exit;
 		}
@@ -628,7 +630,7 @@ class Auth extends CG_Controller
 			// Check nonce.
 			if (true !== check_nonce('user-reset-password_'.$code, false))
 			{
-				set_alert(__('error_csrf'), 'error');
+				set_alert(__('This form did not pass our security controls'), 'error');
 				redirect('reset-password?code='.$code);
 				exit;
 			}
@@ -653,98 +655,5 @@ class Auth extends CG_Controller
 		$this->themes
 			->set_title(__('reset_password'))
 			->render($this->data);
-	}
-
-	// ------------------------------------------------------------------------
-	// Captcha methods.
-	// ------------------------------------------------------------------------
-
-	/**
-	 * Check captcha.
-	 *
-	 * @access 	public
-	 * @param 	string 	$str 	captcha word
-	 * @return 	bool
-	 */
-	public function check_captcha($str)
-	{
-		// Using Google reCAPTCHA?
-		if (get_option('use_recaptcha', false) === true && ! empty(get_option('recaptcha_site_key', null)))
-		{
-			// Catch reCAPTCHA field.
-			$recaptcha = $this->input->post('g-recaptcha-response');
-
-			// Not set? Set the error message and return false.
-			if (empty($recaptcha))
-			{
-				$this->form_validation->set_message('check_captcha', __('form_validation_required'));
-				return false;
-			}
-
-			$data = array(
-				'secret'   => get_option('recaptcha_private_key'),
-				'remoteip' => $this->input->ip_address(),
-				'response' => $recaptcha,
-			);
-
-			// cURL is enabled?
-			if (function_exists('curl_init'))
-			{
-				$verify = curl_init();
-				curl_setopt($verify, CURLOPT_URL, "https://www.google.com/recaptcha/api/siteverify");
-				curl_setopt($verify, CURLOPT_POST, true);
-				curl_setopt($verify, CURLOPT_POSTFIELDS, http_build_query($data));
-				curl_setopt($verify, CURLOPT_SSL_VERIFYPEER, false);
-				curl_setopt($verify, CURLOPT_RETURNTRANSFER, true);
-				$response = curl_exec($verify);
-			}
-			else
-			{
-				// Prepare the verification URL.
-				$verify_url = 'https://www.google.com/recaptcha/api/siteverify?'.http_build_query($data);
-
-				// Catch response and decode it.
-				$response = file_get_contents($verify_url);
-			}
-
-			// Decode the response.
-			$response = json_decode($response, true);
-
-			// Valid captcha?
-			if (isset($response['success']) && $response['success'] === true)
-			{
-				return true;
-			}
-			// Invalid captcha?
-			else
-			{
-				$this->form_validation->set_message('check_captcha', __('form_validation_required'));
-				return false;
-			}
-		}
-
-		// No captcha set?
-		if (empty($str))
-		{
-			$this->form_validation->set_message('check_captcha', __('form_validation_required'));
-			return false;
-		}
-
-		// Check if the captcha exists or not.
-		$var = $this->variables->get_by(array(
-			'name'          => 'captcha',
-			'BINARY(value)' => $str,
-			'params'        => $this->input->ip_address(),
-		));
-
-		// Not found? Generate the error.
-		if ( ! $var)
-		{
-			$this->form_validation->set_message('check_captcha', __('error_captcha'));
-			return false;
-		}
-
-		// Found?
-		return true;
 	}
 }
