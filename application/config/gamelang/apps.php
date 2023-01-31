@@ -3,6 +3,23 @@ defined('BASEPATH') or exit('No direct script access allowed');
 
 /*
 |--------------------------------------------------------------------------
+| Packages settings.
+|--------------------------------------------------------------------------
+*/
+$config['package_folder'] = 'packages';
+$config['package_locations'] = array(
+	APPPATH.$config['package_folder']
+);
+
+/*
+|--------------------------------------------------------------------------
+| Language settings.
+|--------------------------------------------------------------------------
+*/
+$config['languages'] = array('indonesia');
+
+/*
+|--------------------------------------------------------------------------
 | General settings.
 |--------------------------------------------------------------------------
 */
@@ -119,30 +136,3 @@ $config['share_urls'] = array(
 	'linkedin'   => 'http://www.linkedin.com/shareArticle?mini=true&amp;url={url}&amp;title={title}&amp;summary={description}&amp;source={site_name}',
 	'twitter'    => 'http://twitter.com/share?url={url}&amp;text={title}&amp;via={site_name}',
 );
-
-/*
-|--------------------------------------------------------------------------
-| DATABASE settings.
-|--------------------------------------------------------------------------
-*/
-$config['hostname'] = '';
-$config['username'] = '';
-$config['password'] = '';
-$config['database'] = '';
-
-/*
-|--------------------------------------------------------------------------
-| Packages settings.
-|--------------------------------------------------------------------------
-*/
-$config['package_folder'] = 'packages';
-$config['package_locations'] = array(
-	APPPATH.$config['package_folder']
-);
-
-/*
-|--------------------------------------------------------------------------
-| Language settings.
-|--------------------------------------------------------------------------
-*/
-$config['languages'] = array('indonesia');
