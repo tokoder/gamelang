@@ -682,7 +682,7 @@ class Gamelang_users extends CI_Driver implements Gamelang_crud_interface
 		// No data provided? Nothing to do...
 		if (empty($data))
 		{
-			set_alert(__('ERROR_FIELDS_REQUIRED'), 'error');
+			set_alert(__('All fields are required.'), 'error');
 			return false;
 		}
 
@@ -690,7 +690,7 @@ class Gamelang_users extends CI_Driver implements Gamelang_crud_interface
 		if (false === ($guid = $this->create($data)))
 		{
 			// Other wise, an error occurred.
-			set_alert(__('lang_ERROR_CREATE'), 'error');
+			set_alert(__('Unable to create user account'), 'error');
 			return false;
 		}
 
@@ -700,26 +700,36 @@ class Gamelang_users extends CI_Driver implements Gamelang_crud_interface
 		// Requires a manual activation?
 		if (true === $email_activation && true === $manual_activation)
 		{
-			$this->_parent->send_email(
+			$send_email = $this->_parent->send_email(
 				$guid,
-				__('lang_EMAIL_MANUAL_ACTIVATION'),
+				__('lang_email_manual_activation'),
 				'view:emails/users/manual_activation'
 			);
 
-			set_alert(__('lang_INFO_CREATE_MANUAL'), 'info');
+			if ($send_email) {
+				set_alert(__('All accounts require approval by a site administrator before being active. You will receive an email once approved.'), 'info');
+			}
+
 			return $guid;
 		}
 
 		// No activation required?
 		if (true !== $email_activation)
 		{
-			$this->_parent->send_email(
+			if (true !== $manual_activation) {
+				$this->update($guid, ['enabled'=> 1]);
+			}
+
+			$send_email = $this->_parent->send_email(
 				$guid,
-				__('lang_EMAIL_WELCOME'),
+				__('lang_email_welcome'),
 				'view:emails/users/welcome'
 			);
 
-			set_alert(__('lang_SUCCESS_CREATE_LOGIN'), 'success');
+			if ($send_email) {
+				set_alert(__('Account successfully created. You may now login.'), 'success');
+			}
+
 			return $guid;
 		}
 
@@ -735,14 +745,17 @@ class Gamelang_users extends CI_Driver implements Gamelang_crud_interface
 		// Log the activity.
 		log_activity($guid, 'Registered.');
 
-		$this->_parent->send_email(
+		$send_email = $this->_parent->send_email(
 			$guid,
-			__('lang_EMAIL_REGISTER'),
+			__('lang_email_register'),
 			'view:emails/users/register',
 			array('link' => site_url('activate-account?code='.$code),)
 		);
 
-		set_alert(__('lang_INFO_CREATE'), 'info');
+		if ($send_email) {
+			set_alert(__('Account successfully created. The activation link was sent to you.'), 'info');
+		}
+
 		return $guid;
 	}
 
@@ -762,21 +775,21 @@ class Gamelang_users extends CI_Driver implements Gamelang_crud_interface
 		// Nothing passed? Nothing to do...
 		if (empty($identity))
 		{
-			set_alert(__('ERROR_FIELDS_REQUIRED'), 'error');
+			set_alert(__('All fields are required.'), 'error');
 			return false;
 		}
 
 		// Get the user from database and make sure he/she exists.
 		if (false === ($user = $this->get($identity)))
 		{
-			set_alert(__('lang_ERROR_ACCOUNT_MISSING'), 'error');
+			set_alert(__('This user does not exist.'), 'error');
 			return false;
 		}
 
 		// User already enabled?
 		if ($user->enabled == 1)
 		{
-			set_alert(__('lang_error_activate_ALREADY'), 'error');
+			set_alert(__('This account is already active.'), 'error');
 			return false;
 		}
 
@@ -825,21 +838,23 @@ class Gamelang_users extends CI_Driver implements Gamelang_crud_interface
 			// TODO: Log the activity.
 			log_activity($user->id, 'Requested new activation link.');
 
-			$this->_parent->send_email(
+			$send_email = $this->_parent->send_email(
 				$user,
-				__('lang_EMAIL_RESEND'),
+				__('lang_email_resend'),
 				'view:emails/users/resend',
 				array('link' => anchor('activate-account?code='.$code))
 			);
 
+			if ($send_email) {
+				set_alert(__('Account activation link successfully resent. Check your inbox or spam.'), 'success');
+			}
+
 			// Delete old captcha.
 			$this->_parent->auth->delete_captcha();
-
-			set_alert(__('lang_SUCCESS_RESEND'), 'success');
 		}
 		else
 		{
-			set_alert(__('lang_ERROR_RESEND'), 'error');
+			set_alert(__('Unable to resend account activation link'), 'error');
 		}
 
 		return $status;
@@ -861,7 +876,7 @@ class Gamelang_users extends CI_Driver implements Gamelang_crud_interface
 	{
 		if (empty($identity) OR empty($password))
 		{
-			set_alert(__('ERROR_FIELDS_REQUIRED'), 'error');
+			set_alert(__('All fields are required.'), 'error');
 			return false;
 		}
 
@@ -872,21 +887,21 @@ class Gamelang_users extends CI_Driver implements Gamelang_crud_interface
 			 * The reason we are using wrong credentials here is to
 			 * hide the fact that the account does not exist.
 			 */
-			set_alert(__('lang_ERROR_LOGIN_CREDENTIALS'), 'error');
+			set_alert(__('Invalid username/email address and/or password'), 'error');
 			return false;
 		}
 
 		// Check the password.
 		if ( ! $this->ci->encryption->verify($password, $user->password))
 		{
-			set_alert(__('lang_ERROR_LOGIN_CREDENTIALS'), 'error');
+			set_alert(__('Invalid username/email address and/or password'), 'error');
 			return false;
 		}
 
 		// The user is not really deleted?
 		if ($user->deleted == 0)
 		{
-			set_alert(__('lang_ERROR_RESTORE_DELETED'), 'error');
+			set_alert(__('Only deleted accounts can be restored'), 'error');
 			return false;
 		}
 
@@ -899,20 +914,22 @@ class Gamelang_users extends CI_Driver implements Gamelang_crud_interface
 			// TODO: Log the activity.
 			log_activity($user->id, 'Restored account.');
 
-			$this->_parent->send_email(
+			$send_email = $this->_parent->send_email(
 				$user,
-				__('lang_EMAIL_RESTORE'),
+				__('lang_email_restore'),
 				'view:emails/users/restore'
 			);
 
+			if ($send_email) {
+				set_alert(__('Account successfully restored'), 'success');
+			}
+
 			// Delete old captcha.
 			$this->_parent->auth->delete_captcha();
-
-			set_alert(__('lang_SUCCESS_RESTORE'), 'success');
 		}
 		else
 		{
-			set_alert(__('lang_ERROR_RESTORE'), 'error');
+			set_alert(__('Unable to restore account'), 'error');
 		}
 
 		// Return the final process status.
@@ -935,28 +952,28 @@ class Gamelang_users extends CI_Driver implements Gamelang_crud_interface
 		// $identity is empty?
 		if (empty($identity))
 		{
-			set_alert(__('ERROR_FIELDS_REQUIRED'), 'error');
+			set_alert(__('All fields are required.'), 'error');
 			return false;
 		}
 
 		// Get user from database and make sure (s)he exists.
 		if (false === ($user = $this->get($identity)))
 		{
-			set_alert(__('lang_ERROR_ACCOUNT_MISSING'), 'error');
+			set_alert(__('This user does not exist.'), 'error');
 			return false;
 		}
 
 		// Make sure the account is not banned.
 		if ($user->enabled < 0)
 		{
-			set_alert(__('lang_ERROR_ACCOUNT_BANNED'), 'error');
+			set_alert(__('This user is banned from the site'), 'error');
 			return false;
 		}
 
 		// Make sure the account is not deleted.
 		if ($user->deleted > 0)
 		{
-			set_alert(__('lang_ERROR_RECOVER_DELETED'), 'error');
+			set_alert(__('Your account has been deleted but not yet removed from database. Contact us if you want it restored'), 'error');
 			return false;
 		}
 
@@ -1006,19 +1023,20 @@ class Gamelang_users extends CI_Driver implements Gamelang_crud_interface
 			// TODO: Log the activity.
 			log_activity($user->id, 'Request password reset.');
 
-			$this->_parent->send_email(
+			$send_email = $this->_parent->send_email(
 				$user,
-				__('lang_EMAIL_RECOVER'),
+				__('lang_email_recover'),
 				'view:emails/users/forgot',
 				array('link' => anchor('reset-password?code='.$code))
 			);
 
-			// Set alert and log the activity.
-			set_alert(__('lang_SUCCESS_RECOVER'), 'success');
+			if ($send_email) {
+				set_alert(__('Password reset link successfully sent'), 'success');
+			}
 		}
 		else
 		{
-			set_alert(__('lang_ERROR_RECOVER'), 'error');
+			set_alert(__('Unable to send password reset link'), 'error');
 		}
 
 		return $status;
@@ -1070,14 +1088,14 @@ class Gamelang_users extends CI_Driver implements Gamelang_crud_interface
 		// Nothing provided? Nothing to do...
 		if (empty($guid) OR empty($password))
 		{
-			set_alert(__('ERROR_FIELDS_REQUIRED'), 'error');
+			set_alert(__('All fields are required.'), 'error');
 			return false;
 		}
 
 		// Make sure the user exists.
 		if (false === ($user = $this->get($guid)))
 		{
-			set_alert(__('lang_ERROR_RESET'), 'error');
+			set_alert(__('Unable to reset password'), 'error');
 			return false;
 		}
 
@@ -1099,20 +1117,23 @@ class Gamelang_users extends CI_Driver implements Gamelang_crud_interface
 			// TODO: Log the activity.
 			log_activity($user->id, 'Reset password.');
 
-			$this->_parent->send_email(
+			$send_email = $this->_parent->send_email(
 				$guid,
-				__('lang_EMAIL_PASSWORD'),
-				'view:emails/users/password'
+				__('lang_email_password'),
+				'view:emails/users/password',
+				array('login_url' => site_url('login'))
 			);
+
+			if ($send_email) {
+				set_alert(__('Password successfully reset'), 'success');
+			}
 
 			// Purge password codes.
 			$this->_parent->auth->delete_password_codes($guid);
-
-			set_alert(__('lang_SUCCESS_RESET'), 'success');
 		}
 		else
 		{
-			set_alert(__('lang_ERROR_RESET'), 'error');
+			set_alert(__('Unable to reset password'), 'error');
 		}
 
 		// Return the process status.
@@ -1135,7 +1156,7 @@ class Gamelang_users extends CI_Driver implements Gamelang_crud_interface
 		// Check whether it's set and check its length.
 		if (empty($code) OR strlen($code) !== 40)
 		{
-			set_alert(__('lang_error_activate_CODE'), 'error');
+			set_alert(__('This account activation link is no longer valid'), 'error');
 			return false;
 		}
 
@@ -1147,7 +1168,7 @@ class Gamelang_users extends CI_Driver implements Gamelang_crud_interface
 		));
 		if (false === $var)
 		{
-			set_alert(__('lang_error_activate_CODE'), 'error');
+			set_alert(__('This account activation link is no longer valid'), 'error');
 			return false;
 		}
 
@@ -1160,7 +1181,7 @@ class Gamelang_users extends CI_Driver implements Gamelang_crud_interface
 			// First purge activation codes.
 			$this->_parent->auth->delete_activation_codes($var->guid);
 
-			set_alert(__('lang_error_activate_CODE'), 'error');
+			set_alert(__('This account activation link is no longer valid'), 'error');
 			return false;
 		}
 
@@ -1170,21 +1191,24 @@ class Gamelang_users extends CI_Driver implements Gamelang_crud_interface
 			// TODO: Log the activity.
 			log_activity($user->id, 'Activated account.');
 
-			$this->_parent->send_email(
+			$send_email = $this->_parent->send_email(
 				$user,
-				__('lang_EMAIL_ACTIVATED'),
-				'view:emails/users/activated'
+				__('lang_email_activated'),
+				'view:emails/users/activated',
+				array('login_url' => site_url('login'))
 			);
+
+			if ($send_email) {
+				set_alert(__('Account successfully activated. You may now login'), 'success');
+			}
 
 			// Purge activation codes.
 			$this->_parent->auth->delete_activation_codes($var->guid);
-
-			set_alert(__('lang_success_activate_LOGIN'), 'success');
 			return true;
 		}
 
 		// Otherwise, an error occurred somewhere.
-		set_alert(__('lang_error_activate'), 'error');
+		set_alert(__('Unable to activate user account'), 'error');
 		return false;
 	}
 
@@ -1741,14 +1765,16 @@ if ( ! function_exists('user_avatar')):
 		if (strpos($hash, '://') !== false)
 		{
 			$avatar_url = $hash;
-			($size >= 1) && $attrs = ' width="'.$size.'" height="'.$size.'"';
 		}
 		elseif ( ! file_exists($avatar_path))
 		{
 			$avatar_url = $CI->themes->theme_url("assets/img/user.png");
 			$uri = "http://www.gravatar.com/avatar/".$hash."?d=404";
 			$headers = @get_headers($uri);
-			if ( is_array($headers) && ! preg_match("|200|", $headers[0])){
+			if ( is_array($headers)
+				&& ! preg_match("|200|", $headers[0])
+				&& $CI->config->item('use_gravatar')
+			) {
 				$avatar_url = "https://www.gravatar.com/avatar/{$hash}?r=g&amp;d=mm";
 				($size >= 1) && $avatar_url .= "&amp;s={$size}";
 			}
@@ -1756,14 +1782,13 @@ if ( ! function_exists('user_avatar')):
 		else
 		{
 			$avatar_url = $CI->themes->upload_url("avatars/{$avatar}");
-			if (is_array($attrs))
-			{
-				$attrs['width'] = $attrs['height'] = $size;
-			}
-			else
-			{
-				$attrs .= $size >= 1 ? ' width="'.$size.'" height="'.$size.'"' : '';
-			}
+		}
+
+		if (is_array($attrs)) {
+			$attrs['width'] = $attrs['height'] = $size;
+		}
+		else {
+			$attrs .= $size >= 1 ? ' width="'.$size.'" height="'.$size.'"' : '';
 		}
 
 		// Another security layer is to load theme library if the function
@@ -1945,7 +1970,7 @@ class CG_User
 		 * Allow package or themes define the role used as
 		 * the admin role.
 		 */
-		$admin_role = apply_filters('users_admin_role', 'admin');
+		$admin_role = apply_filters('users_admin_role', 'administrator');
 
 		// Whether the user is an admin or not.
 		$this->data->admin = ($admin_role === $user->subtype);
