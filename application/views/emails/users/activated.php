@@ -21,9 +21,18 @@ Hello {name},
 
 Your account at {site_anchor} was successfully activated. You may now <a href="{login_url}" target="_blank">login</a> anytime you want.
 
-Hoping you enjoy your stay, please accept our kind regards.
-
 -- {site_name} Team.
+EOT;
+
+/**
+ * Indonesia version.
+ */
+$messages['indonesia'] = <<<EOT
+Halo {name},
+
+Akun Anda di {site_anchor} berhasil diaktifkan. Anda sekarang dapat <a href="{login_url}" target="_blank">login</a> kapan saja Anda mau.
+
+-- Tim {site_name}.
 EOT;
 
 // ------------------------------------------------------------------------

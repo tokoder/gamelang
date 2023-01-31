@@ -32,10 +32,7 @@ class CG_Pagination extends CI_Pagination
 		 * pagination configuration will be ignored, we use the default
 		 * one provided by the "_admin_params" method.
 		 */
-		global $back_contexts;
-		$controller = get_instance()->router->fetch_class();
-		if (config_item('site_admin') === $controller
-			OR in_array($controller, $back_contexts) )
+		if (get_instance()->router->is_admin())
 		{
 			$params = array_merge($params, $this->_admin_params());
 		}
@@ -81,7 +78,7 @@ class CG_Pagination extends CI_Pagination
 	protected function _admin_params()
 	{
 		return array(
-			'full_tag_open'        => '<div class="text-center"><ul class="pagination pagination-sm pagination-centered m0">',
+			'full_tag_open'        => '<div class="text-center"><ul class="pagination pagination-sm pagination-centered mt-3">',
 			'full_tag_close'       => '</ul></div>',
 			'num_links'            => 5,
 			'num_tag_open'         => '<li class="page-item">',

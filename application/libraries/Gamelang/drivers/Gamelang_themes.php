@@ -972,7 +972,8 @@ class Gamelang_themes extends CI_Driver
 		if (empty($base_url) OR $_protocol !== $protocol)
 		{
 			$_protocol = $protocol;
-			$base_url = path_join(base_url('gamelang/themes', $_protocol), $this->current_theme());
+			$path = $this->_is_admin() ? 'views' : 'themes';
+			$base_url = path_join(base_url('gamelang/'.$path, $_protocol), $this->current_theme());
 		}
 
 		$return = $base_url;
@@ -1382,6 +1383,8 @@ class Gamelang_themes extends CI_Driver
 		$this->_is_admin() && $title[] = 'admin';
 
 		$title[] = $this->package;
+
+		$this->controller = $this->ci->router->fetch_class();
 		$title[] = $this->controller;
 
 		$this->method = $this->ci->router->fetch_method();
@@ -1772,6 +1775,8 @@ class Gamelang_themes extends CI_Driver
 			$view[] = config_item('site_admin');
 		}
 
+		$this->package = $this->ci->router->fetch_package();
+		$this->controller = $this->ci->router->fetch_class();
 		if ($this->package !== $this->controller)
 		{
 			$view[] = $this->package;

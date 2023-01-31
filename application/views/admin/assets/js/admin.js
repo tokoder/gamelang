@@ -341,6 +341,8 @@
 
     $(document).ready(function () {
 
+        cg.ui.initSummerNote(['.summernote']);
+
         /**
          * Toatr default configuration.
          */
@@ -605,6 +607,12 @@
             window.location.href = endpoint;
             return;
         });
+
+        /**
+         * Link Active
+         */
+        var link = $(document).find(".active");
+        link.closest('ul').closest('li').children().addClass('active');
     });
 
 })(window.jQuery || window.Zepto, window, document);

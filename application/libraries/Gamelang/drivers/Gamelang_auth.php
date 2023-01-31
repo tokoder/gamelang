@@ -43,12 +43,6 @@ class Gamelang_auth extends CI_Driver
 	private $admin;
 
 	/**
-	 * check user permission
-	 * @var 	boolean
-	 */
-	protected $permission;
-
-	/**
 	 * Holds the package.
 	 * @var 	string
 	 */
@@ -315,35 +309,49 @@ class Gamelang_auth extends CI_Driver
 	// ------------------------------------------------------------------------
 
 	//check user permission
-	public function user_permission($package = null, $method = null)
+	public function user_permission($permission = NULL, $user = null)
 	{
-		if ( ! $this->online()) {
-			return false;
-		}
-
 		if( $this->is_admin()) {
 			return true;
 		}
 
-		$role_permission = apply_filters('role_permission', ['admin_panel']);
-		$package = ($package!=null)
-			? strtolower($package)
+        if ($user == null && $this->online()) {
+			$user = $this->user();
+        }
+
+        if (empty($user)) {
+			return false;
+		}
+
+		$subtype = $user->subtype;
+		$role = $this->_parent->groups->get($subtype);
+		$role_permission = $role ? $role->permissions : [];
+
+		$permission = ($permission != null)
+			? strtolower($permission)
 			: $this->ci->router->fetch_package();
 
-		if(in_array($package, $role_permission)) {
+		if(in_array($permission, force_array($role_permission))) {
 			return true;
 		}
 
 		return false;
 	}
 
-	public function check_permission($section = NULL)
+	public function check_permission($permission = NULL)
 	{
-		if ( ! user_permission($section)) {
-			return false;
+		// Make sure the user is logged in.
+		if (true !== $this->online()) {
+			set_alert(__('You must be logged in to access this page'), 'error');
+			redirect('login?next='.rawurlencode(uri_string()),'refresh');
+			exit;
 		}
 
-		return true;
+		if ( ! user_permission($permission)) {
+			set_alert(__('You do not have permission to access '.$permission.'. Please contact with administrator'), 'error');
+            redirect($this->ci->agent->referrer());
+            exit();
+		}
 	}
 
 	// ------------------------------------------------------------------------
@@ -363,7 +371,7 @@ class Gamelang_auth extends CI_Driver
 	{
 		if (empty($identity) OR empty($password))
 		{
-			$this->_parent->themes->set_alert(__('ERROR_FIELDS_REQUIRED'), 'error');
+			set_alert(__('All fields are required.'), 'error');
 			return false;
 		}
 
@@ -380,7 +388,7 @@ class Gamelang_auth extends CI_Driver
 					->get_by('entities.username', $identity);
 				if ( ! $user)
 				{
-					$this->_parent->themes->set_alert(__('lang_ERROR_LOGIN_CREDENTIALS'), 'error');
+					set_alert(__('Invalid username/email address and/or password'), 'error');
 					return false;
 				}
 				break;
@@ -391,7 +399,7 @@ class Gamelang_auth extends CI_Driver
 					->get_by('users.email', $identity);
 				if ( ! $user)
 				{
-					$this->_parent->themes->set_alert(__('lang_ERROR_LOGIN_CREDENTIALS'), 'error');
+					set_alert(__('Invalid username/email address and/or password'), 'error');
 					return false;
 				}
 				break;
@@ -404,7 +412,7 @@ class Gamelang_auth extends CI_Driver
 
 				if ( ! $user)
 				{
-					$this->_parent->themes->set_alert(__('lang_ERROR_LOGIN_CREDENTIALS'), 'error');
+					set_alert(__('Invalid username/email address and/or password'), 'error');
 					return false;
 				}
 
@@ -415,16 +423,16 @@ class Gamelang_auth extends CI_Driver
 		$this->ci->load->library('encryption');
 		if ( ! $this->ci->encryption->verify($password, $user->password))
 		{
-			$this->_parent->themes->set_alert(__('lang_ERROR_LOGIN_CREDENTIALS'), 'error');
+			set_alert(__('Invalid username/email address and/or password'), 'error');
 			return false;
 		}
 
 		// Make sure the account is enabled.
 		if ($user->enabled == 0)
 		{
-			$this->_parent->themes->set_alert(sprintf(
-				__('lang_ERROR_ACCOUNT_INACTIVE'),
-				anchor('register/resend', __('lang_CLICK_HERE'), ['class'=>'alert-link'])
+			set_alert(sprintf(
+				__('You account is not yet active. Use the link that was sent to you or %s to receive a new one'),
+				anchor('register/resend', __('Click Here'), ['class'=>'alert-link'])
 			), 'error');
 			return false;
 		}
@@ -432,16 +440,16 @@ class Gamelang_auth extends CI_Driver
 		// Make sure the account is not banned.
 		if ($user->enabled < 0)
 		{
-			$this->_parent->themes->set_alert(__('lang_ERROR_ACCOUNT_BANNED'), 'error');
+			set_alert(__('This user is banned from the site'), 'error');
 			return false;
 		}
 
 		// Make sure the account is not deleted.
 		if ($user->deleted > 0)
 		{
-			$this->_parent->themes->set_alert(sprintf(
-				__('lang_ERROR_ACCOUNT_DELETED'),
-				anchor('login/restore', __('lang_CLICK_HERE'), ['class'=>'alert-link'])
+			set_alert(sprintf(
+				__('Your account has been deleted but not yet removed from database. %s if you wish to restore it'),
+				anchor('login/restore', __('Click Here'), ['class'=>'alert-link'])
 			), 'error');
 
 			return false;
@@ -651,9 +659,9 @@ if ( ! function_exists('user_permission'))
 	 * user_permission
 	 * @return 	string
 	 */
-	function user_permission($package)
+	function user_permission($permission)
 	{
-		return get_instance()->auth->user_permission($package);
+		return get_instance()->auth->user_permission($permission);
 	}
 }
 

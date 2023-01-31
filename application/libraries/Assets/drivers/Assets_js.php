@@ -59,10 +59,6 @@ class Assets_js extends CI_Driver
 	 */
 	public function min($file, $compact = TRUE)
 	{
-		if (is_file($file)) {
-			$file = file_get_contents($file);
-		}
-
 		if ($compact != FALSE) {
 			return trim(JSMin::minify($file)) . "\n";
 		} else {

@@ -14,7 +14,7 @@
 defined('BASEPATH') OR exit('No direct script access allowed');
 
 // Restore tip.
-echo '<p class="mb-3">', __('lang_RESTORE_tip'), '</p>',
+echo '<p class="mb-3">', __('Enter your username/email address and password to restore your account'), '</p>',
 
 // Form opening tag and nonce.
 form_open('restore-account', 'role="form" id="restore"'),
@@ -25,7 +25,7 @@ form_nonce('user-restore'),
 print_input($identity, array(
 	'class' => 'form-control'.(has_error('identity') ? ' is-invalid' : '')
 )),
-form_label(__('lang_identity')),
+form_label($identity['placeholder']),
 form_error('identity', '<div class="form-text invalid-feedback">', '</div>'),
 '</div>',
 
@@ -34,40 +34,17 @@ form_error('identity', '<div class="form-text invalid-feedback">', '</div>'),
 print_input($password, array(
 	'class' => 'form-control'.(has_error('password') ? ' is-invalid' : '')
 )),
-form_label(__('lang_password')),
+form_label($password['placeholder']),
 form_error('password', '<div class="form-text invalid-feedback">', '</div>'),
 '</div>';
 
-if (get_option('use_captcha', false) === true) :
-	// Captcha field.
-	$captcha = generate_captcha();
-	echo '<div class="form-group mb-3">';
-	if (get_option('use_recaptcha', false) === true && ! empty(get_option('recaptcha_site_key', null))) {
-		echo $captcha['captcha'];
-	} else {
-		echo
-		'<div class="input-group">
-			<div class="input-group-text pos-rel">'
-				.$captcha['image'].
-				html_tag('a', array(
-					'class' => 'btn p-0 pos-abs',
-					'id' => 'refresh_captcha',
-				), fa_icon('rotate')),
-			'</div>',
-			print_input($captcha['captcha'], array(
-				'class' => 'form-control'.(has_error('captcha') ? ' is-invalid' : ''),
-				'tabindex' => '-1',
-			)),
-			form_error('captcha', '<div class="invalid-feedback">', '</div>'),
-		'</div>';
-	}
-	echo '</div>';
-endif;
+// Captcha field.
+echo $this->load->view('auth/captcha', null, true);
 
 /**
  * Fires before the closing restore account form tag.
  */
-do_action('auth-form-after');
+do_action('resend-form-after');
 
 // Submit and login button.
 echo '<div class="form-group mb-0">',

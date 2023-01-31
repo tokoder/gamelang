@@ -343,4 +343,91 @@ class CG_Form_validation extends CI_Form_validation
 
 		return $usernames;
 	}
+
+	// ----------------------------------------------------------------------------
+
+	/**
+	 * Check captcha.
+	 *
+	 * @access 	public
+	 * @param 	string 	$str 	captcha word
+	 * @return 	bool
+	 */
+	public function check_captcha($str)
+	{
+		// Using Google reCAPTCHA?
+		if (get_option('use_recaptcha', false) === true && ! empty(get_option('recaptcha_site_key', null)))
+		{
+			// Catch reCAPTCHA field.
+			$recaptcha = $this->input->post('g-recaptcha-response');
+
+			// Not set? Set the error message and return false.
+			if (empty($recaptcha))
+			{
+				return false;
+			}
+
+			$data = array(
+				'secret'   => get_option('recaptcha_private_key'),
+				'remoteip' => $this->input->ip_address(),
+				'response' => $recaptcha,
+			);
+
+			// cURL is enabled?
+			if (function_exists('curl_init'))
+			{
+				$verify = curl_init();
+				curl_setopt($verify, CURLOPT_URL, "https://www.google.com/recaptcha/api/siteverify");
+				curl_setopt($verify, CURLOPT_POST, true);
+				curl_setopt($verify, CURLOPT_POSTFIELDS, http_build_query($data));
+				curl_setopt($verify, CURLOPT_SSL_VERIFYPEER, false);
+				curl_setopt($verify, CURLOPT_RETURNTRANSFER, true);
+				$response = curl_exec($verify);
+			}
+			else
+			{
+				// Prepare the verification URL.
+				$verify_url = 'https://www.google.com/recaptcha/api/siteverify?'.http_build_query($data);
+
+				// Catch response and decode it.
+				$response = file_get_contents($verify_url);
+			}
+
+			// Decode the response.
+			$response = json_decode($response, true);
+
+			// Valid captcha?
+			if (isset($response['success']) && $response['success'] === true)
+			{
+				return true;
+			}
+			// Invalid captcha?
+			else
+			{
+				return false;
+			}
+		}
+
+		// No captcha set?
+		if (empty($str))
+		{
+			return false;
+		}
+
+		// Check if the captcha exists or not.
+		$var = $this->ci->variables->get_by(array(
+			'name'          => 'captcha',
+			'BINARY(value)' => $str,
+			'params'        => $this->ci->input->ip_address(),
+		));
+
+		// Not found? Generate the error.
+		if ( ! $var)
+		{
+			return false;
+		}
+
+		// Found?
+		return true;
+	}
 }

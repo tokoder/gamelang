@@ -1,18 +1,15 @@
-<footer class="footer navbar mt-auto bg-light">
+<footer class="footer navbar navbar-text mt-auto bg-light">
     <div class="container">
-        <span class="navbar-text">
-            <?php echo anchor('', get_option('site_name')) ?>
-            &copy; Copyright <?php echo date('Y') ?>.
+        <span>
+            <?= sprintf('Copyright &copy; %s %s', date('Y'), anchor(prep_url('github.com/tokoder/gamelang'), get_option('site_name'))); ?>.
         </span>
-        <span class="navbar-text">
+        <span>
             <?php if (ENVIRONMENT === 'development'): ?>
-            <abbr title="Render Time">RT</abbr>:
-            <strong>{elapsed_time}</strong>.
-            <abbr title="Theme Render Time">TT</abbr>:
-            <strong>{theme_time}</strong>.
+            <?= sprintf('<abbr title="Render Time">RT</abbr>: <strong>%s</strong>', '{elapsed_time}')?>.
+            <?= sprintf('<abbr title="Theme Render Time">TT</abbr>: <strong>%s</strong>', '{theme_time}')?>.
             <?php endif; ?>
-            <abbr title="Version">Version</abbr>:
-            <strong><a href="<?=site_url('about')?>" class="text-decoration-none text-secondary"><?=CG_VERSION?></a></strong>.
+
+            <?= sprintf('<abbr title="Version">Version</abbr>: <strong>%s</strong>', anchor(prep_url('github.com/tokoder/gamelang/releases'), CG_VERSION, 'class="text-decoration-none text-secondary" target="_blank"'))?>.
         </span>
     </div>
 </footer>

@@ -1,0 +1,11 @@
+{
+	"name": "tokoder/gamelang",
+	"type": "project",
+	"description": "CodeIgniter Gamelang",
+	"homepage": "https://github.com/tokoder",
+	"license": "MIT",
+    "require": {
+        "phpmailer/phpmailer": "^6.7",
+        "nesbot/carbon": "^2.65"
+    }
+}

@@ -29,6 +29,22 @@ Kind regards,
 -- {site_name} Team.
 EOT;
 
+/**
+ * Indonesia version.
+ */
+$messages['indonesia'] = <<<EOT
+Halo {name},
+
+Email ini mengonfirmasi bahwa kata sandi Anda di {site_anchor} telah berhasil diubah. Anda sekarang dapat <a href="{login_url}" target="_blank">login</a> menggunakan yang baru.
+
+Jika Anda tidak melakukan tindakan ini, harap hubungi kami secepat mungkin untuk menyelesaikan masalah ini.
+
+Tindakan ini dilakukan dari alamat IP ini: {ip_link}.
+
+Salam Hormat,
+-- Tim {site_name}.
+EOT;
+
 // ------------------------------------------------------------------------
 
 /**

@@ -19,17 +19,24 @@ defined('BASEPATH') OR exit('No direct script access allowed');
 $messages['english'] = <<<EOT
 Hello {name},
 
-You are receiving this email because we received an email change request for your account on {site_anchor}.
+{content}
 
-Click on the following link or copy-paste it in your browser if you wish to proceed:
 {link}
 
-If you did not request an email change, no further action is required.
-
-This action was requested from this IP address: {ip_link}.
-
-Kind regards,
 -- {site_name} Team.
+EOT;
+
+/**
+ * Indonesia version.
+ */
+$messages['indonesia'] = <<<EOT
+Hello {name},
+
+{content}
+
+{link}
+
+-- Tim {site_name}.
 EOT;
 
 // ------------------------------------------------------------------------
@@ -44,4 +51,4 @@ $message = isset($messages[$lang]) ? $messages[$lang] : $messages['english'];
 /**
  * Filters the welcome email message.
  */
-echo apply_filters('email_users_email_change_prep', $message, $lang);
+echo  apply_filters('email_users_welcome', $message, $lang);

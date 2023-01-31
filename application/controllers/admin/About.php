@@ -31,7 +31,7 @@ class About extends CG_Controller_Admin
 		parent::__construct();
 
 		// Default page title and icon.
-		$this->data['page_icon']  = 'sliders';
+		$this->data['page_icon']  = 'info-circle';
 	}
 
 	// -----------------------------------------------------------------------------

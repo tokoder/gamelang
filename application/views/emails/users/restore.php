@@ -21,10 +21,24 @@ Hello {name},
 
 This email confirms that your account at {site_anchor} has been successfully restored.
 
-Welcome back with us and we hope this time you will enjoy your stay.
+Welcome back with us and we hope this time you will enjoy.
 
 Kind regards,
 -- {site_name} Team.
+EOT;
+
+/**
+ * Indonesia version.
+ */
+$messages['indonesia'] = <<<EOT
+Halo {name},
+
+Email ini mengonfirmasi bahwa akun Anda di {site_anchor} telah berhasil dipulihkan.
+
+Selamat datang kembali bersama kami dan kami harap kali ini Anda akan menikmati.
+
+Salam Hormat,
+-- Tim {site_name}.
 EOT;
 
 /**

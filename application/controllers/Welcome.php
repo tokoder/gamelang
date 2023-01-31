@@ -33,6 +33,18 @@ class Welcome extends CG_Controller
 		parent::__construct();
 	}
 
+	// ------------------------------------------------------------------------
+
+	/**
+	 * We are remapping things just so we can handle methods that are
+	 * http accessed.
+	 */
+	public function _remap($method, $params = array())
+	{
+		// Call the method.
+		return call_user_func_array(apply_filters('remapping_method', array($this, $method)), $params);
+	}
+
     // -----------------------------------------------------------------------------
 
 	/**

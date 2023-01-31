@@ -30,9 +30,9 @@ class Settings extends CG_Controller_Admin
 		// Global Settings.
 		'general' => array(
 			'site_name',
+			'site_title',
 			'site_description',
 			'site_keywords',
-			'site_title',
 			'site_author',
 			'per_page',
 			'google_analytics_id',
@@ -42,18 +42,18 @@ class Settings extends CG_Controller_Admin
 		// User Settings.
 		'users' => array(
 			'allow_registration',
+			'allow_multi_session',
 			'email_activation',
 			'manual_activation',
 			'login_type',
-			'allow_multi_session',
 			'use_gravatar',
 		),
 
 		// Email Settings.
 		'email' => array(
-			'contact_email',
-			'server_email',
+			'mail_address',
 			'mail_protocol',
+			'mail_library',
 			'sendmail_path',
 			'smtp_host',
 			'smtp_port',
@@ -121,7 +121,7 @@ class Settings extends CG_Controller_Admin
 
 		if ('general' !== $tab)
 		{
-			$this->data['page_title'] = sprintf(__('lang_name_%s'), __('lang_'.strtoupper($tab)));
+			$this->data['page_title'] = sprintf(__('lang_settings_%s'), __('lang_'.strtoupper($tab)));
 		}
 
 		list($this->data['inputs'], $rules) = $this->_prep_settings($tab);
@@ -170,9 +170,13 @@ class Settings extends CG_Controller_Admin
 		{
 			$_settings = array();
 			$order = array_flip($this->_tabs[$tab]);
+			$order = apply_filters('_options_order', $order);
 
 			foreach ($settings as $index => $setting)
 			{
+				if (riake($setting->name, $order) === false) {
+					continue;
+				}
 				$_settings[$order[$setting->name]] = $setting;
 			}
 
@@ -188,12 +192,11 @@ class Settings extends CG_Controller_Admin
 
 		foreach ($settings as $option)
 		{
-			$data[$option->name] = array(
-				'type'  => $option->field_type,
-				'name'  => $option->name,
-				'id'    => $option->name,
-				'value' => $option->value,
-			);
+			$extra['type'] = $option->field_type;
+			$extra['name'] = $option->name;
+			$extra['id'] = $option->name;
+			$extra['value'] = $option->value;
+			$data[$option->name] = $extra;
 
 			if ($option->required == 1)
 			{
@@ -207,7 +210,7 @@ class Settings extends CG_Controller_Admin
 
 			if ($option->field_type == 'dropdown' && ! empty($option->options))
 			{
-				$data[$option->name]['options'] = array_map(function($val) {
+				$_option = array_map(function($val) {
 					if (is_numeric($val))
 					{
 						return $val;
@@ -216,12 +219,23 @@ class Settings extends CG_Controller_Admin
 					return (sscanf($val, 'lang:%s', $lang_val) === 1) ? __($lang_val) : $val;
 				}, $option->options);
 
-				$rules[$option->name]['rules'] .= '|in_list['.implode(',', array_keys($option->options)).']';
+				$data[$option->name]['options'] = $_option;
+				if ( ! empty(json_encode($option->value)))
+				{
+					$data[$option->name]['selected'] = is_bool($option->value) ? json_encode($option->value) : $option->value;
+					$rules[$option->name]['rules'] .= '|in_list['.implode(',', array_keys($option->options)).']';
+				}
+				else
+				{
+					$data[$option->name]['selected'] = '';
+				}
 			}
 			else
 			{
 				$data[$option->name]['placeholder'] = __('lang_'.$option->name);
 			}
+
+			$data[$option->name] = apply_filters('_options-'.$option->name, $data[$option->name]);
 		}
 
 		return array($data, array_values($rules));
@@ -239,14 +253,14 @@ class Settings extends CG_Controller_Admin
 		// Nothing provided? Nothing to do.
 		if (empty($inputs) OR (empty($tab) OR ! array_key_exists($tab, $this->_tabs)))
 		{
-			set_alert(__('error_csrf'), 'error');
+			set_alert(__('This form did not pass our security controls'), 'error');
 			return false;
 		}
 
 		// Check nonce.
 		if (true !== check_nonce('settings-'.$tab, false))
 		{
-			set_alert(__('error_csrf'), 'error');
+			set_alert(__('This form did not pass our security controls'), 'error');
 			return false;
 		}
 
@@ -271,7 +285,7 @@ class Settings extends CG_Controller_Admin
 		 */
 		if (empty($settings))
 		{
-			set_alert(__('lang_success_update'), 'success');
+			set_alert(__('Settings successfully updated'), 'success');
 			return true;
 		}
 
@@ -284,12 +298,12 @@ class Settings extends CG_Controller_Admin
 			if (false === $this->options->set_item($key, $val))
 			{
 				log_message('error', "Unable to update setting {$tab}: {$key}");
-				set_alert(__('lang_error_update'), 'error');
+				set_alert(__('Unable to update settings'), 'error');
 				return false;
 			}
 		}
 
-		set_alert(__('lang_success_update'), 'success');
+		set_alert(__('Settings successfully updated'), 'success');
 		return true;
 	}
 
@@ -297,11 +311,6 @@ class Settings extends CG_Controller_Admin
 
 	protected function _subhead()
 	{
-		if ('sysinfo' === $this->router->fetch_method())
-		{
-			return;
-		}
-
 		add_action('admin_subhead', function() {
 
 			$tab = $this->input->get('tab', true);

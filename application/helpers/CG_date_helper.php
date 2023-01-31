@@ -34,3 +34,23 @@ if(!function_exists('diffForHumans'))
         return Carbon::parse(strtotime($date1))->locale('id_ID')->diffForHumans();
     }
 }
+
+//date format
+if (!function_exists('formatted_date'))
+{
+    function formatted_date($datetime)
+    {
+        $date = date("M j, Y", $datetime);
+        $date = diffForHumans($date);
+        return $date;
+    }
+}
+
+//print formatted hour
+if (!function_exists('formatted_hour'))
+{
+    function formatted_hour($timestamp)
+    {
+        return date("H:i", strtotime($timestamp));
+    }
+}

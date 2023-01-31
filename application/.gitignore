@@ -1,10 +1,10 @@
-# Remove caches file.
+# Ignore caches file.
 #-------------------------
 cache/captcha/*
 !cache/captcha/fonts
 !cache/captcha/index.html
 
-# Remove configs file.
+# Ignore configs file.
 #-------------------------
 config/gamelang/encryption_key.php
 
@@ -23,3 +23,7 @@ themes/*
 #-------------------------
 uploads/*
 !uploads/index.html
+
+# Ignore vendor.
+#-------------------------
+/vendor/

@@ -32,6 +32,25 @@ Kind regards,
 -- {site_name} Team.
 EOT;
 
+/**
+ * Indonesia version.
+ */
+$messages['indonesia'] = <<<EOT
+Halo {name},
+
+Anda menerima email ini karena kami menerima permintaan pengaturan ulang kata sandi untuk akun Anda di {site_anchor}.
+
+Klik tautan berikut atau salin-tempel di browser Anda jika Anda ingin melanjutkan:
+{link}
+
+Jika Anda tidak meminta pengaturan ulang kata sandi, tidak diperlukan tindakan lebih lanjut.
+
+Tindakan ini diminta dari alamat IP ini: {ip_link}.
+
+Salam Hormat,
+-- Tim {site_name}.
+EOT;
+
 // ------------------------------------------------------------------------
 
 /**

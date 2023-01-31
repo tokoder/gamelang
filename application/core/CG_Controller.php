@@ -69,12 +69,12 @@ class CG_Controller extends CI_Controller
 		{
 			if (false === stripos($this->uri->uri_string(), $this->router->default_controller))
 			{
-				set_alert(__('error_component_disabled'), 'error');
+				set_alert(__('This component is disabled. Enable it on the dashboard in order to use it'), 'error');
 				redirect(($this->router->is_admin() ? config_item('site_admin') : ''));
 				exit;
 			}
 
-			show_error(__('error_component_disabled'));
+			show_error(__('This component is disabled. Enable it on the dashboard in order to use it'));
 		}
 		/**
 		 * If the "manifest.json" file is missing or badly formatted,
@@ -87,12 +87,12 @@ class CG_Controller extends CI_Controller
 		{
 			if (false === stripos($this->uri->uri_string(), $this->router->default_controller))
 			{
-				set_alert(__('error_manifest_missing'), 'error');
+				set_alert(__('This component\'s "manifest.json" file is either missing or badly formatted'), 'error');
 				redirect('');
 				exit;
 			}
 
-			show_error(__('error_manifest_missing'));
+			show_error(__('This component\'s "manifest.json" file is either missing or badly formatted'));
 		}
 		$this->themes->set('package', $package, true);
 
@@ -174,7 +174,6 @@ class CG_Controller extends CI_Controller
 		{
 			// Set CI validation rules first.
 			$this->form_validation->set_rules($rules);
-
 			// Use jQuery validation?
 			if (null !== $form)
 			{
@@ -220,19 +219,7 @@ class CG_Controller_Admin extends CG_Controller
 	{
 		parent::__construct();
 
-		// Make sure the user is logged in.
-		if (true !== $this->auth->online())
-		{
-			redirect('login?next='.rawurlencode(uri_string()),'refresh');
-			exit;
-		}
-
-		if ( ! $this->auth->check_permission('admin_panel'))
-		{
-			set_alert(__('lang_error_permission'), 'error');
-			redirect('');
-			exit;
-		}
+		$this->auth->check_permission('admin_panel');
 	}
 
 	// ------------------------------------------------------------------------
@@ -297,7 +284,6 @@ class CG_Controller_Admin extends CG_Controller
 	{
 		$ignored_contexts = array('admin', 'users', 'settings');
 		$packages = $this->router->list_packages(true);
-		$lang = $this->lang->lang_detail('folder');
 
 		if ( ! $packages)
 		{
@@ -312,32 +298,6 @@ class CG_Controller_Admin extends CG_Controller
 				continue;
 			}
 
-			/**
-			 * Jika modul dilengkapi dengan item menu tingkat atas menggunakan
-			 * "admin_navbar-name" atau "admin_navbar_right-name",
-			 * kami pastikan untuk menampilkan menu kemudian menghentikan skrip.
-			 */
-
-			// See if we have a top level menu.
-			if ( has_action('admin_navbar-'.$folder))
-			{
-				add_action('_admin_navbar', function() use ($folder) {
-					do_action('admin_navbar-'.$folder);
-				});
-
-				continue;
-			}
-
-			// See if we have a top level menu (right menu).
-			if ( has_action('admin_navbar_right-'.$folder))
-			{
-				add_action('_admin_navbar_right', function() use ($folder) {
-					do_action('admin_navbar_right-'.$folder);
-				});
-
-				continue;
-			}
-
 			foreach ($package['contexts'] as $context => $status)
 			{
 				// No context? Ignore it.
@@ -349,7 +309,7 @@ class CG_Controller_Admin extends CG_Controller
 				}
 
 				// Add other context.
-				add_action("_{$context}_menu", function() use ($package, $status, $context, $lang)
+				add_filter("_admin_menu", function($admin) use ($package, $context)
 				{
 					$uri = $package['folder'];
 					('admin' !== $context) && $uri = $context.'/'.$uri;
@@ -362,14 +322,19 @@ class CG_Controller_Admin extends CG_Controller
 					$title = (isset($package[$title_line])
 						&& 1 === sscanf($package[$title_line], 'lang:%s', $line))
 						? __($line)
-						: ucwords($package[$title_line]);
+						: ucwords(str_replace('-', ' ', $package[$title_line]));
 
-					echo html_tag('a', array(
-						'href' => admin_url($uri),
-						'class' => 'dropdown-item',
-					), $title);
+					$admin[] = array(
+						'parent'     => "_{$context}_menu",
+						'order'      => $package['admin_order'],
+						'id'         => "_{$context}_".url_title(strtolower($title)),
+						'permission' => $package['folder'],
+						'slug'       => admin_url($uri),
+						'name'       => $title,
+					);
 
-				}, $package['admin_order']);
+					return $admin;
+				});
 			}
 		}
 	}
@@ -384,25 +349,29 @@ class CG_Controller_Admin extends CG_Controller
 	 * @param 	bool 	$return 		Whether to echo the anchor.
 	 * @return 	string
 	 */
-	protected function _btn_back($limit = null, $label = false, $return = true)
+	protected function _btn_back($package = null, $label = false, $return = false)
 	{
-		$limit OR $limit = 3;
-		$referrer = $this->_referrer($limit);
+		if (null === $package)
+		{
+			$package = empty($this->uri->segment(3))
+				? $this->uri->segment(2)
+				: $this->uri->segment(3);
+		}
 
 		// Direction of the icon depends on the language.
-		$icon = 'caret-'.('rtl' === $this->lang->lang_detail('direction') ? 'right' : 'left');
+		$icon = 'arrow-'.('rtl' === $this->lang->lang_detail('direction') ? 'right' : 'left').'-long';
 
 		$anchor = html_tag('a', array(
-			'href' => $referrer,
+			'href' => admin_url($package),
 			'class' => 'btn btn-outline-dark btn-sm btn-icon me-2',
 		), fa_icon($icon).($label ? $label : __('lang_back')));
 
 		if (false === $return)
 		{
-			return $anchor;
+			echo $anchor;
 		}
 
-		echo $anchor;
+		return $anchor;
 	}
 
 	/**
@@ -445,13 +414,7 @@ class CG_Controller_User extends CG_Controller
 	{
 		parent::__construct();
 
-		if ( ! $this->auth->online())
-		{
-			// The user must be logged in.
-			set_alert(__('ERROR_LOGGED_OUT'), 'error');
-			redirect('login?next='.rawurlencode(uri_string()),'refresh');
-			exit;
-		}
+		$this->auth->check_permission();
 	}
 }
 
@@ -567,7 +530,7 @@ class CG_Controller_Ajax extends CG_Controller
 		// The method does not exist?
 		if ( ! method_exists($this, $method))
 		{
-			$this->response->header  = self::HTTP_UNAUTHORIZED;
+			$this->response->header  = self::HTTP_NOT_FOUND;
 			return $this->response();
 		}
 
@@ -597,21 +560,21 @@ class CG_Controller_Ajax extends CG_Controller
 			&& (true !== $nonce_status OR true !== $this->auth->online()))
 		{
 			$this->response->header  = self::HTTP_UNAUTHORIZED;
-			$this->response->message = __('error_nonce_url');
+			$this->response->message = __('This action did not pass our security controls');
 		}
 		// Does the method require an admin user?
 		elseif (in_array($method, $this->admin_methods)
 			&& true !== $this->auth->is_admin())
 		{
 			$this->response->header  = self::HTTP_UNAUTHORIZED;
-			$this->response->message = __('error_nonce_url');
+			$this->response->message = __('This action did not pass our security controls');
 		}
 		// Does the method require an admin user AND a safety check?
 		elseif (in_array($method, $this->safe_admin_methods)
 			&& (true !== $nonce_status OR true !== $this->auth->is_admin()))
 		{
 			$this->response->header  = self::HTTP_UNAUTHORIZED;
-			$this->response->message = __('error_nonce_url');
+			$this->response->message = __('This action did not pass our security controls');
 		}
 		// Otherwise, call the method.
 		else

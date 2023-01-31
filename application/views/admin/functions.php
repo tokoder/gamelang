@@ -29,6 +29,7 @@ class Admin_theme
 {
     public function __construct()
     {
+		add_filter('_admin_menu', array($this, '_admin_menu'), 0);
 		add_filter('admin_head', array($this, 'globals'), 0);
 		add_filter('admin_head', array($this, 'admin_head'), 99);
 
@@ -63,6 +64,62 @@ class Admin_theme
     }
 
 	// ----------------------------------------------------------------------------
+
+	public function _admin_menu($admin_menu)
+	{
+		// Settings menu
+		$admin_menu[] = array(
+			'parent' => '_setting_menu',
+			'order'  => 0,
+			'id'     => '_setting_general',
+			'slug'   => admin_url('settings'),
+			'name'   => __('general_settings'),
+		);
+
+		// users menu
+		$admin_menu[] = array(
+			'parent' => '_user_menu',
+			'order'  => 0,
+			'id'     => '_user_manager',
+			'slug'   => admin_url('users'),
+			'name'   => __('users_manage'),
+		);
+
+		// Extensions menu.
+		foreach (['packages', 'themes', 'languages'] as $key => $value) {
+			$admin_menu[] = array(
+				'parent' => '_extensions_menu',
+				'order'  => 0,
+				'id'     => 'extensions_'.$value,
+				'slug'   => admin_url($value),
+				'name'   => __('lang_'.$value),
+			);
+		}
+
+		// Helps menu.
+		$admin_menu[] = array(
+			'parent' => '_help_menu',
+			'order'  => 0,
+			'id'     => '_help_about',
+			'slug'   => admin_url('about'),
+			'name'   => __('lang_system_information'),
+		);
+		$admin_menu[] = array(
+			'parent' => '_help_menu',
+			'order'  => 0,
+			'id'     => '_help_documentation',
+			'slug'   => prep_url('github.com/tokoder/gamelang/wiki'),
+			'name'   => __('lang_documentation'),
+			'attributes' => array(
+				'target' =>'_blank',
+				'class'  => (ENVIRONMENT !== 'production' ? '': ' disabled')
+			),
+		);
+
+		return $admin_menu;
+	}
+
+	// ----------------------------------------------------------------------------
 	/**
 	 * This method is triggered after theme was installed.
 	 * @access 	public
@@ -70,13 +127,15 @@ class Admin_theme
 	public function after_theme_setup()
 	{
 		add_styles('assets/vendor/bootstrap/css/bootstrap.css');
+		add_styles('assets/vendor/bootnavbar/css/bootnavbar.css');
 		add_styles('assets/vendor/fontawesome-free/css/all.css');
 		add_styles('assets/vendor/summernote/summernote-bs5.css');
 		add_styles('assets/vendor/sweetalert2/sweetalert2.css');
-		add_styles(get_theme_path('assets/css/admin.css'));
+		add_styles(get_theme_path('admin.css'));
 
 		add_script('assets/vendor/jquery/jquery.js');
 		add_script('assets/vendor/bootstrap/js/bootstrap.bundle.js');
+		add_script('assets/vendor/bootnavbar/js/bootnavbar.js');
 		add_script('assets/vendor/summernote/summernote-bs5.js');
 		add_script('assets/vendor/js-cookie/js.cookie.js');
 		add_script('assets/vendor/sweetalert2/sweetalert2.js');
