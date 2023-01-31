@@ -44,7 +44,6 @@ class Welcome extends CG_Controller_Admin
 
 		// Set page title and render view.
 		$this->themes
-			->set_title(__('lang_panel'))
 			->render($this->data);
 	}
 
@@ -73,20 +72,20 @@ class Welcome extends CG_Controller_Admin
 				__('lang_users'),
 				'users',
 				admin_url('users'),
-				'light'
+				'primary'
 			);
 		}
 
-		// Themes count.
-		$themes_count = count($this->themes->list_themes());
-		if ($themes_count > 0)
+		// Languages count.
+		$langs_count = count(config_item('languages'));
+		if ($langs_count >= 1)
 		{
 			$boxes[] = info_box(
-				number_format_short($themes_count),
-				__('lang_themes'),
-				'paint-brush',
-				admin_url('themes'),
-				'danger'
+				number_format_short($langs_count),
+				__('lang_languages'),
+				'language',
+				admin_url('languages'),
+				'success'
 			);
 		}
 
@@ -103,16 +102,16 @@ class Welcome extends CG_Controller_Admin
 			);
 		}
 
-		// Languages count.
-		$langs_count = count(config_item('languages'));
-		if ($langs_count >= 1)
+		// Themes count.
+		$themes_count = count($this->themes->list_themes());
+		if ($themes_count > 0)
 		{
 			$boxes[] = info_box(
-				number_format_short($langs_count),
-				__('lang_languages'),
-				'globe',
-				admin_url('languages'),
-				'success'
+				number_format_short($themes_count),
+				__('lang_themes'),
+				'paint-brush',
+				admin_url('themes'),
+				'danger'
 			);
 		}
 
