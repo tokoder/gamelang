@@ -57,6 +57,14 @@ class Gamelang_menus extends CI_Driver {
 	private $item_tag_close           = '</li>';
 
 	/**
+	 * Anchor tag of the menu item.
+	 * Default is '<a href="%s">%s</a>'
+	 *
+	 * @var string
+	 */
+	private $item_anchor              = '<a href="%s">%s</a>';
+
+	/**
 	 * Opening tag of the menu item that has children
 	 * default is '</li>'
 	 *
@@ -121,6 +129,22 @@ class Gamelang_menus extends CI_Driver {
 	private $children_tag_close       = '</ul>';
 
 	/**
+	 * Tag opening tag of the menu item
+	 * default is '</li>'
+	 *
+	 * @var string
+	 */
+	private $children_open            = '<li>';
+
+	/**
+	 * Anchor tag of the menu item.
+	 * Default is '<a href="%s">%s</a>'
+	 *
+	 * @var string
+	 */
+	private $children_anchor		  = '<a href="%s">%s</a>';
+
+	/**
 	 * The active item class
 	 * Default is 'active'
 	 *
@@ -135,14 +159,6 @@ class Gamelang_menus extends CI_Driver {
 	 * @var string
 	 */
 	private $item_active              = '';
-
-	/**
-	 * Anchor tag of the menu item.
-	 * Default is '<a href="%s">%s</a>'
-	 *
-	 * @var string
-	 */
-	private $item_anchor              = '<a href="%s">%s</a>';
 
 	/**
 	 * The list of menu items that has divider
@@ -304,8 +320,12 @@ class Gamelang_menus extends CI_Driver {
 
 		if ( is_array($config) )
 		{
-			foreach ($config as $key => $value) {
-				$this->$key = $value;
+			foreach ($config as $key => $value)
+			{
+				if (isset($this->$key))
+				{
+					$this->$key = $value;
+				}
 			}
 
 			$this->divided_items_list_count = count((array)$this->divided_items_list);
@@ -412,91 +432,90 @@ class Gamelang_menus extends CI_Driver {
 		foreach ($items as $item)
 		{
 			// menu label
-			if ( isset($item[$this->menu_label], $item[$this->menu_key]) )
+			if ( ! isset($item[$this->menu_label], $item[$this->menu_key]) )
 			{
-				$label = $item[$this->menu_label];
+				continue;
+			}
 
-				// icon
-				$icon  = empty($item[$this->menu_icon]) ? '' : $item[$this->menu_icon];
-				if ( isset($this->menu_icons_list[($item[$this->menu_key])]) ) {
-					$icon = $this->menu_icons_list[($item[$this->menu_key])];
-				}
+			$permission = isset($item['permission']) OR $item['permission'] = FALSE;
+			if($permission && ! user_permission($item['permission'])) {
+				continue;
+			}
 
-				if ($icon)
+			$label = $item[$this->menu_label];
+
+			// icon
+			$icon = empty($item[$this->menu_icon]) ? '' : $item[$this->menu_icon];
+			if ( isset($this->menu_icons_list[($item[$this->menu_key])]) ) {
+				$icon = $this->menu_icons_list[($item[$this->menu_key])];
+			}
+
+			if ($icon)
+			{
+				$icon = "<i class='{$icon}'></i>";
+				$label = trim( $this->icon_position == 'right' ? ($label . " " . $icon ) : ($icon . " " . $label) );
+			}
+
+			// menu slug
+			$slug = $item[$this->menu_key];
+
+			// has children or not
+			$has_children = ! empty($item['children']);
+
+			// if menu item need separator
+			if ($this->divided_items_list_count > 0 && in_array($item[$this->menu_id], (array)$this->divided_items_list)) {
+				$html .= sprintf($this->item_divider, $item[$this->menu_id]);
+			}
+
+			if ($has_children)
+			{
+				if ( is_null($item[$this->menu_parent]) && $this->parentl1_tag_open != '' )
 				{
-					$icon = "<i class='{$icon}'></i>";
-					$label = trim( $this->icon_position == 'right' ? ($label . " " . $icon ) : ($icon . " " . $label) );
-				}
-
-				// menu slug
-				$slug  = $item[$this->menu_key];
-
-				// has children or not
-				$has_children = ! empty($item['children']);
-
-				// if menu item need separator
-				if ($this->divided_items_list_count > 0 && in_array($slug, (array)$this->divided_items_list)) {
-					$html .= $this->item_divider;
-				}
-
-				if ($has_children)
-				{
-					if ( is_null($item[$this->menu_parent]) && $this->parentl1_tag_open != '' )
-					{
-						$tag_open    =  $this->parentl1_tag_open;
-						$item_anchor = $this->parentl1_anchor != '' ? $this->parentl1_anchor : $this->parent_anchor;
-					}
-					else
-					{
-						$tag_open    = $this->parent_tag_open;
-						$item_anchor = $this->parent_anchor;
-					}
-
-					$href  = '#';
+					$tag_open    =  $this->parentl1_tag_open;
+					$item_anchor = $this->parentl1_anchor != '' ? $this->parentl1_anchor : $this->parent_anchor;
 				}
 				else
 				{
+					$tag_open    = $this->parent_tag_open;
+					$item_anchor = $this->parent_anchor;
+				}
+
+				$href  = '#';
+			}
+			else
+			{
+				$href = (strpos($slug, '://') === FALSE) ? site_url($slug) : $slug;
+
+				if (isset($nav_tag_opened))
+				{
 					$tag_open    = $this->item_tag_open;
-					$href        = (strpos($slug, '://') === FALSE) ? site_url($slug) : $slug;
 					$item_anchor = $this->item_anchor;
 				}
-
-				$html .= $this->set_active($tag_open, $slug);
-
-				switch (substr_count($item_anchor, '%s'))
-				{
-					case '3':
-						$uri = (strpos($slug, '://') === FALSE)
-							? uri_string()
-							: current_url();
-						$active = (trim_slashes($slug) == trim_slashes($uri) )
-							? $this->item_active_class
-							: '';
-						$html .= sprintf($item_anchor, $href, $active, $label);
-						break;
-					case '2':
-						$html .= sprintf($item_anchor, $href, $label);
-						break;
-					default:
-						$html .= sprintf($item_anchor, $label);
-						break;
+				else {
+					$tag_open    = $this->children_open;
+					$item_anchor = $this->children_anchor;
 				}
+			}
 
-				if ( $has_children )
-				{
-					$this->render_item($item['children'], $html);
+			$html .= $tag_open;
 
-					if ( is_null($item[$this->menu_parent]) && $this->parentl1_tag_close != '' ) {
-						$html .= $this->parentl1_tag_close;
-					}
-					else {
-						$html  .= $this->parent_tag_close;
-					}
+			isset($item['attributes']) OR $item['attributes'] = array();
+			$html .= $this->_parse_attributes($item_anchor, $href, $label, $item['attributes']);
+			unset($item['attributes']);
+
+			if ( $has_children )
+			{
+				$this->render_item($item['children'], $html);
+
+				if ( is_null($item[$this->menu_parent]) && $this->parentl1_tag_close != '' ) {
+					$html .= $this->parentl1_tag_close;
 				}
 				else {
-					$html .= $this->item_tag_close;
+					$html  .= $this->parent_tag_close;
 				}
-
+			}
+			else {
+				$html .= $this->item_tag_close;
 			}
 		}
 
@@ -509,7 +528,7 @@ class Gamelang_menus extends CI_Driver {
 			$html .= $this->nav_tag_close;
 		}
 		else {
-			$html  .= $this->children_tag_close;
+			$html .= $this->children_tag_close;
 		}
 	}
 
@@ -534,25 +553,35 @@ class Gamelang_menus extends CI_Driver {
 		return $this;
 	}
 
-	// ----------------------------------------------------------------------------
+	// --------------------------------------------------------------------
 
 	/**
-	 * Set active item
+	 * Parse attributes
 	 *
-	 * @param string $html html tag that would be injected
-	 * @param string $slug html tag that has injected with active class
+	 * @param	array	$attributes
+	 * @return	void
 	 */
-	private function set_active($html, $slug)
+	protected function _parse_attributes($item_anchor, $href, $label, $attributes)
 	{
-		$segment = $this->ci->uri->segment($this->uri_segment);
+		if (substr_count($item_anchor, '%s') == 2) {
+			$html = sprintf($item_anchor, $href, $label);
+		}
+		else {
+			$html = sprintf($item_anchor, $label);
+		}
 
-		$uri = (strpos($slug, '://') === FALSE) ? uri_string() : current_url();
-		if (( $this->item_active != '' && $slug == $this->item_active && empty($segment) )
-			|| trim_slashes($slug) == trim_slashes($uri)
-		) {
-			$doc = new DOMDocument();
-			$doc->loadHTML($html);
-			foreach($doc->getElementsByTagName('*') as $tag ){
+		$doc = new DOMDocument();
+		$doc->loadHTML($html);
+		foreach($doc->getElementsByTagName('a') as $tag ){
+			foreach ($attributes as $key => $value)
+			{
+				$tag->setAttribute($key, ($tag->hasAttribute($key) ? $tag->getAttribute($key) . ' ' : '') . $value);
+			}
+
+			// Set active item
+			if (( $this->item_active != '' && $href == $this->item_active )
+				|| (trim_slashes(current_url()) == trim_slashes($href))
+			) {
 				$tag->setAttribute('class', ($tag->hasAttribute('class') ? $tag->getAttribute('class') . ' ' : '') . $this->item_active_class);
 			}
 
