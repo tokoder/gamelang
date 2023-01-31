@@ -1,6 +1,6 @@
-<footer class="footer navbar bg-light">
+<footer class="footer navbar navbar-text bg-light">
     <div class="container">
-        <span class="navbar-text">
+        <span>
             <?php
             echo '<span class="me-2">',
             html_tag('a', array(
@@ -8,14 +8,14 @@
             ), fa_icon('external-link').__('lang_go_homepage')),
             '</span>';
 
-            $default_copyright = sprintf(__('lang_copyright'), date('Y'));
+            $default_copyright = sprintf(__('&copy; %s %s'), date('Y'), get_option('site_name'));
             $footer_copyright = apply_filters('login_copyright', $default_copyright);
             if ( ! empty($footer_copyright)) {
                 echo $footer_copyright;
             }
             ?>
         </span>
-        <span class="navbar-text">
+        <span>
             <?php if (ENVIRONMENT === 'development'): ?>
             <abbr title="Render Time">RT</abbr>:
             <strong>{elapsed_time}</strong>.

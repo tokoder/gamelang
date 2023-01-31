@@ -201,7 +201,8 @@ class CG_Lang extends CI_Lang
 				: false;
 		}
 
-        if ($value === FALSE)
+		// Because killer robots like unicorns!
+		if ($value === FALSE && $log_errors === TRUE)
 		{
             $default_path = APPPATH . 'language/' . $this->lang() . '/' . $this->default_lang_file;
 
@@ -213,13 +214,7 @@ class CG_Lang extends CI_Lang
 
 			$this->language = array_merge($this->language, $lang);
 
-            return $this->language[$line];
-        }
-
-		// Because killer robots like unicorns!
-		if ($value === FALSE && $log_errors === TRUE)
-		{
-			log_message('error', 'Could not find the language line "'.$line.'"');
+            $value = riake($line, $this->language);
 		}
 
         return $value;
@@ -263,9 +258,9 @@ class CG_Lang extends CI_Lang
 		$line = strtolower(str_replace(' ', '_', $line));
 
         try {
-            $file_contents = file_get_contents($file);
-            $pattern = '~\$lang\[(\'|")' . preg_quote($line) . '(\'|")\]~';
-            if (!preg_match($pattern, $file_contents))
+            $lang_contents = file_get_contents($file);
+            $lang_pattern = '~\$lang\[(\'|")' . preg_quote($line) . '(\'|")\]~';
+            if (!preg_match($lang_pattern, $lang_contents))
 			{
                 $data = '$lang[\'' . addcslashes($line, '\'') . '\'] = "' . addcslashes($lang, '"') . '";';
                 file_put_contents($file, PHP_EOL . $data, FILE_APPEND);

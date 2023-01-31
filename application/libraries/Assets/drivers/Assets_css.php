@@ -60,10 +60,6 @@ class Assets_css extends CI_Driver
 	 */
 	public function min($file, $compact = TRUE, $is_aggregated = NULL)
 	{
-		if (is_file($file)) {
-			$file = file_get_contents($file);
-		}
-
 		if ($is_aggregated) {
 			$file = $this->remove_charsets($file);
 		}

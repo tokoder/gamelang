@@ -87,16 +87,18 @@ class Gamelang_entities extends CI_Driver implements Gamelang_crud_interface
 		 */
 		if (empty($data) // There are $data
 			OR ( ! isset($data['type']) // The type is set
-				OR ! in_array($data['type'], array('user', 'group', 'object')) )// type is valid.
+			OR ! in_array($data['type'], array('user', 'group', 'object')) )// type is valid.
 			OR ! isset($data['subtype'])) // Subtype is set.
 		{
 			return false;
 		}
 
-		// Should we generate another username?
+		// Make sure username is always set.
 		$data['username'] = isset($data['username'])
 			? url_title($data['username'], 'dash', true)
 			: random_string('alnum', 20);
+
+		// Should we generate another username?
 		if ($this->get_by('username', $data['username']))
 		{
 			// Let's generate the username.

@@ -16,6 +16,21 @@ Very kind regards,
 -- {site_name} Team.
 EOT;
 
+/**
+ * Indonesia version
+ */
+$messages['indonesia'] = <<<EOT
+Halo {name},
+
+Terima kasih telah mendaftar di {site_anchor}. Akun Anda dibuat dan harus diaktifkan sebelum Anda dapat menggunakannya.
+
+Untuk mengaktifkan akun Anda, klik tautan berikut atau salin-tempel di browser Anda:
+{link}
+
+Salam Hormat,
+-- Tim {site_name}.
+EOT;
+
 // ------------------------------------------------------------------------
 
 /**

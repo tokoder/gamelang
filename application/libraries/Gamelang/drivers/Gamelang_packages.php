@@ -83,6 +83,9 @@ class Gamelang_packages extends CI_Driver
 		}
 
 		// Include their main file if found.
+		$this->ci->load->add_package_path($packages[$name]);
+
+		// Include their main file if found.
 		$file = $packages[$name]."main.php";
 		require_once($file);
 

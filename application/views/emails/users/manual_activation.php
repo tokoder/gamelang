@@ -29,6 +29,22 @@ Hoping you enjoy your stay, please accept our kind regards.
 -- {site_name} Team.
 EOT;
 
+/**
+ * Indonesia version.
+ */
+$messages['indonesia'] = <<<EOT
+Halo {name},
+
+Terima kasih telah bergabung dengan kami di {site_anchor}. Akun Anda dibuat tetapi membutuhkan persetujuan dari admin situs sebelum aktif.
+Kami dengan tulus meminta maaf atas langkah penting ini, tetapi ini hanya untuk tujuan keamanan.
+
+Anda akan menerima email konfirmasi segera setelah akun Anda disetujui.
+
+Berharap Anda menikmati masa tunggu Anda, terimalah salam kami.
+
+-- Tim {site_name}.
+EOT;
+
 // ------------------------------------------------------------------------
 
 /**

@@ -1,16 +1,25 @@
 <?php
 defined('BASEPATH') OR exit('No direct script access allowed');
 
-add_filter( 'html_class', function ( $class ) {
-	$class[] = 'h-100';
-	return $class;
-});
-add_filter( 'body_class', function ( $class ) {
-	$class[] = 'd-flex flex-column h-100';
-	return $class;
-});
 add_filter( 'after_scripts', function ( $output ) {
-	$output .= get_partial('script');
+	$output .= <<<EOT
+	<script>
+	$(document).ready(function () {
+		$(document).on('click', "#show_password", function(){
+			if($(this).is(':checked')){
+				$("input[name='password'], input[name='cpassword']").attr('type','text');
+			}else{
+				$("input[name='password'], input[name='cpassword']").attr('type','password');
+			}
+		});
+	});
+	function copy(email, password)
+	{
+		$("#identity").val(email);
+		$("#password").val(password);
+	}
+	</script>
+	EOT;
 	return $output;
 });
 

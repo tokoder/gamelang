@@ -56,6 +56,16 @@ class Default_theme {
 
 		// pagination
 		add_filter( 'pagination', array( $this, 'pagination' ) );
+
+		add_filter( 'html_class', function ( $class ) {
+			$class[] = 'h-100';
+			return $class;
+		});
+
+		add_filter( 'body_class', function ( $class ) {
+			$class[] = 'd-flex flex-column h-100';
+			return $class;
+		});
 	}
 
 	// ------------------------------------------------------------------------
@@ -138,6 +148,7 @@ class Default_theme {
 
 		add_script('assets/vendor/jquery/jquery.js');
 		add_script('assets/vendor/bootstrap/js/bootstrap.bundle.js');
+		add_script(get_theme_path('assets/js/script.js'));
 	}
 
 	/**
@@ -197,7 +208,6 @@ class Default_theme {
 	 */
 	public function enqueue_partials() {
 		add_partial( 'header' );
-		add_partial( 'sidebar' );
 		add_partial( 'footer' );
 	}
 
@@ -274,19 +284,6 @@ if ( ! function_exists('remove_generator'))
 
 	// Now you add the filer.
 	add_filter('CG_generator', 'remove_generator');
-}
-
-// ------------------------------------------------------------------------
-
-if ( ! function_exists( 'fa_icon' ) ) {
-	/**
-	 * Useful to generate a fontawesome icon.
-	 * @param  string $icon the icon to generate.
-	 * @return string       the full FA tag.
-	 */
-	function fa_icon( $icon = 'user' ) {
-		return "<i class=\"fa fa-fw fa-{$icon}\"></i>";
-	}
 }
 
 // ------------------------------------------------------------------------

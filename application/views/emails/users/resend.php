@@ -31,6 +31,24 @@ Very kind regards,
 -- {site_name} Team.
 EOT;
 
+/**
+ * Indonesia version.
+ */
+$messages['indonesia'] = <<<EOT
+Halo {name},
+
+Anda baru saja meminta tautan aktivasi baru di {site_anchor} karena akun Anda tidak aktif.
+Untuk mengaktifkan akun Anda, klik tautan berikut atau salin-tempel di browser Anda:
+{link}
+
+Jika Anda tidak memintanya, tidak diperlukan tindakan lebih lanjut.
+
+Tindakan ini diminta dari alamat IP ini: {ip_link}.
+
+Salam Hormat,
+-- Tim {site_name}.
+EOT;
+
 // ------------------------------------------------------------------------
 
 /**

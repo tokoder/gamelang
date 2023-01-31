@@ -354,13 +354,26 @@ class Gamelang extends CI_Driver_Library
 	{
 		if (empty($message) OR empty($user))
 		{
+			set_alert(__('lang_empty_message'), 'error');
 			return false;
 		}
 
 		$user = ($user instanceof CG_User) ? $user : $this->ci->users->get($user);
 		if ( ! $user)
 		{
+			set_alert(__('lang_account_not_exists'), 'error');
 			return false;
+		}
+
+		// We add IP Address.
+		if ( ! isset($data['ip_link']))
+		{
+			$ip_address = $this->ci->input->ip_address();
+			$data['ip_link'] = html_tag('a', array(
+				'href'   => 'https://www.iptolocation.net/trace-'.$ip_address,
+				'target' => '_blank',
+				'rel'    => 'nofollow',
+			), $ip_address);
 		}
 
 		$email       = isset($data['email']) ? $data['email'] : $user->email;
@@ -387,17 +400,6 @@ class Gamelang extends CI_Driver_Library
 		$search  = array('{name}', '{site_name}', '{site_anchor}');
 		$replace = array($name, $site_name, $site_anchor);
 
-		// We add IP Address.
-		if ( ! isset($data['ip_link']))
-		{
-			$ip_address = $this->ci->input->ip_address();
-			$data['ip_link'] = html_tag('a', array(
-				'href'   => 'https://www.iptolocation.net/trace-'.$ip_address,
-				'target' => '_blank',
-				'rel'    => 'nofollow',
-			), $ip_address);
-		}
-
 		// If we have any other elements, use theme.
 		if ( ! empty($data))
 		{
@@ -419,8 +421,42 @@ class Gamelang extends CI_Driver_Library
 		$message .= nl2br($raw_message);
 		$message .= $this->ci->load->view('emails/_footer', null, true);
 
-		// TODO : fixed sending email with API Email
-		(class_exists('CI_Email', false)) OR $this->ci->load->library('email');
-		// return $this->ci->email->send_email($email, $subject, $message, $alt_message);
+		// Start by setting up the email config.
+		$config['useragent']    = $this->ci->config->item('mail_library');
+		$config['protocol']     = $this->ci->config->item('mail_protocol');
+		$config['mailpath']     = $this->ci->config->item('sendmail_path');
+		$config['smtp_host']    = $this->ci->config->item('smtp_host');
+		$config['smtp_port']    = $this->ci->config->item('smtp_port');
+		$config['smtp_user']    = $this->ci->config->item('smtp_user');
+		$config['smtp_pass']    = $this->ci->config->item('smtp_pass');
+		$config['smtp_crypto']  = $this->ci->config->item('smtp_crypto') == 'none' ? '' : $this->ci->config->item('smtp_crypto');
+		$config['smtp_timeout'] = 30;
+		$config['smtp_auth']    = true;
+		$config['validate']     = true;
+		$config['mailtype']     = 'html';
+
+		// Let's now initialize email library.
+		(class_exists('CI_Email', false)) OR $this->ci->load->library('email', $config);
+
+		// alternative message?
+		if ( ! empty($alt_message)) {
+			$this->ci->email->set_alt_message(nl2br($alt_message));
+		}
+
+		// And here we go! Send it.
+		$result = $this->ci->email
+			->from($this->ci->config->item('mail_address'), $site_name)
+			->to($email)
+			->subject($subject)
+			->message($message)
+			->send(false);
+
+		if ( ! $result)
+		{
+			set_alert($this->ci->email->print_debugger([]), 'error');
+			return false;
+		}
+
+		return true;
 	}
 }

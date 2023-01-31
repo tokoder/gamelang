@@ -37,13 +37,6 @@ class Packages extends CG_Controller_Admin {
 	{
 		parent::__construct();
 
-		if ( ! $this->auth->is_admin())
-		{
-			set_alert(__('lang_error_permission'), 'error');
-			redirect('');
-			exit;
-		}
-
 		// Default page title and icon.
 		$this->data['page_icon']  = 'plug';
 		$this->data['page_title'] = __('lang_packages');
@@ -73,7 +66,7 @@ class Packages extends CG_Controller_Admin {
 		{
 			if (true !== check_nonce('bulk-update-packages'))
 			{
-				set_alert(__('error_nonce_url'), 'error');
+				set_alert(__('This action did not pass our security controls'), 'error');
 				redirect(admin_url('packages'));
 				exit;
 			}
@@ -83,19 +76,19 @@ class Packages extends CG_Controller_Admin {
 			$selected = $this->input->post('selected', true);
 			if (empty($selected))
 			{
-				set_alert(__('error_bulk'.$action), 'error');
+				set_alert(sprintf(__('Unable to %s package'), $action), 'error');
 				redirect(admin_url('packages'));
 				exit;
 			}
 
 			if (false !== $this->packages->{$action}($selected))
 			{
-				set_alert(__('success_bulk'.$action), 'success');
+				set_alert(sprintf(__('Selected package successfully %s'), $action), 'success');
 				redirect(admin_url('packages'));
 				exit;
 			}
 
-			set_alert(__('error_bulk'.$action), 'error');
+			set_alert(sprintf(__('Unable to %s package'), $action), 'error');
 			redirect(admin_url('packages'));
 			exit;
 		}
@@ -122,31 +115,44 @@ class Packages extends CG_Controller_Admin {
 			$p['details'] = array();
 
 			if ( ! empty($p['version'])) {
-				$p['details'][] = sprintf(__('lang_version_%s'), $p['version']);
+				$p['details'][] = sprintf(__('Version: %s'), $p['version']);
 			}
 			if ( ! empty($p['author'])) {
 				$author = (empty($p['author_uri']))
 					? $p['author']
-					: sprintf(__('lang_%s_%s'), $p['author'], $p['author_uri']);
-				$p['details'][] = sprintf(__('lang_by_%s'), $author);
+					: sprintf(
+						__('<a href="%s" target="_blank" rel="nofollow">%s</a>'),
+						$p['author_uri'],
+						$p['author']
+					);
+				$p['details'][] = sprintf(__('By %s'), $author);
 			}
 			if ( ! empty($p['license'])) {
 				$license = empty($p['license_uri'])
 					? $p['license']
-					: sprintf(__('lang_%s_%s'), $p['license'], $p['license_uri']);
-				$p['details'][] = sprintf(__('lang_license_%s'), $license);
+					: sprintf(
+						__('<a href="%s" target="_blank" rel="nofollow">%s</a>'),
+						$p['license_uri'],
+						$p['license']
+					);
+				$p['details'][] = sprintf(__('License: %s'), $license);
 				// Reset license.
 				$license = null;
 			}
 			if ( ! empty($p['package_uri'])) {
-				$p['details'][] = html_tag('a', array(
-					'href'   => $p['package_uri'],
-					'target' => '_blank',
-					'rel'    => 'nofollow',
-				), __('lang_website'));
+				$p['details'][] = sprintf(
+					__('<a href="%s" target="_blank" rel="nofollow">%s</a>'),
+					$p['package_uri'],
+					__('lang_website')
+				);
 			}
 			if ( ! empty($p['author_email'])) {
-				$p['details'][] = sprintf(__('lang_email_%s'), $p['author_email']);
+				$p['details'][] = sprintf(
+					__('<a href="mailto:%s?subject=%s" target="_blank" rel="nofollow">%s</a>'),
+					$p['author_email'],
+					rawurlencode('Support: '.$p['name']),
+					__('Support')
+				);
 			}
 
 			// Add package actions.
@@ -161,7 +167,7 @@ class Packages extends CG_Controller_Admin {
 						'package-deactivate_'.$folder
 					)),
 					'class' => 'btn btn-warning btn-sm btn-icon package-deactivate ms-2',
-					'aria-label' => sprintf(__('lang_deactivate_%s'), $p['name']),
+					'aria-label' => sprintf(__('Deactivate %s'), $p['name']),
 				), fa_icon('times').__('lang_deactivate'));
 			}
 			else
@@ -173,7 +179,7 @@ class Packages extends CG_Controller_Admin {
 						'package-activate_'.$folder
 					)),
 					'class' => 'btn btn-success btn-sm btn-icon package-activate ms-2',
-					'aria-label' => sprintf(__('lang_activate_%s'), $p['name']),
+					'aria-label' => sprintf(__('Activate %s'), $p['name']),
 				), fa_icon('check').__('lang_activate'));
 			}
 
@@ -183,7 +189,7 @@ class Packages extends CG_Controller_Admin {
 				$actions[] = html_tag('a', array(
 					'href'  => admin_url('setting/'.$folder),
 					'class' => 'btn btn-secondary btn-sm btn-icon ms-2',
-					'aria-label' => sprintf(__('lang_settings_%s'), $p['name']),
+					'aria-label' => sprintf(__('Settings %s'), $p['name']),
 				), fa_icon('cogs').__('lang_settings'));
 			}
 
@@ -197,7 +203,7 @@ class Packages extends CG_Controller_Admin {
 						'package-delete_'.$folder
 					)),
 					'class' => 'btn btn-danger btn-sm btn-icon package-delete ms-2',
-					'aria-label' => sprintf(__('lang_delete_%s'), $p['name']),
+					'aria-label' => sprintf(__('Delete %s'), $p['name']),
 				), fa_icon('trash').__('lang_delete'));
 			}
 
@@ -267,7 +273,7 @@ class Packages extends CG_Controller_Admin {
 		// We check CSRF token validity.
 		if ( ! check_nonce('upload-package'))
 		{
-			set_alert(__('error_nonce_url'), 'error');
+			set_alert(__('This action did not pass our security controls'), 'error');
 			redirect(admin_url('packages/install'));
 			exit;
 		}
@@ -343,12 +349,12 @@ class Packages extends CG_Controller_Admin {
 
 		if (false !== $this->packages->activate($folder))
 		{
-			set_alert(sprintf(__('lang_success_activate_%s'), $name), 'success');
+			set_alert(sprintf(__('%s package successfully activated'), $name), 'success');
 			redirect(admin_url('packages'));
 			exit;
 		}
 
-		set_alert(sprintf(__('lang_error_activate_%s'), $name), 'error');
+		set_alert(sprintf(__('Unable to activate %s package'), $name), 'error');
 		redirect(admin_url('packages'));
 		exit;
 	}
@@ -369,12 +375,12 @@ class Packages extends CG_Controller_Admin {
 
 		if (package_is_active($folder) && $this->packages->deactivate($folder))
 		{
-			set_alert(sprintf(__('lang_success_deactivate_%s'), $name), 'success');
+			set_alert(sprintf(__('%s package successfully deactivated'), $name), 'success');
 			redirect(admin_url('packages'));
 			exit;
 		}
 
-		set_alert(sprintf(__('lang_error_deactivate_%s'), $name), 'error');
+		set_alert(sprintf(__('Unable to deactivate %s package'), $name), 'error');
 		redirect(admin_url('packages'));
 		exit;
 	}
@@ -395,7 +401,7 @@ class Packages extends CG_Controller_Admin {
 
 		if (package_is_active($folder))
 		{
-			set_alert(sprintf(__('lang_error_delete_active_%s'), $name), 'error');
+			set_alert(sprintf(__('You must disable the %s package before deleting it'), $name), 'error');
 			redirect(admin_url('packages'));
 			exit;
 		}
@@ -404,12 +410,12 @@ class Packages extends CG_Controller_Admin {
 
 		if (false !== directory_delete($details['full_path']))
 		{
-			set_alert(sprintf(__('lang_success_delete_%s'), $name), 'success');
+			set_alert(sprintf(__('%s package successfully delete'), $name), 'success');
 			redirect(admin_url('packages'));
 			exit;
 		}
 
-		set_alert(sprintf(__('lang_error_delete_%s'), $name), 'error');
+		set_alert(sprintf(__('Unable to delete %s package'), $name), 'error');
 		redirect(admin_url('packages'));
 		exit;
 	}
@@ -447,7 +453,7 @@ class Packages extends CG_Controller_Admin {
 					), fa_icon('upload').__('lang_upload'));
 
 					// Back button.
-					$this->_btn_back();
+					$this->_btn_back('packages');
 
 				});
 				break;
@@ -458,7 +464,7 @@ class Packages extends CG_Controller_Admin {
 				$this->data['page_title'] = sprintf(__('lang_settings_name_%s'), $details['name']);
 
 				add_action('admin_subhead', function() {
-					$this->_btn_back();
+					$this->_btn_back('packages');
 				}, 0);
 				break;
 

@@ -41,33 +41,6 @@ if ( ! function_exists('uri_string'))
 
 // ------------------------------------------------------------------------
 
-if ( ! function_exists('current_url'))
-{
-	/**
-	 * Current URL
-	 *
-	 * Returns the full URL (including segments) of the page where this
-	 * function is placed
-	 *
-	 * @param 	bool 	$query_string 	Whether to add QUERY STRING.
-	 * @return	string
-	 */
-	function current_url($query_string = true)
-	{
-		$CI =& get_instance();
-		$url = $CI->config->site_url($CI->uri->uri_string());
-
-		if ($query_string && ! empty($_SERVER['QUERY_STRING']))
-		{
-			$url .= '?'.$_SERVER['QUERY_STRING'];
-		}
-
-		return $url;
-	}
-}
-
-// ------------------------------------------------------------------------
-
 if ( ! function_exists('previous_url'))
 {
 	/**
