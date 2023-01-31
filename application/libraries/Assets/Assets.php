@@ -823,7 +823,14 @@ class Assets extends CI_Driver_Library {
                 break;
         }
 
-        foreach ($this->ci->load->get_package_paths() as $package_path)
+        $theme_path = get_theme_path('/');
+        if (False !== strpos($file, (string)$theme_path))
+        {
+            return $theme_path;
+        }
+
+        $package_paths = $this->ci->load->get_package_paths();
+        foreach ($package_paths as $package_path)
         {
             if (file_exists($package_path . $file))
             {
@@ -837,24 +844,16 @@ class Assets extends CI_Driver_Library {
             }
         }
 
-        $path = normalize_path(VIEWPATH);
-
-        if (file_exists($path . $file))
+        $view_path = normalize_path(VIEWPATH);
+        if (file_exists($view_path . $file))
         {
-            return $path;
+            return $view_path;
         }
 
-        $path .= $dir;
-        if (file_exists($path . $file))
+        $view_path .= $dir;
+        if (file_exists($view_path . $file))
         {
-            return $path;
-        }
-
-        $path = get_theme_path('/');
-
-        if (False !== strpos($file, (string)$path))
-        {
-            return get_theme_path('/');
+            return $view_path;
         }
 
         return FALSE;
