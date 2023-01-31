@@ -74,23 +74,29 @@ class Themes extends CG_Controller_Admin {
 						'theme-activate_'.$folder
 					)),
 					'role' => 'button',
-					'class' => 'btn btn-info btn-sm theme-activate me-2',
+					'class' => 'btn btn-outline-primary btn-sm theme-activate me-2',
 					'data-name' => $t['name'],
 				), __('lang_activate'));
 			}
-			else {
-				$t['actions'][] = html_tag('a', array(
-					'href'  => admin_url('themes/settings/'.$folder),
-					'class' => 'btn btn-default btn-xs btn-icon ml-2',
-					'aria-label' => sprintf(__('lang_settings_%s'), $folder),
-				), fa_icon('cogs').__('lang_settings'));
+			else
+			{
+				require_once($t['full_path'].'/functions.php');
+
+				if (has_action('theme_settings_'.$t['folder']))
+				{
+					$t['actions'][] = html_tag('a', array(
+						'href'  => admin_url('themes/settings/'.$folder),
+						'class' => 'btn btn-light btn-sm me-2',
+						'aria-label' => sprintf(__('lang_settings_%s'), $folder),
+					), fa_icon('cogs').__('lang_settings'));
+				}
 			}
 
 			// Details button.
 			$t['actions'][] = html_tag('a', array(
 				'href'  => admin_url('themes?theme='.$folder),
-				'class' => 'btn btn-primary btn-sm theme-details',
-			), __('lang_DETAILS'));
+				'class' => 'btn btn-info btn-sm theme-details',
+			), __('lang_details'));
 		}
 
 		/**
@@ -116,38 +122,39 @@ class Themes extends CG_Controller_Admin {
 			// The theme has a URI?
 			$theme['name_uri'] = $theme['name'];
 			if ( ! empty($theme['theme_uri'])) {
-				$theme['name_uri'] = html_tag('a', array(
-					'href'   => $theme['theme_uri'],
-					'target' => '_blank',
-					'rel'    => 'nofollow',
-				), $theme['name']);
+				$theme['name_uri'] = sprintf(
+					__('<a href="%s" target="_blank" rel="nofollow">%s</a>'),
+					$theme['theme_uri'],
+					$theme['name']
+				);
 			}
 
 			// Does the license have a URI?
 			if ( ! empty($theme['license_uri'])) {
-				$theme['license'] = html_tag('a', array(
-					'href'   => $theme['license_uri'],
-					'target' => '_blank',
-					'rel'    => 'nofollow',
-				), $theme['license']);
+				$theme['license'] = sprintf(
+					__('<a href="%s" target="_blank" rel="nofollow">%s</a>'),
+					$theme['license_uri'],
+					$theme['license']
+				);
 			}
 
 			// Does the author have a URI?
 			if ( ! empty($theme['author_uri'])) {
-				$theme['author'] = html_tag('a', array(
-					'href'   => $theme['author_uri'],
-					'target' => '_blank',
-					'rel'    => 'nofollow',
-				), $theme['author']);
+				$theme['author'] = sprintf(
+					__('<a href="%s" target="_blank" rel="nofollow">%s</a>'),
+					$theme['author_uri'],
+					$theme['author']
+				);
 			}
 
 			// Did the user provide a support email address?
 			if ( ! empty($theme['author_email'])) {
-				$theme['author_email'] = html_tag('a', array(
-					'href'   => "mailto:{$theme['author_email']}?subject=".rawurlencode("Theme Support: {$theme['name']}"),
-					'target' => '_blank',
-					'rel'    => 'nofollow',
-				), $theme['author_email']);
+				$theme['author_email'] = sprintf(
+					__('<a href="mailto:%s?subject=%s" target="_blank" rel="nofollow">%s</a>'),
+					$theme['author_email'],
+					rawurlencode("Theme Support: {$theme['name']}"),
+					$theme['author_email'],
+				);
 			}
 
 			// Actions buttons.
@@ -208,7 +215,7 @@ class Themes extends CG_Controller_Admin {
 		// The theme does not exists?
 		if ( ! $theme)
 		{
-			set_alert(__('themes_ERROR_theme_MISSING'), 'error');
+			set_alert(__('This theme does not exist'), 'error');
 			redirect('admin/themes');
 			exit;
 		}
@@ -216,7 +223,7 @@ class Themes extends CG_Controller_Admin {
 		// Disabled? It needs to be enabled first.
 		if ( ! $theme['enabled'])
 		{
-			set_alert(__('themes_ERROR_SETTINGS_DISABLED'), 'error');
+			set_alert(__('You can only update settings of activated theme'), 'error');
 			redirect('admin/themes');
 			exit;
 		}
@@ -224,9 +231,9 @@ class Themes extends CG_Controller_Admin {
 		require_once($theme['full_path'].'/functions.php');
 
 		// It does not have a settings page?
-		if ( ! has_filter('theme_settings_'.$theme['name']))
+		if ( ! has_action('theme_settings_'.$theme['folder']))
 		{
-			set_alert(__('themes_ERROR_SETTINGS_MISSING'), 'error');
+			set_alert(__('This theme does not have a settings page'), 'error');
 			redirect('admin/themes');
 			exit;
 		}
@@ -289,7 +296,7 @@ class Themes extends CG_Controller_Admin {
 		// We check CSRF token validity.
 		if (true !== check_nonce('upload-theme'))
 		{
-			set_alert(__('error_csrf'), 'error');
+			set_alert(__('This form did not pass our security controls'), 'error');
 			redirect(admin_url('themes/install'));
 			exit;
 		}
@@ -297,7 +304,7 @@ class Themes extends CG_Controller_Admin {
 		// Did the user provide a valid file?
 		if (empty($_FILES['themezip']['name']))
 		{
-			set_alert(__('lang_ERROR_file_not_exists'), 'error');
+			set_alert(__('This theme does not exist'), 'error');
 			redirect(admin_url('themes/install'));
 			exit;
 		}
@@ -306,7 +313,7 @@ class Themes extends CG_Controller_Admin {
 		$this->load->helper('file');
 		if ( ! function_exists('unzip_file'))
 		{
-			set_alert(__('lang_ERROR_unzip'), 'error');
+			set_alert(__('lang_error_unzip'), 'error');
 			redirect(admin_url('themes/install'));
 			exit;
 		}
@@ -336,13 +343,13 @@ class Themes extends CG_Controller_Admin {
 		// Successfully installed?
 		if (true === $status)
 		{
-			set_alert(__('lang_SUCCESS_UPLOAD'), 'success');
+			set_alert(__('Theme successfully uploaded'), 'success');
 			redirect(admin_url('themes'));
 			exit;
 		}
 
 		// Otherwise, the theme could not be installed.
-		set_alert(__('lang_ERROR_UPLOAD'), 'error');
+		set_alert(__('Unable to upload theme'), 'error');
 		redirect(admin_url('themes/install'));
 		exit;
 	}
@@ -376,12 +383,12 @@ class Themes extends CG_Controller_Admin {
 				}
 			}
 
-			set_alert(sprintf(__('lang_success_activate_%s'), $folder), 'success');
+			set_alert(sprintf(__('%s theme successfully activated'), $folder), 'success');
 			redirect(admin_url('themes'));
 			exit;
 		}
 
-		set_alert(sprintf(__('lang_error_activate_%s'), $folder), 'error');
+		set_alert(sprintf(__('Unable to activate %s theme'), $folder), 'error');
 		redirect(admin_url('themes'));
 		exit;
 	}
@@ -418,12 +425,12 @@ class Themes extends CG_Controller_Admin {
 			delete_option('theme_images_'.$folder);
 			delete_option('theme_menus_'.$folder);
 
-			set_alert(sprintf(__('lang_success_delete_%s'), $folder), 'success');
+			set_alert(sprintf(__('%s theme successfully delete'), $folder), 'success');
 			redirect(admin_url('themes'));
 			exit;
 		}
 
-		set_alert(sprintf(__('lang_error_delete_%s'), $folder), 'error');
+		set_alert(sprintf(__('Unable to delete %s theme'), $folder), 'error');
 		redirect(admin_url('themes'));
 		exit;
 	}
@@ -481,7 +488,7 @@ class Themes extends CG_Controller_Admin {
 				), fa_icon('upload').__('lang_upload'));
 
 				// Back button.
-				$this->_btn_back();
+				$this->_btn_back('themes');
 			}
 			elseif ('index' === $this->router->fetch_method())
 			{
@@ -493,7 +500,7 @@ class Themes extends CG_Controller_Admin {
 			}
 			else {
 				// Back button.
-				$this->_btn_back();
+				$this->_btn_back('themes');
 			}
 		});
 	}

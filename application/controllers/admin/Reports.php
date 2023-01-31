@@ -34,13 +34,6 @@ class Reports extends CG_Controller_Admin {
 	{
 		parent::__construct();
 
-		if ( ! $this->auth->is_admin())
-		{
-			set_alert(__('lang_error_permission'), 'error');
-			redirect('');
-			exit;
-		}
-
 		// Default page title and icon.
 		$this->data['page_icon']  = 'bar-chart';
 		$this->data['page_title'] = __('lang_reports');
@@ -206,7 +199,7 @@ class Reports extends CG_Controller_Admin {
 	{
 		// We add the back button only if there are $_GET params.
 		empty($_GET) OR  add_action('admin_subhead', function() {
-			$this->_btn_back();
+			$this->_btn_back('reports');
 		});
 	}
 

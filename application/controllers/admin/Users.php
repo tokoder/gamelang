@@ -55,16 +55,12 @@ class Users extends CG_Controller_Admin {
 
 		// Users filter.
 		$where = array();
+		$where = apply_filters('user_where_clause', $where);
 
 		// Filter by role (subtype).
 		if (null !== ($role = $this->input->get('role', true)))
 		{
 			$where['subtype'] = $role;
-		}
-
-		if ( ! $this->auth->is_admin() && user_permission('users'))
-		{
-			$where['owner_id'] = $this->auth->user_id();
 		}
 
 		// Account status.
@@ -127,7 +123,7 @@ class Users extends CG_Controller_Admin {
 
 		// Set page title and render view.
 		$this->themes
-			->set_title(__('lang_manage_users'))
+			->set_title(__('lang_users'))
 			->render($this->data);
     }
 
@@ -161,18 +157,27 @@ class Users extends CG_Controller_Admin {
 			array(	'field' => 'cpassword',
 					'label' => 'lang:confirm_password',
 					'rules' => 'trim|required|matches[password]'),
+			array(	'field' => 'subtype',
+					'label' => 'lang:subtype',
+					'rules' => 'trim|required'),
 		), '#add-user');
 
 		// Default user fields.
 		$_defaults = array('first_name', 'last_name', 'email', 'password', 'cpassword');
 
-		// Allow users to add extra fields.
+		// Allow plugins to add extra fields.
 		$defaults = apply_filters('users_fields', $_defaults);
 
 		// Let's now generate our form fields.
 		foreach ($defaults as $field)
 		{
 			$name = $field;
+
+			if ($this->config->item($name, 'inputs') == NULL) {
+				$inputs[$name] = [];
+				continue;
+			}
+
 			$inputs[$name] = array_merge(
 				$this->config->item($name, 'inputs'),
 				array(
@@ -181,8 +186,20 @@ class Users extends CG_Controller_Admin {
 			);
 		}
 
+		// Format subtype
+		$inputs['subtype'] = array(
+			'type'     => 'dropdown',
+			'name'     => 'subtype',
+			'id'       => 'subtype',
+			'placeholder' => 'lang:lang_role',
+			'options'  => apply_filters('users_role', array(
+				'regular'       => 'lang:lang_regular',
+				'administrator' => 'lang:lang_administrator',
+			)),
+		);
+
 		// Let's now add our generated inputs to view.
-		$this->data['inputs'] = $inputs;
+		$this->data['inputs'] = apply_filters('users_inputs', $inputs);
 
 		// Before form processing
 		if ($this->form_validation->run() == false)
@@ -200,30 +217,32 @@ class Users extends CG_Controller_Admin {
 		{
 			if (true !== check_nonce('add-user'))
 			{
-				set_alert(__('error_csrf'), 'error');
+				set_alert(__('This form did not pass our security controls'), 'error');
 				redirect(admin_url('users/add'), 'refresh');
 				exit;
 			}
 
-			$data = $this->input->post(array(
-				'first_name',
-				'last_name',
-				'email',
-				'password'
-			), true);
+			/**
+			 * Here we make sure to remove the confirm password field.
+			 * Otherwise it will be used as a metadata
+			 */
+			unset($inputs['cpassword']);
 
+			// Collect all user details.
+			$data = $this->input->post(array_keys($inputs), true);
+
+			// Format "enabled".
 			$data['enabled'] = ($this->input->post('enabled') == '1') ? 1 : 0;
-			($this->input->post('admin') == '1') && $data['subtype'] = 'administrator';
 
 			// Successful
 			if (false !== ($guid = $this->users->create($data)))
 			{
-				set_alert(__('lang_SUCCESS_ADD'), 'success');
+				set_alert(__('User successfully created'), 'success');
 				redirect(admin_url('users'), 'refresh');
 			}
 			// Something went wrong?
 			else {
-				set_alert(__('lang_ERROR_ADD'), 'error');
+				set_alert(__('Unable to create user'), 'error');
 				redirect(admin_url('users/add'), 'refresh');
 			}
 			exit;
@@ -247,15 +266,16 @@ class Users extends CG_Controller_Admin {
 		$this->data['user'] = $this->users->get($id);
 		if ( ! $this->data['user'])
 		{
-			set_alert(__('lang_ERROR_ACCOUNT_MISSING'), 'error');
+			set_alert(__('This user does not exist.'), 'error');
 			redirect($this->agent->referrer());
 			exit;
 		}
 
-		$this->data['user']->admin = ($this->data['user']->subtype === 'administrator');
-
 		// Prepare form validation.
 		$rules = array(
+			array(	'field' => 'subtype',
+					'label' => 'lang:lang_subtype',
+					'rules' => 'trim|required'),
 			array(	'field' => 'first_name',
 					'label' => 'lang:lang_first_name',
 					'rules' => 'trim|required|min_length[1]|max_length[32]'),
@@ -318,8 +338,7 @@ class Users extends CG_Controller_Admin {
 		$_defaults = array('first_name', 'last_name', 'email', 'username');
 
 		// Allow users to add extra fields.
-		$defaults = apply_filters('users_fields', array());
-		$defaults = array_merge($_defaults, $defaults);
+		$defaults = apply_filters('users_fields', $_defaults);
 
 		// Let's now generate our form fields.
 		foreach ($defaults as $field)
@@ -352,11 +371,27 @@ class Users extends CG_Controller_Admin {
 			{
 				$inputs[$name] = array_merge($item, array('value' => set_value($name, $value)));
 			}
+			else {
+				$inputs[$name] = array();
+			}
 		}
+
+		// Format subtype
+		$inputs['subtype'] = array(
+			'type'     => 'dropdown',
+			'name'     => 'subtype',
+			'id'       => 'subtype',
+			'placeholder' => 'lang:lang_role',
+			'selected' => $this->data['user']->subtype,
+			'options'  => apply_filters('users_role', array(
+				'regular'       => 'lang:lang_regular',
+				'administrator' => 'lang:lang_administrator',
+			)),
+		);
 
 		/**
 		 * Bidang di bawah ini adalah bidang default juga, jadi kami tidak memberikan
-		 * plugin atau tema hak untuk mengubahnya.
+		 * plugin atau tema, hak untuk mengubahnya.
 		 */
 		$inputs['password']  = $this->config->item('password', 'inputs');
 		$inputs['cpassword'] = $this->config->item('cpassword', 'inputs');
@@ -366,13 +401,13 @@ class Users extends CG_Controller_Admin {
 		);
 
 		// Let's now add our generated inputs to view.
-		$this->data['inputs'] = $inputs;
+		$this->data['inputs'] = apply_filters('users_inputs', $inputs);
 
 		// Before form processing
 		if ($this->form_validation->run() == false)
 		{
 			$this->data['page_icon'] = 'user';
-			$this->data['page_title'] = sprintf(__('lang_edit_user_%s'), $this->data['user']->username);
+			$this->data['page_title'] = sprintf(__('lang_edit_user_%s'), $this->data['user']->full_name);
 
 			// Set page title and render view.
 			$this->themes
@@ -384,7 +419,7 @@ class Users extends CG_Controller_Admin {
 		{
 			if (true !== check_nonce('edit-user_'.$id))
 			{
-				set_alert(__('error_csrf'), 'error');
+				set_alert(__('This form did not pass our security controls'), 'error');
 				redirect(admin_url('users/edit/'.$id), 'refresh');
 				exit;
 			}
@@ -398,9 +433,8 @@ class Users extends CG_Controller_Admin {
 			// Collect all user details.
 			$user_data = $this->input->post(array_keys($inputs), true);
 
-			// Format "enabled" and user's "subtype".
+			// Format "enabled".
 			$user_data['enabled'] = ($this->input->post('enabled') == '1') ? 1 : 0;
-			$user_data['subtype'] = ($this->input->post('admin') == '1') ? 'administrator' : 'regular';
 
 			/**
 			 * After form submit. We make sure to remove fields that have
@@ -438,13 +472,13 @@ class Users extends CG_Controller_Admin {
 			if (empty($user_data) OR true === $this->users->update($id, $user_data))
 			{
 				// Log the activity.
-				set_alert(__('lang_SUCCESS_EDIT'), 'success');
+				set_alert(__('User successfully updated'), 'success');
 				redirect(admin_url('users'), 'refresh');
 			}
 			// Something went wrong?
 			else
 			{
-				set_alert(__('lang_ERROR_EDIT'), 'error');
+				set_alert(__('Unable to update user'), 'error');
 				redirect(admin_url('users/edit/'.$this->data['user']->id), 'refresh');
 			}
 			exit;
@@ -467,25 +501,25 @@ class Users extends CG_Controller_Admin {
 		// No action done on own account.
 		if ($id == $this->c_user->id)
 		{
-			set_alert(__('lang_error_activate_OWN'), 'error');
+			set_alert(__('You cannot activate your own account'), 'error');
 		}
 
 		// Make sure the user exists.
 		elseif (false === ($user = $this->users->get($id)))
 		{
-			set_alert(__('lang_ERROR_ACCOUNT_MISSING'), 'error');
+			set_alert(__('This user does not exist.'), 'error');
 		}
 
 		// Successfully activated?
 		elseif (0 == $user->enabled && false !== $user->update('enabled', 1))
 		{
-			set_alert(sprintf(__('lang_success_activate_%s'), $user->username), 'success');
+			set_alert(sprintf(__('%s successfully activated'), $user->username), 'success');
 		}
 
 		// An error occurred somewhere?
 		else
 		{
-			set_alert(sprintf(__('lang_error_activate_%s'), $user->username), 'error');
+			set_alert(sprintf(__('Unable to activate %s'), $user->username), 'error');
 		}
 
 		redirect($this->redirect);
@@ -506,25 +540,25 @@ class Users extends CG_Controller_Admin {
 		// No action done on own account.
 		if ($id == $this->c_user->id)
 		{
-			set_alert(__('lang_error_deactivate_OWN'), 'error');
+			set_alert(__('You cannot deactivate your own account'), 'error');
 		}
 
 		// Make sure the user exists.
 		elseif (false === ($user = $this->users->get($id)))
 		{
-			set_alert(__('lang_ERROR_ACCOUNT_MISSING'), 'error');
+			set_alert(__('This user does not exist.'), 'error');
 		}
 
 		// Successfully activated?
 		elseif (1 == $user->enabled && false !== $user->update('enabled', 0))
 		{
-			set_alert(sprintf(__('lang_success_deactivate_%s'), $user->username), 'success');
+			set_alert(sprintf(__('%s successfully deactivated'), $user->username), 'success');
 		}
 
 		// An error occurred somewhere?
 		else
 		{
-			set_alert(sprintf(__('lang_error_deactivate_%s'), $user->username), 'error');
+			set_alert(sprintf(__('Unable to deactivate %s'), $user->username), 'error');
 		}
 
 		redirect($this->redirect);
@@ -545,25 +579,25 @@ class Users extends CG_Controller_Admin {
 		// No action done on own account.
 		if ($id == $this->c_user->id)
 		{
-			set_alert(__('lang_error_delete_OWN'), 'error');
+			set_alert(__('You cannot delete your own account'), 'error');
 		}
 
 		// Make sure the user exists.
 		elseif (false === ($user = $this->users->get($id)))
 		{
-			set_alert(__('lang_ERROR_ACCOUNT_MISSING'), 'error');
+			set_alert(__('This user does not exist.'), 'error');
 		}
 
 		// Successfully activated?
 		elseif (0 == $user->deleted && false !== $this->users->delete($id))
 		{
-			set_alert(sprintf(__('lang_success_delete_%s'), $user->username), 'success');
+			set_alert(sprintf(__('%s successfully delete'), $user->username), 'success');
 		}
 
 		// An error occurred somewhere?
 		else
 		{
-			set_alert(sprintf(__('lang_error_delete_%s'), $user->username), 'error');
+			set_alert(sprintf(__('Unable to delete %s'), $user->username), 'error');
 		}
 
 		redirect($this->redirect);
@@ -584,25 +618,25 @@ class Users extends CG_Controller_Admin {
 		// No action done on own account.
 		if ($id == $this->c_user->id)
 		{
-			set_alert(__('lang_error_restore_own'), 'error');
+			set_alert(__('You cannot restore your own account'), 'error');
 		}
 
 		// Make sure the user exists.
 		elseif (false === ($user = $this->users->get($id)))
 		{
-			set_alert(__('lang_error_account_missing'), 'error');
+			set_alert(__('This user does not exist.'), 'error');
 		}
 
 		// Successfully activated?
 		elseif (1 == $user->deleted && false !== $this->users->restore($id))
 		{
-			set_alert(sprintf(__('lang_success_restore_%s'), $user->username), 'success');
+			set_alert(sprintf(__('%s successfully restore'), $user->username), 'success');
 		}
 
 		// An error occurred somewhere?
 		else
 		{
-			set_alert(sprintf(__('lang_error_restore_%s'), $user->username), 'error');
+			set_alert(sprintf(__('Unable to restore %s'), $user->username), 'error');
 		}
 
 		redirect($this->redirect);
@@ -623,25 +657,25 @@ class Users extends CG_Controller_Admin {
 		// No action done on own account.
 		if ($id == $this->c_user->id)
 		{
-			set_alert(__('lang_error_remove_own'), 'error');
+			set_alert(__('You cannot remove your own account'), 'error');
 		}
 
 		// Make sure the user exists.
 		elseif (false === ($user = $this->users->get($id)))
 		{
-			set_alert(__('lang_error_account_missing'), 'error');
+			set_alert(__('This user does not exist.'), 'error');
 		}
 
 		// Successfully activated?
 		elseif (false !== $this->users->remove($id))
 		{
-			set_alert(sprintf(__('lang_success_remove_%s'), $user->username), 'success');
+			set_alert(sprintf(__('%s successfully remove'), $user->username), 'success');
 		}
 
 		// An error occurred somewhere?
 		else
 		{
-			set_alert(sprintf(__('lang_error_remove_%s'), $user->username), 'error');
+			set_alert(sprintf(__('Unable to remove %s'), $user->username), 'error');
 		}
 
 		redirect($this->redirect);
@@ -660,15 +694,13 @@ class Users extends CG_Controller_Admin {
 	 */
 	protected function _subhead()
 	{
-		if ('index' !== $this->router->fetch_method())
-		{
-			add_action('admin_subhead', function () {
-				$this->_btn_back();
-			});
-			return;
-		}
-
 		add_action('admin_subhead', function () {
+
+			if ('index' !== $this->router->fetch_method())
+			{
+				$this->_btn_back('users');
+				return;
+			}
 
 			// Add user button.
 			echo html_tag('a', array(

@@ -38,7 +38,7 @@ class Languages extends CG_Controller_Admin
 		parent::__construct();
 
 		// Default page title and icon.
-		$this->data['page_icon']  = 'globe';
+		$this->data['page_icon']  = 'language';
 		$this->data['page_title'] = __('lang_languages');
 
 		// Add our head string.
@@ -222,7 +222,7 @@ class Languages extends CG_Controller_Admin
 		// We cannot touch "English" language.
 		if ('indonesia' === $folder)
 		{
-			set_alert(__('lang_ERROR_ENGLISH_REQUIRED'), 'error');
+			set_alert(__('The English language is required, thus it cannot be touched'), 'error');
 			redirect(admin_url('languages'));
 			exit;
 		}
@@ -234,7 +234,7 @@ class Languages extends CG_Controller_Admin
 		// Already enabled? Nothing to do..
 		if (in_array($folder, $languages))
 		{
-			set_alert(__('lang_ALREADY_ENABLE'), 'error');
+			set_alert(__('This language is already enabled'), 'error');
 			redirect(admin_url('languages'));
 			exit;
 		}
@@ -247,12 +247,12 @@ class Languages extends CG_Controller_Admin
 		// Successfully updated?
 		if (false !== $this->options->set_item('languages', $languages))
 		{
-			set_alert(__('lang_SUCCESS_ENABLE'), 'success');
+			set_alert(__('Language successfully enabled'), 'success');
 			redirect(admin_url('languages'));
 			exit;
 		}
 
-		set_alert(__('lang_ERROR_ENABLE'), 'error');
+		set_alert(__('Unable to enable language'), 'error');
 		redirect(admin_url('languages'));
 		exit;
 	}
@@ -274,7 +274,7 @@ class Languages extends CG_Controller_Admin
 		// We cannot touch "English" language.
 		if ('indonesia' === $folder)
 		{
-			set_alert(__('lang_ERROR_ENGLISH_REQUIRED'), 'error');
+			set_alert(__('The English language is required, thus it cannot be touched'), 'error');
 			redirect(admin_url('languages'));
 			exit;
 		}
@@ -286,7 +286,7 @@ class Languages extends CG_Controller_Admin
 		// Already disabled? Nothing to do..
 		if ( ! in_array($folder, $languages))
 		{
-			set_alert(__('lang_ALREADY_DISABLE'), 'error');
+			set_alert(__('This language is already disabled'), 'error');
 			redirect(admin_url('languages'));
 			exit;
 		}
@@ -315,12 +315,12 @@ class Languages extends CG_Controller_Admin
 				$this->options->set_item('language', 'indonesia');
 			}
 
-			set_alert(__('lang_SUCCESS_DISABLE'), 'success');
+			set_alert(__('Language successfully disabled'), 'success');
 			redirect(admin_url('languages'));
 			exit;
 		}
 
-		set_alert(__('lang_ERROR_DISABLE'), 'error');
+		set_alert(__('Unable to disable language'), 'error');
 		redirect(admin_url('languages'));
 		exit;
 	}
@@ -351,7 +351,7 @@ class Languages extends CG_Controller_Admin
 
 			if (false === $this->options->set_item('languages', $languages))
 			{
-				set_alert(__('lang_ERROR_DEFAULT'), 'error');
+				set_alert(__('Unable to change default language'), 'error');
 				redirect(admin_url('languages'));
 				exit;
 			}
@@ -367,12 +367,12 @@ class Languages extends CG_Controller_Admin
 			$user = $this->auth->user();
 			$user->update('language', $folder);
 
-			set_alert(__('lang_success_default'), 'success');
+			set_alert(__('Default language successfully changed'), 'success');
 			redirect(admin_url('languages'));
 			exit;
 		}
 
-		set_alert(__('lang_ERROR_DEFAULT'), 'error');
+		set_alert(__('Unable to change default language'), 'error');
 		redirect(admin_url('languages'));
 		exit;
 	}
