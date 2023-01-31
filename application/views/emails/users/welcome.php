@@ -19,14 +19,20 @@ defined('BASEPATH') OR exit('No direct script access allowed');
 $messages['english'] = <<<EOT
 Hello {name},
 
-Most people have really long welcome email sequences after you register on their site.
-
-Good news: we aren't most people.
-But, we want to welcome you anyways, and thank you for joining us at {site_anchor}.
-
-Hoping you enjoy your stay, please accept our kind regards.
+welcome you anyways, and thank you for joining us at {site_anchor}.
 
 -- {site_name} Team.
+EOT;
+
+/**
+ * Indonesia version.
+ */
+$messages['indonesia'] = <<<EOT
+Halo {name},
+
+Selamat datang, dan terima kasih telah bergabung dengan kami di {site_anchor}.
+
+-- Tim {site_name}.
 EOT;
 
 // ------------------------------------------------------------------------
