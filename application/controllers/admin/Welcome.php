@@ -65,55 +65,43 @@ class Welcome extends CG_Controller_Admin
 
 		// Users count.
 		$users_count = $this->users->count();
-		if ($users_count > 0)
-		{
-			$boxes[] = info_box(
-				number_format_short($users_count),
-				__('lang_users'),
-				'users',
-				admin_url('users'),
-				'primary'
-			);
-		}
+		$boxes[] = info_box(
+			number_format_short($users_count),
+			__('lang_users'),
+			'users',
+			admin_url('users'),
+			'primary'
+		);
 
 		// Languages count.
 		$langs_count = count(config_item('languages'));
-		if ($langs_count >= 1)
-		{
-			$boxes[] = info_box(
-				number_format_short($langs_count),
-				__('lang_languages'),
-				'language',
-				admin_url('languages'),
-				'success'
-			);
-		}
+		$boxes[] = info_box(
+			number_format_short($langs_count),
+			__('lang_languages'),
+			'language',
+			admin_url('languages'),
+			'success'
+		);
 
 		// Packages count.
 		$packages_count = count($this->router->list_packages());
-		if ($packages_count > 0)
-		{
-			$boxes[] = info_box(
-				number_format_short($packages_count),
-				__('lang_packages'),
-				'plug',
-				admin_url('packages'),
-				'warning'
-			);
-		}
+		$boxes[] = info_box(
+			number_format_short($packages_count),
+			__('lang_packages'),
+			'plug',
+			admin_url('packages'),
+			'warning'
+		);
 
 		// Themes count.
 		$themes_count = count($this->themes->list_themes());
-		if ($themes_count > 0)
-		{
-			$boxes[] = info_box(
-				number_format_short($themes_count),
-				__('lang_themes'),
-				'paint-brush',
-				admin_url('themes'),
-				'danger'
-			);
-		}
+		$boxes[] = info_box(
+			number_format_short($themes_count),
+			__('lang_themes'),
+			'paint-brush',
+			admin_url('themes'),
+			'danger'
+		);
 
 		$output .= implode('</div><div class="col-xs-6 col-sm-6 col-md-3">', $boxes);
 
