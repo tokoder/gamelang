@@ -373,25 +373,6 @@ class CG_Controller_Admin extends CG_Controller
 
 		return $anchor;
 	}
-
-	/**
-	 * _referrer
-	 *
-	 * @access 	public
-	 * @param 	int 	$limit 	The limit to create back link for.
-	 * @return 	string
-	 */
-	protected function _referrer($limit = null, $redirect = false)
-	{
-		$total_segments = $this->uri->total_segments() - $limit;
-		$slice          = $total_segments ? -1 - ($total_segments) : -1;
-		$segment        = array_slice($this->uri->segment_array(), 1, $slice);
-		$referrer       = admin_url($segment);
-
-		return (false === $redirect)
-			? $referrer
-			: redirect($referrer);
-	}
 }
 
 // -----------------------------------------------------------------------------

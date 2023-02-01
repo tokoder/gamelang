@@ -23,7 +23,7 @@ defined( 'BASEPATH' ) OR exit( 'No direct script access allowed' );
  * @author		Tokoder Team
  */
 // ------------------------------------------------------------------------
-if ( ! class_exists('Default_theme', false)):
+if ( ! class_exists('Default_theme', false) && ! get_instance()->router->is_admin()):
 // ------------------------------------------------------------------------
 class Default_theme {
 	/**
@@ -241,12 +241,11 @@ class Default_theme {
 	}
 
 }
+// Initialize class.
+$Default_theme = new Default_theme();
 // ------------------------------------------------------------------------
 endif; // End of class Default_theme.
 // ------------------------------------------------------------------------
-
-// Initialize class.
-$Default_theme = new Default_theme();
 
 // To remove the copyright added between DOCTYPE and <html>:
 if ( ! function_exists('remove_copyright'))
@@ -266,6 +265,8 @@ if ( ! function_exists('remove_copyright'))
 	// Now you add the filer.
 	add_filter('CG_copyright', 'remove_copyright');
 }
+
+// -----------------------------------------------------------------------------
 
 // To remove the generator meta tag:
 if ( ! function_exists('remove_generator'))
