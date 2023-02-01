@@ -63,11 +63,6 @@ class Users extends CG_Controller_Admin {
 			$where['subtype'] = $role;
 		}
 
-		if ( ! $this->auth->is_admin() && user_permission('users'))
-		{
-			$where['owner_id'] = $this->auth->user_id();
-		}
-
 		// Account status.
 		if (null !== ($status = $this->input->get('status', true)))
 		{
