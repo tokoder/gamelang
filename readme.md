@@ -1,6 +1,6 @@
 <h1>Codeigniter Gamelang</h1>
 
-<p></p>
+<p>Bagaimana jika anda mendapat tantangan dengan kasus, seperti membuat sebuah fitur dengan kemampuan yang dapat diperguanakan dalam konteks yang berbeda.</p>
 
 <h4>Dibuat dengan <a href="https://codeigniter.com/" target="_blank">Codeigniter</a>, terintegrasi secara mulus dengan banyak packages untuk mempercepat pengembangan aplikasi berbasis web.</h4>
 
