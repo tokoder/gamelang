@@ -65,6 +65,12 @@ class Themes extends CG_Controller_Admin {
 		{
 			$t['actions'] = array();
 
+			// Details button.
+			$t['actions'][] = html_tag('a', array(
+				'href'  => admin_url('themes?theme='.$folder),
+				'class' => 'btn btn-light btn-sm theme-details',
+			), __('lang_details'));
+
 			// Activation button.
 			if ($folder !== config_item('theme'))
 			{
@@ -74,7 +80,7 @@ class Themes extends CG_Controller_Admin {
 						'theme-activate_'.$folder
 					)),
 					'role' => 'button',
-					'class' => 'btn btn-outline-primary btn-sm theme-activate me-2',
+					'class' => 'btn btn-primary btn-sm theme-activate ms-2',
 					'data-name' => $t['name'],
 				), __('lang_activate'));
 			}
@@ -86,17 +92,11 @@ class Themes extends CG_Controller_Admin {
 				{
 					$t['actions'][] = html_tag('a', array(
 						'href'  => admin_url('themes/settings/'.$folder),
-						'class' => 'btn btn-light btn-sm me-2',
+						'class' => 'btn btn-light btn-sm ms-2',
 						'aria-label' => sprintf(__('lang_settings_%s'), $folder),
 					), fa_icon('cogs').__('lang_settings'));
 				}
 			}
-
-			// Details button.
-			$t['actions'][] = html_tag('a', array(
-				'href'  => admin_url('themes?theme='.$folder),
-				'class' => 'btn btn-info btn-sm theme-details',
-			), __('lang_details'));
 		}
 
 		/**

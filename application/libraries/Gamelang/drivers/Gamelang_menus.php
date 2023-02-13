@@ -190,6 +190,14 @@ class Gamelang_menus extends CI_Driver {
 	private $item_divider             = '';
 
 	/**
+	 * Hidden of the item
+	 * if no children item
+	 *
+	 * @var string
+	 */
+	private $item_hidden             = '';
+
+	/**
 	 * Array key that holds Menu id
 	 * Ex: $items['id'] = 1
 	 *
@@ -301,6 +309,18 @@ class Gamelang_menus extends CI_Driver {
 			$this->item_divider             = $divider ? $divider : $this->item_divider;
 			$this->divided_items_list_count = count($this->divided_items_list);
 		}
+	}
+
+	// ----------------------------------------------------------------------------
+
+	/**
+	 * Specify what items would be hidden
+	 *
+	 * @param array  $items   array of menu
+	 */
+	public function set_hidden_items($items = '')
+	{
+		$this->item_hidden = $items;
 	}
 
 	// ----------------------------------------------------------------------------
@@ -484,6 +504,13 @@ class Gamelang_menus extends CI_Driver {
 			}
 			else
 			{
+				if ( is_array($this->item_hidden)
+					&& in_array($item[$this->menu_id], $this->item_hidden)
+					OR $item[$this->menu_id] == $this->item_hidden)
+				{
+					continue;
+				}
+
 				$href = (strpos($slug, '://') === FALSE) ? site_url($slug) : $slug;
 
 				if (isset($nav_tag_opened))

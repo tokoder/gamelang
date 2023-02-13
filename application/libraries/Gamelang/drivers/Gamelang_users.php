@@ -1773,8 +1773,7 @@ if ( ! function_exists('user_avatar')):
 			$headers = @get_headers($uri);
 			if ( is_array($headers)
 				&& ! preg_match("|200|", $headers[0])
-				&& $CI->config->item('use_gravatar')
-			) {
+				&& $CI->config->item('use_gravatar')){
 				$avatar_url = "https://www.gravatar.com/avatar/{$hash}?r=g&amp;d=mm";
 				($size >= 1) && $avatar_url .= "&amp;s={$size}";
 			}

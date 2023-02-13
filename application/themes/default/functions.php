@@ -148,6 +148,7 @@ class Default_theme {
 
 		add_script('assets/vendor/jquery/jquery.js');
 		add_script('assets/vendor/bootstrap/js/bootstrap.bundle.js');
+		add_script('assets/vendor/js-cookie/js.cookie.js');
 		add_script(get_theme_path('assets/js/script.js'));
 	}
 

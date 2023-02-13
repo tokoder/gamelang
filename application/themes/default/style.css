@@ -16,7 +16,36 @@ body {
 
 .wrapper { margin-bottom: 65px; }
 
-.btn {font-size: 1em}
+.nav-scroller {
+    position: relative;
+    z-index: 2;
+    height: 2.75rem;
+}
+
+.nav-scroller .nav {
+    display: flex;
+    flex-wrap: nowrap;
+    margin-top: -1px;
+    overflow-x: auto;
+    text-align: center;
+    white-space: nowrap;
+    -webkit-overflow-scrolling: touch;
+}
+
+.nav-scroller .nav-link {
+    padding: calc(1.5rem * 0.5);
+    color: #6c757d;
+}
+
+.nav-scroller .nav-link:hover {
+    color: #007bff;
+}
+
+.nav-scroller .active {
+    color: #343a40;
+}
+
+/* user */
 .user-menu {
     border-left: 1px solid #eee; /* Fallback */
     border-left: 1px solid rgba(255, 255, 255, 0.1);
@@ -26,11 +55,6 @@ body {
 .user-menu img {
     margin-top: -2px;
     margin-left: 12px;
-}
-
-.navbar {
-    border: none;
-    border-radius: 0;
 }
 
 .avatar-male,
@@ -52,17 +76,6 @@ body {
 
 
 /* Utilities */
-.margin-none {margin: 0}
-.margin-top-none {margin-top: 0}
-.margin-bottom-none {margin-bottom: 0}
-.margin-right-none {margin-right: 0}
-.margin-left-none {margin-left: 0}
-.padding-none {padding: 0}
-.padding-top-none {padding-top: 0}
-.padding-bottom-none {padding-bottom: 0}
-.padding-right-none {padding-right: 0}
-.padding-left-none {padding-left: 0}
-
 hr {
     opacity: 0.5;
 }
