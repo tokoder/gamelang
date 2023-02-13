@@ -117,7 +117,7 @@ class CG_Model extends CI_Model
 	 * Whether to use unix_timestamp or datatime.
 	 * Set to 'timestamp' or 'Y-m-d H:i:s'
 	 */
-	protected $datetime_format = 'Y-m-d H:i:s';
+	protected $datetime_format = 'timestamp';
 
 	// -----------------------------------------------------------------------------
 	// GENERIC METHODS

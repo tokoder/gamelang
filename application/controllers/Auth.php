@@ -103,9 +103,6 @@ class Auth extends CG_Controller
 			add_filter('theme_views_path', function($path) {
 				return VIEWPATH;
 			});
-
-			// Separated footer to allow different layouts.
-			add_partial('footer');
 		}
 
 		// Call the method.

@@ -14,7 +14,7 @@
 defined('BASEPATH') OR exit('No direct script access allowed');
 
 // Form open tag.
-echo form_open('login', 'id="login"'),
+echo form_open(current_url(), 'id="login"'),
 form_nonce('user-login');
 
 do_action('login-form-before');

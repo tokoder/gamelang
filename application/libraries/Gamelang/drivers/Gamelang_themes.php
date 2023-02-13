@@ -819,7 +819,7 @@ class Gamelang_themes extends CI_Driver
 		if ($this->_is_admin())
 		{
 			$this->body_classes[] = 'admin';
-			$this->body_classes[] = 'ver-'.str_replace('.', '-', CI_VERSION);
+			$this->body_classes[] = 'ver-'.str_replace('.', '-', CG_VERSION);
 			$this->body_classes[] = 'locale-'.strtolower($this->language('locale'));
 		}
 
@@ -1380,7 +1380,7 @@ class Gamelang_themes extends CI_Driver
 	{
 		$title = array();
 
-		$this->_is_admin() && $title[] = 'admin';
+		$this->_is_admin() && $title[] = config_item('site_admin');
 
 		$title[] = $this->package;
 

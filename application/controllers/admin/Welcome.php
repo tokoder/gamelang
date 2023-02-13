@@ -78,7 +78,7 @@ class Welcome extends CG_Controller_Admin
 		$boxes[] = info_box(
 			number_format_short($langs_count),
 			__('lang_languages'),
-			'language',
+			'globe',
 			admin_url('languages'),
 			'success'
 		);
@@ -88,7 +88,7 @@ class Welcome extends CG_Controller_Admin
 		$boxes[] = info_box(
 			number_format_short($packages_count),
 			__('lang_packages'),
-			'plug',
+			'boxes',
 			admin_url('packages'),
 			'warning'
 		);

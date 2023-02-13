@@ -59,6 +59,11 @@ class CG_Controller extends CI_Controller
 			$this->session->set_flashdata('old_post_data', $this->input->post());
 		}
 
+		/**
+		 * Components is called only of method that load views.
+		 */
+		$this->_component_menu();
+
 		// Get current package's details.
 		$package = $this->router->fetch_package();
 		empty($package) OR $package = $this->router->package_details($package);
@@ -174,6 +179,7 @@ class CG_Controller extends CI_Controller
 		{
 			// Set CI validation rules first.
 			$this->form_validation->set_rules($rules);
+
 			// Use jQuery validation?
 			if (null !== $form)
 			{
@@ -199,6 +205,70 @@ class CG_Controller extends CI_Controller
 			}
 		}
 	}
+
+	// ------------------------------------------------------------------------
+	// Private Methods.
+	// ------------------------------------------------------------------------
+
+	/**
+	 * Prepare component menu.
+	 * @access 	public
+	 * @param 	none
+	 * @return 	array
+	 */
+	protected function _component_menu()
+	{
+		$_contexts = array('admin');
+		$packages = $this->router->list_packages(true);
+
+		if ( ! $packages)
+		{
+			return;
+		}
+
+		foreach ($packages as $folder => $package)
+		{
+			// we make sure the package is enabled!
+			if ( ! $package['enabled'])
+			{
+				continue;
+			}
+
+			foreach ($package['contexts'] as $context => $status)
+			{
+				// No context? Ignore it.
+				if (false === $status OR ! in_array($context, $_contexts))
+				{
+					continue;
+				}
+
+				// Add other context.
+				add_filter("components_menu", function($admin) use ($package, $context)
+				{
+					$uri = $package['folder'];
+
+					$title_line = isset($package[$context.'_menu'])
+						? $context.'_menu'
+						: 'admin_menu';
+
+					// Translation present?
+					$title = (isset($package[$title_line]) && 1 === sscanf($package[$title_line], 'lang:%s', $line))
+						? __($line)
+						: ucwords(str_replace('-', ' ', $package[$title_line]));
+
+					$admin[] = array(
+						'parent' => NULL,
+						'order'  => $package['admin_order'],
+						'id'     => "_{$context}_".url_title(strtolower($title)),
+						'slug'   => site_url($uri),
+						'name'   => $title,
+					);
+
+					return $admin;
+				});
+			}
+		}
+	}
 }
 
 // -----------------------------------------------------------------------------
@@ -220,6 +290,7 @@ class CG_Controller_Admin extends CG_Controller
 		parent::__construct();
 
 		$this->auth->check_permission('admin_panel');
+        $this->session->unset_userdata('_admin_menu');
 	}
 
 	// ------------------------------------------------------------------------
@@ -317,8 +388,7 @@ class CG_Controller_Admin extends CG_Controller
 						: 'admin_menu';
 
 					// Translation present?
-					$title = (isset($package[$title_line])
-						&& 1 === sscanf($package[$title_line], 'lang:%s', $line))
+					$title = (isset($package[$title_line]) && 1 === sscanf($package[$title_line], 'lang:%s', $line))
 						? __($line)
 						: ucwords(str_replace('-', ' ', $package[$title_line]));
 
@@ -361,7 +431,7 @@ class CG_Controller_Admin extends CG_Controller
 
 		$anchor = html_tag('a', array(
 			'href' => admin_url($package),
-			'class' => 'btn btn-outline-dark btn-sm btn-icon me-2',
+			'class' => 'btn btn-outline-dark btn-sm btn-icon',
 		), fa_icon($icon).($label ? $label : __('lang_back')));
 
 		if (false === $return)

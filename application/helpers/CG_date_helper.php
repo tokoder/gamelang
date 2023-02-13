@@ -39,7 +39,6 @@ if (!function_exists('formatted_date'))
     function formatted_date($datetime)
     {
         $date = date("M j, Y", $datetime);
-        $date = diffForHumans($date);
         return $date;
     }
 }

@@ -502,6 +502,13 @@ class CG_Router extends CI_Router
     	// Let's detect package's parts first.
         list($package, $directory, $controller) = array_pad($segments, 3, NULL);
 
+		if ($this->translate_uri_dashes === TRUE)
+		{
+			$package = str_replace('-', '_', $package);
+			$directory = str_replace('-', '_', $directory);
+			$controller = str_replace('-', '_', $controller);
+		}
+
         // Flag to see if we are in a package.
         $is_package = false;
 
@@ -522,6 +529,8 @@ class CG_Router extends CI_Router
 
         if (false === $is_package)
         {
+			$package = $this->is_admin() ? config_item('site_admin') : $package;
+
 			$path = APPPATH.'controllers/';
 			$this->directory = $package.'/';
 
@@ -553,7 +562,7 @@ class CG_Router extends CI_Router
 			return false;
 		}
 
-		if (true !== is_dir($source = $location.'/controllers/'))
+		if (true !== is_dir($source = $location.'controllers/'))
 		{
 			return false;
 		}
@@ -584,6 +593,7 @@ class CG_Router extends CI_Router
 		$this->directory = "{$relative}/{$package}/controllers/";
 
 		// Found the controller?
+		$directory = in_array($directory, [config_item('site_admin')]) ? config_item('site_admin') : $directory;
 		if ($directory && is_file($source.ucfirst($directory).'.php'))
 		{
 			$this->set_class($directory);
@@ -617,7 +627,6 @@ class CG_Router extends CI_Router
 			}
 		}
 
-		$directory = str_replace('-', '_', $this->uri->segment(1));
 		if ($directory && is_file($source.ucfirst($directory).'.php'))
 		{
 			$this->set_class($directory);

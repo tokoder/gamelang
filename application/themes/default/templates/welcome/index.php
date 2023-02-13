@@ -1,72 +1,48 @@
-<div class="row g-3 mb-5">
-    <div class="col-12">
-        <div class="p-3 p-md-5 bg-light border border-dark rounded">
-            <h1 class="display-4 fw-normal"><?=sprintf(__('Welcome to %s'), config_item('site_name'))?>!</h1>
-
-            <p class="lead fw-normal">
+<div class="row g-5 py-5">
+    <div class="col-md-8">
+        <section>
+            <div class="row">
+                <div class="col-md-8">
+                    <h1 class="display-4 fw-bold lh-1 mb-3"><?=__('Let\'s build from here')?></h1>
+                    <p class="lead text-muted"><?=config_item('site_description')?></p>
+                    <p>
+                        <a href="<?=admin_url('packages')?>" class="btn btn-primary my-2"><?=__('Add new package')?></a>
+                        <a href="<?=admin_url()?>" class="btn btn-secondary my-2"><?=__('Go to dashboard')?></a>
+                    </p>
+                </div>
+            </div>
+        </section>
+    </div>
+    <div class="col-md-4">
+        <div class="position-sticky" style="top: 2rem;">
+            <div class="p-4 mb-3 bg-light rounded">
+                <h4 class="fst-italic"><?php _e('Guides')?></h4>
+                <p class="mb-0">
                 <?=sprintf(
-                    __('The page you are looking at is being generated dynamically by %s'),
-                    anchor(prep_url('github.com/tokoder/gamelang#readme'), 'CodeIgniter Gamelang', 'target="_blank"')
-                )?>.
-            </p>
+                    __('Read more detailed instructions and documentation on using or contributing to %s'),
+                    anchor(prep_url('github.com/tokoder/gamelang/wiki'), 'Gamelang', 'target="_blank"')
+                )?>
+                </p>
+            </div>
 
-            <p>
-                <?=sprintf(
-                    __('If you are exploring CodeIgniter Gamelang for the very first time, you should start by reading the %s'),
-                    anchor(prep_url('github.com/tokoder/gamelang/wiki'), 'User Guide', 'target="_blank"')
-                )?>.
-            </p>
+            <div class="p-4">
+                <h4 class="fst-italic"><?php _e('Archives')?></h4>
+                <ol class="list-unstyled mb-0">
+                    <li><a href="#"><?= date('F Y')?></a></li>
+                    <li><a href="#"><?= date('F Y', strtotime('12/27/17'))?></a></li>
+                </ol>
+            </div>
 
-            <p>
-                <?=sprintf(
-                    __('The corresponding controller for this page is found at: %s'),
-                    '<code>application/controllers/Welcome.php</code>'
-                )?>.
-            </p>
-
-            <?php echo  (ENVIRONMENT === 'development') ?  '<p>CodeIgniter Version <strong>' . CI_VERSION . '</strong></p>' : '' ?>
+            <div class="p-4">
+                <h4 class="fst-italic"><?php _e('Social')?></h4>
+                <ol class="list-unstyled">
+                    <li><?=anchor(prep_url('github.com/tokoder/gamelang'), 'GitHub', 'target="_blank"')?></li>
+                    <li><?=anchor(prep_url('facebook.com/tokoder'), 'Facebook', 'target="_blank"')?></li>
+                    <li><?=anchor(prep_url('instagram.com/tokodercom'), 'Instragram', 'target="_blank"')?></li>
+                    <li><?=anchor(prep_url('tokoder.com'), 'Website', 'target="_blank"')?></li>
+                </ol>
+            </div>
         </div>
-    </div>
-</div>
-
-<div class="row g-5 mb-5">
-    <div class="col-xs-12 col-sm-6 col-md-3">
-        <h3 class="fst-italic"><?php _e('Social')?></h3>
-        <ol class="list-unstyled">
-            <li><?=anchor(prep_url('github.com/tokoder/gamelang'), 'GitHub', 'target="_blank"')?></li>
-            <li><?=anchor(prep_url('facebook.com/tokoder'), 'Facebook', 'target="_blank"')?></li>
-            <li><?=anchor(prep_url('instagram.com/tokodercom'), 'Instragram', 'target="_blank"')?></li>
-            <li><?=anchor(prep_url('tokoder.com'), 'Website', 'target="_blank"')?></li>
-        </ol>
-    </div>
-
-    <div class="col-xs-12 col-sm-6 col-md-3">
-        <h3 class="fst-italic"><?php _e('Archives')?></h3>
-        <ol class="list-unstyled mb-0">
-            <li><a href="#"><?= date('F Y')?></a></li>
-            <li><a href="#"><?= date('F Y', strtotime('12/27/17'))?></a></li>
-        </ol>
-    </div>
-
-    <div class="col-xs-12 col-sm-6 col-md-3">
-        <h3 class="fst-italic"><?php _e('About')?></h3>
-        <p class="mb-0">
-            <?=__(get_option('site_description'))?>
-            <?=sprintf(
-                __('Check out these open source projects that you can quickly duplicate to a new %s repository'),
-                anchor(prep_url('github.com/tokoder/gamelang'), 'GitHub', 'target="_blank"')
-            )?>.
-        </p>
-    </div>
-
-    <div class="col-xs-12 col-sm-6 col-md-3">
-        <h3 class="fst-italic"><?php _e('Guides')?></h3>
-        <p class="mb-0">
-            <?=sprintf(
-                __('Read more detailed instructions and documentation on using or contributing to %s'),
-                anchor(prep_url('github.com/tokoder/gamelang/wiki'), 'Gamelang', 'target="_blank"')
-            )?>.
-        </p>
     </div>
 </div>
 
