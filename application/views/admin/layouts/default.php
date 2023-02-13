@@ -18,27 +18,23 @@ defined('BASEPATH') OR exit('No direct script access allowed');
  */
 echo get_partial('admin_header');
 
-echo '<main class="wrapper container my-3" role="main">';
+echo '<main class="wrapper container" role="main">';
+
+    /**
+     * Fires at the top of page content.
+     */
+    do_action('admin_page_header');
 
     // Display the alert.
     the_alert();
 
-    echo '<div id="wrapper">';
+    // Display the page content.
+    the_content();
 
-        /**
-         * Fires at the top of page content.
-         */
-        do_action('admin_page_header');
-
-        // Display the page content.
-        the_content();
-
-        /**
-         * Fires at the end of page content.
-         */
-        do_action('admin_page_footer');
-
-    echo '</div>';
+    /**
+     * Fires at the end of page content.
+     */
+    do_action('admin_page_footer');
 
 echo '</main>';
 

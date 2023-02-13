@@ -131,7 +131,7 @@ class Admin_theme
 		add_styles('assets/vendor/fontawesome-free/css/all.css');
 		add_styles('assets/vendor/summernote/summernote-bs5.css');
 		add_styles('assets/vendor/sweetalert2/sweetalert2.css');
-		add_styles(get_theme_path('admin.css'));
+		add_styles(get_theme_path('style.css'));
 
 		add_script('assets/vendor/jquery/jquery.js');
 		add_script('assets/vendor/bootstrap/js/bootstrap.bundle.js');
@@ -139,7 +139,7 @@ class Admin_theme
 		add_script('assets/vendor/summernote/summernote-bs5.js');
 		add_script('assets/vendor/js-cookie/js.cookie.js');
 		add_script('assets/vendor/sweetalert2/sweetalert2.js');
-		add_script('assets/vendor/bootbox/bootbox.min.js');
+		add_script('assets/vendor/bootbox/bootbox.js');
 		add_script(get_theme_path('assets/js/admin.js'));
 	}
 

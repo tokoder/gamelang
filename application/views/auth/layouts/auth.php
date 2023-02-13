@@ -23,11 +23,6 @@ add_filter( 'after_scripts', function ( $output ) {
 	return $output;
 });
 
-// Layout opening tags.
-echo '<main class="container vh-100 d-flex flex-column justify-content-center">';
-echo '<div class="row">';
-echo '<div class="col-lg-5 col-md-8 mx-auto my-5">';
-
 // logo filter.
 $login_src = apply_filters('login_img_src', "");
 $login_alt = apply_filters('login_img_alt', config_item('site_name'));
@@ -35,29 +30,89 @@ $login_url = apply_filters('login_img_url', site_url());
 
 if ( ! empty($login_src))
 {
-	echo '<div class="card-body card-logo">';
 	$login_img = html_tag('img', array(
 		'src'   => $login_src,
 		'class' => 'login-logo',
 		'alt'   => $login_alt
 	));
 
-	echo empty($login_url) ? $login_img : "<a href=\"{$login_url}\" tabindex=\"-1\">{$login_img}</a>";
-	echo '</div>';
+	$login_alt = empty($login_url) ? $login_img : "<a href=\"{$login_url}\" tabindex=\"-1\">{$login_img}</a>";
 }
-else {
-	echo "<h1>{$login_alt}</h1>";
-}
+?>
+<main class="py-5 bg-light">
+	<div class="container">
+		<div class="row align-items-center g-lg-5 py-5">
+			<div class="col-lg-7">
+				<h1 class="display-4 fw-bold lh-1 mb-3"><?=$login_alt?></h1>
+				<p class="col-lg-11 fs-4 d-none d-sm-block"><?=config_item('site_description')?></p>
+			</div>
+			<div class="col-lg-5 mx-auto">
+                <div class="card card-body position-relative">
+				<?php
+				// Display the alert.
+				echo $this->themes->get_alert();
 
-// Display the alert.
-echo $this->themes->get_alert();
+				// Display the content.
+				echo $this->themes->print_content();
+				?>
+                </div>
+			</div>
+		</div>
+	</div>
+</main>
 
-// Display the content.
-echo $this->themes->print_content();
+<footer class="footer text-muted py-5">
+    <div class="container">
+        <?php
+        $in_footer[] = array(
+            'parent' => NULL,
+            'id'     => 'homepage',
+            'slug'   => site_url(),
+            'icon'   => 'fa fa-external-link',
+            'name'   => __('lang_go_homepage'),
+        );
+        $in_footer[] = array(
+            'parent' => NULL,
+            'id'     => 'GitHub',
+            'slug'   => prep_url('github.com/tokoder/gamelang'),
+            'name'   => __('GitHub'),
+            'attributes'   => ['target'=>'_blank'],
+        );
+        $in_footer[] = array(
+            'parent' => NULL,
+            'id'     => 'Facebook',
+            'slug'   => prep_url('facebook.com/tokoder'),
+            'name'   => __('Facebook'),
+            'attributes'   => ['target'=>'_blank'],
+        );
+        $in_footer[] = array(
+            'parent' => NULL,
+            'id'     => 'instagram',
+            'slug'   => prep_url('instagram.com/tokodercom'),
+            'name'   => __('instagram'),
+            'attributes'   => ['target'=>'_blank'],
+        );
+        $in_footer[] = array(
+            'parent' => NULL,
+            'id'     => 'Website',
+            'slug'   => prep_url('tokoder.com'),
+            'name'   => __('Website'),
+            'attributes'   => ['target'=>'_blank'],
+        );
+        $this->menus->set_items($in_footer);
+        echo $this->menus->render([
+            'nav_tag_open'  => '<ul class="nav border-bottom">',
+            'item_tag_open' => '<li class="nav-item">',
+            'item_anchor'   => '<a href="%s" class="nav-link ps-0 text-muted">%s</a>',
+        ]);
 
-echo '</div>';
-echo '</div>';
-echo '</main>';
-
-// Footer section.
-echo get_partial('footer');
+		// footer copyright
+        $footer_copyright = sprintf('&copy; %s %s - All Rights Reserved.', date('Y'), anchor(site_url(), get_option('site_name')));
+        $footer_copyright = apply_filters('login_copyright', $footer_copyright);
+        echo html_tag('div', array(
+            'id' => 'footer-copyright',
+            'class' => 'py-3',
+        ), $footer_copyright);
+        ?>
+    </div>
+</footer>

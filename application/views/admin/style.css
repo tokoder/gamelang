@@ -1,4 +1,31 @@
+/**
+ * Theme Name: Admin
+ * Description: The Admin theme that comes with the CodeIgniter Gamelang.
+ * Version: 1.0.0
+ * License: MIT
+ * License URI: https://opensource.org/licenses/MIT
+ * Author: Tokoder Team
+ * Author URI: https://github.com/tokoder
+ * Author Email: tokodercom@mail.com
+ * Tags: codeigniter3, bootstrap5
+ */
+html,
+body {
+    height: 100%;
+}
 
+.wrapper { margin-bottom: 65px; }
+
+.user-menu {
+    border-left: 1px solid #eee; /* Fallback */
+    border-left: 1px solid rgba(255, 255, 255, 0.1);
+    margin-left: 12px;
+}
+
+.user-menu img {
+    margin-top: -2px;
+    margin-left: 12px;
+}
 .btn-select-option {
     font-size: 12px;
     margin: 0;

@@ -192,20 +192,22 @@ class Settings extends CG_Controller_Admin
 
 		foreach ($settings as $option)
 		{
-			$extra['type'] = $option->field_type;
-			$extra['name'] = $option->name;
-			$extra['id'] = $option->name;
-			$extra['value'] = $option->value;
-			$data[$option->name] = $extra;
+			$data[$option->name] = array(
+				'type'  => $option->field_type,
+				'name'  => $option->name,
+				'id'    => $option->name,
+			);
+
+			$rules[$option->name] = array(
+				'field' => $option->name,
+				'label' => "lang:lang_{$option->name}",
+				'rules' => 'trim',
+			);
 
 			if ($option->required == 1)
 			{
 				$data[$option->name]['required'] = 'required';
-				$rules[$option->name] = array(
-					'field' => $option->name,
-					'label' => "lang:lang_{$option->name}",
-					'rules' => 'required',
-				);
+				$rules[$option->name]['rules'] .= '|required';
 			}
 
 			if ($option->field_type == 'dropdown' && ! empty($option->options))
@@ -218,21 +220,18 @@ class Settings extends CG_Controller_Admin
 
 					return (sscanf($val, 'lang:%s', $lang_val) === 1) ? __($lang_val) : $val;
 				}, $option->options);
-
 				$data[$option->name]['options'] = $_option;
+
 				if ( ! empty(json_encode($option->value)))
 				{
 					$data[$option->name]['selected'] = is_bool($option->value) ? json_encode($option->value) : $option->value;
 					$rules[$option->name]['rules'] .= '|in_list['.implode(',', array_keys($option->options)).']';
 				}
-				else
-				{
-					$data[$option->name]['selected'] = '';
-				}
 			}
 			else
 			{
 				$data[$option->name]['placeholder'] = __('lang_'.$option->name);
+				$data[$option->name]['value'] = get_option($option->value);
 			}
 
 			$data[$option->name] = apply_filters('_options-'.$option->name, $data[$option->name]);

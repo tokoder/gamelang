@@ -86,11 +86,11 @@ $config['sess_regenerate_destroy'] = FALSE;
 | Cross Site Request Forgery
 |--------------------------------------------------------------------------
 */
-$config['csrf_protection']   = (ENVIRONMENT !== 'development');
+$config['csrf_protection']   = TRUE;
 $config['csrf_token_name']   = 'csrf_codeigniter_gamelang';
 $config['csrf_cookie_name']  = 'csrf_cookie_codeigniter_gamelang';
 $config['csrf_expire']       = 7200;
-$config['csrf_regenerate']   = TRUE;
+$config['csrf_regenerate']   = FALSE;
 $config['csrf_exclude_uris'] = array();
 
 /*
