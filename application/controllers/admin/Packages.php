@@ -495,7 +495,7 @@ class Packages extends CG_Controller_Admin {
 					), fa_icon('plus-circle').__('lang_add')),
 
 					// Filters toolbar.
-					'<div class="btn-group ms-3" role="group">',
+					'<div class="btn-group ms-2" role="group">',
 
 						// All packages.
 						html_tag('a', array(

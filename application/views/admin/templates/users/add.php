@@ -45,7 +45,7 @@ echo '<div class="col-xs-12 col-md-6">';
 		echo '<div class="form-group mb-3">',
 		form_label($input['placeholder'], $input['name']),
 		print_input($input, array(
-			'autofocus' => 'autofocus',
+			'required' => 'required',
 			'class' => 'form-control'.(has_error($name) ? ' is-invalid' : ''),
 		)),
 		form_error($name, '<div class="form-text invalid-feedback">', '</div>'),
