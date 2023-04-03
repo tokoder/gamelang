@@ -18,7 +18,7 @@ defined('BASEPATH') OR exit('No direct script access allowed');
  *
  * @var	string
  */
-const CG_VERSION = '1.0.0-rc.2';
+const CG_VERSION = '1.0.0-rc.3';
 
 /**
  * Bootstrap File.
@@ -87,7 +87,7 @@ class CG_app
 		 * Back-end context (controllers) - extend the CG_Controller_Admin class.
 		 */
 		global $back_contexts, $front_contexts;
-		$back_contexts  = array('report', 'setting', 'user', 'content', 'help');
+		$back_contexts  = array('setting', 'user', 'extension', 'content', 'component', 'report', 'help');
 		$front_contexts = array('ajax', 'api');
 
 		// Muat file config

@@ -13,18 +13,12 @@
  */
 defined('BASEPATH') OR exit('No direct script access allowed');
 
-echo '<div class="row">';
+echo '<div class="container">';
+
+echo form_open('', 'role="form" id="settings-'.$tab.'" class="row"');
+echo form_nonce('settings-'.$tab);
 
 	echo '<div class="col-sm-6">';
-
-		echo form_open_multipart('', array(
-			'role'  => 'form',
-			'id'    => 'settings-'.$tab,
-			'class' => 'mb-3'
-		));
-
-		echo form_nonce('settings-'.$tab);
-
 		foreach ($inputs as $name => $input)
 		{
 			echo '<div class="form-group mb-3">',
@@ -44,8 +38,6 @@ echo '<div class="row">';
 			'class' => 'btn btn-primary'
 		), __('lang_save_changes'));
 
-		echo form_close();
-
 	echo '</div>';
 
 	/**
@@ -56,5 +48,7 @@ echo '<div class="row">';
 		do_action('settings-'.$tab);
 		echo '</div>';
 	}
+
+echo form_close();
 
 echo '</div>';

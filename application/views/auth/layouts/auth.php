@@ -26,6 +26,7 @@ add_filter( 'after_scripts', function ( $output ) {
 // logo filter.
 $login_src = apply_filters('login_img_src', "");
 $login_alt = apply_filters('login_img_alt', config_item('site_name'));
+$login_des = apply_filters('login_img_des', config_item('site_description'));
 $login_url = apply_filters('login_img_url', site_url());
 
 if ( ! empty($login_src))
@@ -44,7 +45,7 @@ if ( ! empty($login_src))
 		<div class="row align-items-center g-lg-5 py-5">
 			<div class="col-lg-7">
 				<h1 class="display-4 fw-bold lh-1 mb-3"><?=$login_alt?></h1>
-				<p class="col-lg-11 fs-4 d-none d-sm-block"><?=config_item('site_description')?></p>
+				<p class="col-lg-11 fs-4 d-none d-sm-block"><?=$login_des?></p>
 			</div>
 			<div class="col-lg-5 mx-auto">
                 <div class="card card-body position-relative">
@@ -67,7 +68,7 @@ if ( ! empty($login_src))
         $in_footer[] = array(
             'parent' => NULL,
             'id'     => 'homepage',
-            'slug'   => site_url(),
+            'slug'   => $login_url,
             'icon'   => 'fa fa-external-link',
             'name'   => __('lang_go_homepage'),
         );
@@ -107,7 +108,7 @@ if ( ! empty($login_src))
         ]);
 
 		// footer copyright
-        $footer_copyright = sprintf('&copy; %s %s - All Rights Reserved.', date('Y'), anchor(site_url(), get_option('site_name')));
+        $footer_copyright = sprintf('&copy; %s %s - All Rights Reserved.', date('Y'), anchor($login_url, $login_alt));
         $footer_copyright = apply_filters('login_copyright', $footer_copyright);
         echo html_tag('div', array(
             'id' => 'footer-copyright',

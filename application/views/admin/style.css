@@ -63,6 +63,12 @@ body {
     display: block;
 }
 
+.form-group.required > label:after {
+    content:"*";
+    color:red;
+    margin-left: 3px;
+}
+
 /* small box */
 .small-box {
     border-radius: .25rem;

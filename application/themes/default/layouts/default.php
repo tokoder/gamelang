@@ -7,9 +7,9 @@ defined('BASEPATH') OR exit('No direct script access allowed');
 <main class="wrapper">
 	<div class="container">
 		<?php the_alert(); ?>
-
-		<?php the_content(); ?>
 	</div>
+
+	<?php the_content(); ?>
 </main>
 
 <?= get_partial('footer'); ?>

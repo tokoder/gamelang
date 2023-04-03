@@ -387,7 +387,7 @@ class Gamelang_menus extends CI_Driver {
      * @param  int 		$parent parent of items
      * @return array
      */
-    private function prepare_items(array $data, $parent = null)
+    public function prepare_items(array $data, $parent = null)
     {
 		$items = array();
 
@@ -458,7 +458,7 @@ class Gamelang_menus extends CI_Driver {
 			}
 
 			$permission = isset($item['permission']) OR $item['permission'] = FALSE;
-			if($permission && ! user_permission($item['permission'])) {
+			if($permission && ! checkUserPermission($item['permission'])) {
 				continue;
 			}
 
@@ -472,7 +472,7 @@ class Gamelang_menus extends CI_Driver {
 
 			if ($icon)
 			{
-				$icon = "<i class='{$icon}'></i>";
+				$icon = riake('icon_img_base_url', $item, "<i class='{$icon}'></i>");
 				$label = trim( $this->icon_position == 'right' ? ($label . " " . $icon ) : ($icon . " " . $label) );
 			}
 
@@ -598,7 +598,7 @@ class Gamelang_menus extends CI_Driver {
 		}
 
 		$doc = new DOMDocument();
-		$doc->loadHTML($html);
+		$doc->loadHTML($html, LIBXML_NOERROR);
 		foreach($doc->getElementsByTagName('a') as $tag ){
 			foreach ($attributes as $key => $value)
 			{

@@ -153,7 +153,7 @@ class Users extends CG_Controller_Admin {
 					'rules' => 'trim|required|valid_email|unique_email'),
 			array(	'field' => 'password',
 					'label' => 'lang:lang_password',
-					'rules' => 'trim|required|min_length[8]|max_length[20]'),
+					'rules' => 'trim|required|min_length[8]|max_length[50]'),
 			array(	'field' => 'cpassword',
 					'label' => 'lang:confirm_password',
 					'rules' => 'trim|required|matches[password]'),
@@ -163,10 +163,7 @@ class Users extends CG_Controller_Admin {
 		), '#add-user');
 
 		// Default user fields.
-		$_defaults = array('first_name', 'last_name', 'email', 'password', 'cpassword');
-
-		// Allow plugins to add extra fields.
-		$defaults = apply_filters('users_fields', $_defaults);
+		$defaults = array('first_name', 'last_name', 'email', 'subtype', 'password', 'cpassword');
 
 		// Let's now generate our form fields.
 		foreach ($defaults as $field)
@@ -186,34 +183,11 @@ class Users extends CG_Controller_Admin {
 			);
 		}
 
-		// Format subtype
-		$inputs['subtype'] = array(
-			'type'     => 'dropdown',
-			'name'     => 'subtype',
-			'id'       => 'subtype',
-			'placeholder' => 'lang:lang_role',
-			'options'  => apply_filters('users_role', array(
-				'regular'       => 'lang:lang_regular',
-				'administrator' => 'lang:lang_administrator',
-			)),
-		);
-
 		// Let's now add our generated inputs to view.
-		$this->data['inputs'] = apply_filters('users_inputs', $inputs);
+		$this->data['inputs'] = $inputs = apply_filters('users_inputs', $inputs);
 
-		// Before form processing
-		if ($this->form_validation->run() == false)
-		{
-			// Page icon and title.
-			$this->data['page_icon'] = 'user-plus';
-			$this->data['page_title'] = __('lang_add_user');
-
-			$this->themes
-				->set_title($this->data['page_title'])
-				->render($this->data);
-		}
 		// Process form.
-		else
+		if ($this->form_validation->run())
 		{
 			if (true !== check_nonce('add-user'))
 			{
@@ -247,6 +221,15 @@ class Users extends CG_Controller_Admin {
 			}
 			exit;
 		}
+
+		// Page icon and title.
+		$this->data['page_icon'] = 'user-plus';
+		$this->data['page_title'] = __('lang_add_user');
+
+		// Set page title and render view.
+		$this->themes
+			->set_title($this->data['page_title'])
+			->render($this->data);
 	}
 
 	// ------------------------------------------------------------------------
@@ -335,10 +318,7 @@ class Users extends CG_Controller_Admin {
 		$this->prep_form($rules, '#edit-user');
 
 		// Default user fields.
-		$_defaults = array('first_name', 'last_name', 'email', 'username');
-
-		// Allow users to add extra fields.
-		$defaults = apply_filters('users_fields', $_defaults);
+		$defaults = array('first_name', 'last_name', 'email', 'subtype', 'username');
 
 		// Let's now generate our form fields.
 		foreach ($defaults as $field)
@@ -351,10 +331,10 @@ class Users extends CG_Controller_Admin {
 
 			/**
 			 * Sekarang kita menyimpan nilai default dari field.
-			 * Jika bidangnya adalah array $_defaults, itu berarti itu datang
+			 * Jika bidangnya adalah array $defaults, itu berarti itu datang
 			 * dari tabel "user". Jika tidak, itu adalah metadata.
 			 */
-			$value = (in_array($name, $_defaults))
+			$value = (in_array($name, $defaults))
 				? $this->data['user']->{$name}
 				: $this->metadata->get_meta($this->data['user']->id, $name, true);
 
@@ -376,19 +356,6 @@ class Users extends CG_Controller_Admin {
 			}
 		}
 
-		// Format subtype
-		$inputs['subtype'] = array(
-			'type'     => 'dropdown',
-			'name'     => 'subtype',
-			'id'       => 'subtype',
-			'placeholder' => 'lang:lang_role',
-			'selected' => $this->data['user']->subtype,
-			'options'  => apply_filters('users_role', array(
-				'regular'       => 'lang:lang_regular',
-				'administrator' => 'lang:lang_administrator',
-			)),
-		);
-
 		/**
 		 * Bidang di bawah ini adalah bidang default juga, jadi kami tidak memberikan
 		 * plugin atau tema, hak untuk mengubahnya.
@@ -401,21 +368,10 @@ class Users extends CG_Controller_Admin {
 		);
 
 		// Let's now add our generated inputs to view.
-		$this->data['inputs'] = apply_filters('users_inputs', $inputs);
+		$this->data['inputs'] = $inputs = apply_filters('users_edit_inputs', $inputs, $id);
 
-		// Before form processing
-		if ($this->form_validation->run() == false)
-		{
-			$this->data['page_icon'] = 'user';
-			$this->data['page_title'] = sprintf(__('lang_edit_user_%s'), $this->data['user']->full_name);
-
-			// Set page title and render view.
-			$this->themes
-				->set_title($this->data['page_title'])
-				->render($this->data);
-		}
 		// Process form.
-		else
+		if ($this->form_validation->run())
 		{
 			if (true !== check_nonce('edit-user_'.$id))
 			{
@@ -483,6 +439,15 @@ class Users extends CG_Controller_Admin {
 			}
 			exit;
 		}
+
+		// Page icon and title.
+		$this->data['page_icon'] = 'user';
+		$this->data['page_title'] = sprintf(__('lang_edit_user_%s'), $this->data['user']->full_name);
+
+		// Set page title and render view.
+		$this->themes
+			->set_title($this->data['page_title'])
+			->render($this->data);
 	}
 
 	// ------------------------------------------------------------------------

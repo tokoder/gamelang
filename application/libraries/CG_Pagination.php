@@ -27,6 +27,8 @@ class CG_Pagination extends CI_Pagination
 	 */
 	public function __construct($params = array())
 	{
+		get_instance()->themes->load_functions();
+
 		/**
 		 * Because the dashboard is built using Bootstrap, any provided
 		 * pagination configuration will be ignored, we use the default
@@ -134,7 +136,8 @@ class CG_Pagination extends CI_Pagination
 			'last_link',
 			'cur_tag_open',
 			'cur_tag_close',
-			'display_pages',
+			'page_query_string',
+			'query_string_segment',
 			'attributes',
 		);
 	}

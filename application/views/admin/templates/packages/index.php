@@ -15,14 +15,15 @@ defined('BASEPATH') OR exit('No direct script access allowed');
 
 add_script(get_theme_path('assets/js/packages.js'));
 
+echo '<div class="container">';
 // Form opening tag.
-echo form_open(admin_url('packages'), 'class="form-inline card"'),
+echo form_open(admin_url('packages'), 'class="form-inline"'),
 
 // Form nonce field.
 form_nonce('bulk-update-packages'),
 
 // Bulk action section.
-'<div class="table-bulk-actions card-header">',
+'<div class="table-bulk-actions">',
 	'<div class="row row-cols-lg-auto g-3 align-items-center">',
 		'<div class="col-12">',
 		form_dropdown('action', array(
@@ -36,11 +37,11 @@ form_nonce('bulk-update-packages'),
 		form_submit('doaction', __('lang_apply'), 'class="btn btn-primary btn-sm ml-1"'),
 		'</div>',
 	'</div>',
-'</div>',
+'</div>';
 
 // Packages list table.
-'<div class="table-responsive-sm">',
-'<table class="table table-hover table-striped mb-0">',
+echo '<div class="table-responsive-sm">';
+echo '<table class="table table-hover table-striped mb-0">',
 	// Table heading.
 	'<thead>',
 	'<tr>',
@@ -85,5 +86,8 @@ form_nonce('bulk-update-packages'),
 		echo '</tbody>';
 	}
 
-echo '</table></div>',
+echo '</table>';
+echo '</div>',
 form_close();
+
+echo '</div>';

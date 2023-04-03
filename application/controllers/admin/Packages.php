@@ -156,11 +156,11 @@ class Packages extends CG_Controller_Admin {
 			}
 
 			// Add package actions.
-			$actions = array();
+			$p['actions'] = array();
 
 			if (true === $p['enabled'])
 			{
-				$actions[] = html_tag('button', array(
+				$p['actions'][] = html_tag('button', array(
 					'type' => 'button',
 					'data-endpoint' => esc_url(nonce_admin_url(
 						'packages?action=deactivate&package='.$folder,
@@ -172,7 +172,7 @@ class Packages extends CG_Controller_Admin {
 			}
 			else
 			{
-				$actions[] = html_tag('button', array(
+				$p['actions'][] = html_tag('button', array(
 					'type' => 'button',
 					'data-endpoint' => esc_url(nonce_admin_url(
 						'packages?action=activate&package='.$folder,
@@ -186,7 +186,7 @@ class Packages extends CG_Controller_Admin {
 			// add button settings
 			if (true === $p['enabled'] && true === $p['has_setting'])
 			{
-				$actions[] = html_tag('a', array(
+				$p['actions'][] = html_tag('a', array(
 					'href'  => admin_url('setting/'.$folder),
 					'class' => 'btn btn-secondary btn-sm btn-icon ms-2',
 					'aria-label' => sprintf(__('Settings %s'), $p['name']),
@@ -196,7 +196,7 @@ class Packages extends CG_Controller_Admin {
 			// add button delete
 			if (true !== $p['enabled'])
 			{
-				$actions[] = html_tag('button', array(
+				$p['actions'][] = html_tag('button', array(
 					'type' => 'button',
 					'data-endpoint' => esc_url(nonce_admin_url(
 						'packages?action=delete&package='.$folder,
@@ -208,8 +208,17 @@ class Packages extends CG_Controller_Admin {
 			}
 
 			$headers = $this->router->package_header($folder);
-			$p['actions'] = ( $headers['enabled'] ) ? array() : $actions;
+			if ('active' !== $filter && $headers['enabled']) {
+				unset($packages[$folder]);
+			}
+			elseif($headers['enabled']){
+				$p['actions'] = array();
+			}
 		}
+
+		// usort($packages, function ($a, $b) {
+		// 	return $b['enabled'] - $a['enabled'];
+		// });
 
 		/**
 		 * Catches packages actions.
@@ -486,7 +495,7 @@ class Packages extends CG_Controller_Admin {
 					), fa_icon('plus-circle').__('lang_add')),
 
 					// Filters toolbar.
-					'<div class="btn-group ms-3" role="group">',
+					'<div class="btn-group ms-2" role="group">',
 
 						// All packages.
 						html_tag('a', array(

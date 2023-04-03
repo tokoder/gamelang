@@ -1127,7 +1127,7 @@ class Gamelang_themes extends CI_Driver
 	 */
 	public function print_extra_head($content = "\n")
 	{
-		return  apply_filters($this->_is_admin() ? 'admin_head' : 'extra_head', $content);
+		return apply_filters($this->_is_admin() ? 'admin_head' : 'extra_head', $content);
 	}
 
 	// ------------------------------------------------------------------------

@@ -101,15 +101,12 @@ if ( ! function_exists('print_input'))
 				case 'dropdown':
 					$name = $input['name'];
 					$options = array_map('_transfigure', $input['options']);
+					$selected = array();
 					unset($input['name'], $input['options']);
 					if (isset($input['selected']))
 					{
 						$selected = $input['selected'];
 						unset($input['selected']);
-					}
-					else
-					{
-						$selected = array();
 					}
 					return form_dropdown($name, $options, $selected, $input);
 					break;

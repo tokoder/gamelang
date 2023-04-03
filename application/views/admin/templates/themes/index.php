@@ -28,6 +28,7 @@ EOT;
 
 if ($themes)
 {
+	echo '<div class="container">';
 	echo '<div class="row" id="themes-list">';
 	foreach ($themes as $folder => $t) {
 		$t['actions'] = implode('', $t['actions']);
@@ -37,6 +38,7 @@ if ($themes)
 			$theme_item_temp
 		);
 	}
+	echo '</div>';
 	echo '</div>';
 }
 

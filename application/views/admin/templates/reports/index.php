@@ -48,7 +48,7 @@ echo '<div class="table-responsive-sm">',
 								'delete-report_'.$report->id
 							),
 							'class' => 'btn btn-outline-danger btn-sm btn-icon report-delete',
-						), fa_icon('trash').__('lang_delete')),
+						), fa_icon('trash')),
 					'</td>',
 
 				'</tr>';

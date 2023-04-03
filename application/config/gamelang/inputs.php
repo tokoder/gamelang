@@ -108,6 +108,18 @@ $config['gender'] = array(
 	),
 );
 
+// subtype field.
+$config['subtype'] = array(
+	'type' => 'dropdown',
+	'name' => 'subtype',
+	'id'   => 'subtype',
+	'placeholder' => 'lang:lang_subtype',
+	'options' => array(
+		'regular'       => 'lang:lang_regular',
+		'administrator' => 'lang:lang_administrator',
+	),
+);
+
 // Company field.
 $config['company'] = array(
 	'name'        => 'company',
@@ -205,6 +217,8 @@ $config['meta_title'] = array(
 
 // Meta description
 $config['meta_description'] = array(
+	'type'        => 'textarea',
+	'rows' 		  => '3',
 	'name'        => 'meta_description',
 	'id'          => 'meta_description',
 	'placeholder' => 'lang:lang_meta_description',

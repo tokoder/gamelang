@@ -5,6 +5,11 @@ $(document).ready(function () {
     var link = $(document).find(".active");
     link.closest('ul').closest('li').children().addClass('active');
 
+    // Footer List
+    $('.footer-top .list-title').on('click', function () {
+        $(this).parent().toggleClass('open-list');
+    });
+
     // Tooltip and popover demos
     document.querySelectorAll('[data-bs-toggle="tooltip"], [rel=tooltip]')
         .forEach(tooltip => {
