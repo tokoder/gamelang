@@ -13,47 +13,88 @@
  */
 defined('BASEPATH') OR exit('No direct script access allowed');
 
-echo '<div class="row">',
-'<div class="col-xs-12 col-sm-8 col-md-6">',
-
+echo '<div class="container">';
 // Form opening tag and nonce.
-form_open(admin_url('users/edit/'.$user->id), 'role="form" id="edit-user"'),
+echo form_open(admin_url('users/edit/'.$user->id), 'role="form" id="edit-user" class="row"'),
 form_nonce('edit-user_'.$user->id);
 
 // Display inputs.
-foreach ($inputs as $name => $input) {
-	echo '<div class="form-group mb-3">',
-	form_label($input['placeholder'], $input['name']),
-	print_input($input, array(
-		'class' => 'form-control'.(has_error($name) ? ' is-invalid' : ''),
-	)),
-	form_error($name, '<div class="form-text invalid-feedback">', '</div>'),
+echo '<div class="col-xs-12 col-md-6">';
+	foreach ($inputs as $name => $input) {
+		if (in_array($input['name'], ['password', 'cpassword'])) {
+			continue;
+		}
+		echo '<div class="form-group mb-3">',
+		form_label($input['placeholder'], $input['name']),
+		print_input($input, array(
+			'autofocus' => 'autofocus',
+			'class' => 'form-control'.(has_error($name) ? ' is-invalid' : ''),
+		)),
+		form_error($name, '<div class="form-text invalid-feedback">', '</div>'),
+		'</div>';
+	}
+// End of column
+echo '</div>';
+
+// Display metas.
+echo '<div class="col-xs-12 col-md-6">';
+	foreach ($inputs as $name => $input) {
+		if ( ! in_array($input['name'], ['password', 'cpassword'])) {
+			continue;
+		}
+		echo '<div class="form-group mb-3">',
+		form_label($input['placeholder'], $input['name']),
+		print_input($input, array(
+			'autofocus' => 'autofocus',
+			'class' => 'form-control'.(has_error($name) ? ' is-invalid' : ''),
+		)),
+		form_error($name, '<div class="form-text invalid-feedback">', '</div>'),
+		'</div>';
+	}
+	echo '<div class="form-group mb-3">';
+		echo html_tag('label', 'class="d-inline-flex gap-2"',
+			form_checkbox(FALSE, FALSE, FALSE, 'id="show_password" class="form-check-input"')
+			.html_tag('span', [], __('lang_show_password'))
+		);
+		// Account status
+		echo html_tag('label', 'class="d-inline-flex gap-2 float-end"',
+			form_checkbox('enabled', 1, $user->enabled, 'id="enabled" class="form-check-input"')
+			.html_tag('span', [], __('lang_active'))
+		);
+	echo '</div>',
+
+	// Submit button and cancel.
+	'<div class="form-group mb-3 border-top pt-3">',
+	html_tag('button', array(
+		'type' => 'submit',
+		'class' => 'btn btn-primary '
+	), __('lang_save_changes')),
+	html_tag('a', array(
+		'href'  => admin_url('users'),
+		'class' => 'btn btn-secondary float-end',
+	), __('lang_cancel')),
 	'</div>';
-}
-
-echo '<div class="form-group mb-3">',
-// Account status
-form_checkbox('enabled', 1, (1 == $user->enabled), 'id="enabled"'),
-html_tag('label', array('for' => 'enabled'), __('lang_active')),
-'</div>',
-
-// Submit button and cancel.
-'<div class="form-group mb-0">',
-html_tag('button', array(
-	'type' => 'submit',
-	'class' => 'btn btn-primary '
-), __('lang_save_changes')),
-html_tag('a', array(
-	'href'  => admin_url('users'),
-	'class' => 'btn btn-secondary float-end',
-), __('lang_cancel')),
-'</div>',
-
-// Form closing tag.
-form_close(),
 
 // End of column
-'</div>',
+echo '</div>';
 
-// End of row.
-'</div>';
+// Form closing tag.
+echo form_close();
+echo '</div>';
+
+add_filter( 'after_admin_scripts', function ( $output ) {
+	$output .= <<<EOT
+	<script>
+	$(document).ready(function () {
+		$(document).on('click', "#show_password", function(){
+			if($(this).is(':checked')){
+				$("input[name='password'], input[name='cpassword']").attr('type','text');
+			}else{
+				$("input[name='password'], input[name='cpassword']").attr('type','password');
+			}
+		});
+	});
+	</script>
+	EOT;
+	return $output;
+});

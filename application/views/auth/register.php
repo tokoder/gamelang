@@ -32,7 +32,7 @@ foreach ($inputs as $name => $input) {
 
 // Password field.
 echo '<div class="form-group mb-3">';
-	echo html_tag('label', 'class="d-inline-flex gap-2 align-items-baseline"',
+	echo html_tag('label', 'class="d-inline-flex gap-2"',
 		form_checkbox(FALSE, FALSE, FALSE, 'id="show_password" class="form-check-input"')
 		.html_tag('span', [], __('lang_show_password'))
 	);

@@ -15,7 +15,7 @@ defined('BASEPATH') OR exit('No direct script access allowed');
 ?>
 <ul class="nav nav-tabs" role="tablist">
 	<li role="presentation" class="nav-item"><a href="#sysinfo" class="nav-link active" aria-controls="sysinfo" role="tab" data-bs-toggle="tab"><?php _e('lang_system_information'); ?></a></li>
-	<?php if (ENVIRONMENT !== 'production') : ?>
+	<?php if (ENVIRONMENT == 'development') : ?>
 	<li role="presentation" class="nav-item"><a href="#phpset" class="nav-link" aria-controls="phpset" role="tab" data-bs-toggle="tab"><?php _e('lang_php_settings'); ?></a></li>
 	<li role="presentation" class="nav-item"><a href="#phpinfo" class="nav-link" aria-controls="phpinfo" role="tab" data-bs-toggle="tab"><?php _e('lang_php_info'); ?></a></li>
 	<?php endif; ?>

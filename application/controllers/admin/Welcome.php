@@ -39,7 +39,7 @@ class Welcome extends CG_Controller_Admin
 	{
 		// EDIT THIS METHOD TO SUIT YOUR NEEDS.
 		if ($this->auth->is_admin()) {
-			add_action('admin_index_stats', array($this, '_stats'), 0);
+		add_action('admin_index_stats', array($this, '_stats'), 0);
 		}
 
 		// Set page title and render view.
@@ -60,7 +60,8 @@ class Welcome extends CG_Controller_Admin
 	{
 		$this->load->helper('number');
 
-		$output = '<div class="row">';
+		$output = '<div class="container">';
+		$output .= '<div class="row">';
 		$output .= '<div class="col-xs-6 col-sm-6 col-md-3">';
 
 		// Users count.
@@ -105,6 +106,7 @@ class Welcome extends CG_Controller_Admin
 
 		$output .= implode('</div><div class="col-xs-6 col-sm-6 col-md-3">', $boxes);
 
+		$output .= '</div>';
 		$output .= '</div>';
 		$output .= '</div>';
 		echo $output;

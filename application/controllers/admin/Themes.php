@@ -92,7 +92,7 @@ class Themes extends CG_Controller_Admin {
 				{
 					$t['actions'][] = html_tag('a', array(
 						'href'  => admin_url('themes/settings/'.$folder),
-						'class' => 'btn btn-light btn-sm ms-2',
+						'class' => 'btn btn-dark btn-sm ms-2',
 						'aria-label' => sprintf(__('lang_settings_%s'), $folder),
 					), fa_icon('cogs').__('lang_settings'));
 				}

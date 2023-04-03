@@ -47,9 +47,11 @@ add_script(get_theme_path('assets/js/users.js'));
 					echo html_tag('td', null, $user->id),
 
 					// Full name, username and email address.
-					html_tag('td', null, fa_icon($user->gender.' me-1').user_anchor($user->id)),
+					html_tag('td', null, fa_icon($user->gender)
+						.user_anchor($user->id, '', 'target="_blank"')
+						.html_tag('div', ['class'=>'text-muted text-sm m-0'], $user->email)),
 					html_tag('td', null, $user->username),
-					html_tag('td', null, $user->email),
+					html_tag('td', null, html_tag('span', ['class'=>'text-muted text-sm m-0'], date('Y-m-d / H:i', $user->created_at))),
 					html_tag('td', null, __('lang_'.$user->subtype));
 
 					// Status.
@@ -73,6 +75,8 @@ add_script(get_theme_path('assets/js/users.js'));
 
 					// User actions.
 					echo '<td class="text-end">';
+					echo '<div class="btn-group">';
+
 						/**
 						 * Fire before default users actions.
 						 */
@@ -81,17 +85,17 @@ add_script(get_theme_path('assets/js/users.js'));
 						// Edit user button.
 						echo html_tag('a', array(
 							'href'   => admin_url('users/edit/'.$user->id),
-							'class'  => 'btn btn-outline-secundary btn-sm ms-2',
+							'class'  => 'btn btn-warning btn-sm',
 							'rel'    => 'tooltip',
 							'title'  => __('lang_EDIT_USER'),
-						), fa_icon('edit text-primary'));
+						), fa_icon('edit'));
 
 						// Activate/deactivate user.
 						if (1 == $user->enabled) {
 							echo html_tag('button', array(
 								'type'          => 'button',
 								'data-endpoint' => esc_url(nonce_admin_url("users?action=deactivate&amp;user={$user->id}&amp;next=".rawurlencode($uri_string), "user-deactivate_{$user->id}")),
-								'class'         => 'btn btn-outline-secundary btn-sm user-deactivate ms-2',
+								'class'         => 'btn btn-outline-secondary btn-sm user-deactivate',
 								'rel'           => 'tooltip',
 								'title'         => __('lang_deactivate'),
 							), fa_icon('lock'));
@@ -99,7 +103,7 @@ add_script(get_theme_path('assets/js/users.js'));
 							echo html_tag('button', array(
 								'type'          => 'button',
 								'data-endpoint' => esc_url(nonce_admin_url("users?action=activate&amp;user={$user->id}&amp;next=".rawurlencode($uri_string), "user-activate_{$user->id}")),
-								'class'         => 'btn btn-outline-secundary btn-sm user-activate ms-2',
+								'class'         => 'btn btn-outline-secondary btn-sm user-activate',
 								'rel'           => 'tooltip',
 								'title'         => __('lang_activate'),
 							), fa_icon('unlock-alt text-success'));
@@ -111,17 +115,16 @@ add_script(get_theme_path('assets/js/users.js'));
 							echo html_tag('button', array(
 								'type'          => 'button',
 								'data-endpoint' => esc_url(nonce_admin_url("users?action=restore&amp;user={$user->id}&amp;next=".rawurlencode($uri_string), "user-restore_{$user->id}")),
-								'class'         => 'btn btn-outline-secundary btn-sm user-restore ms-2',
+								'class'         => 'btn btn-outline-secondary btn-sm user-restore',
 								'rel'           => 'tooltip',
 								'title'         => __('lang_RESTORE_USER'),
 							), fa_icon('history'));
-						}
-						else
+						} else
 						{
 							echo html_tag('button', array(
 								'type'          => 'button',
 								'data-endpoint' => esc_url(nonce_admin_url("users?action=delete&amp;user={$user->id}&amp;next=".rawurlencode($uri_string), "user-delete_{$user->id}")),
-								'class'         => 'btn btn-outline-secundary btn-sm user-delete ms-2',
+								'class'         => 'btn btn-outline-secondary btn-sm user-delete',
 								'rel'           => 'tooltip',
 								'title'         => __('lang_delete'),
 							), fa_icon('times'));
@@ -130,11 +133,12 @@ add_script(get_theme_path('assets/js/users.js'));
 						echo html_tag('button', array(
 							'type'          => 'button',
 							'data-endpoint' => esc_url(nonce_admin_url("users?action=remove&amp;user={$user->id}&amp;next=".rawurlencode($uri_string), "user-remove_{$user->id}")),
-							'class'         => 'btn btn-outline-danger btn-sm user-remove ms-2',
+							'class'         => 'btn btn-outline-danger btn-sm user-remove',
 							'rel'           => 'tooltip',
 							'title'         => __('lang_REMOVE_USER'),
 						), fa_icon('trash'));
 
+					echo '</div>';
 					echo '</td>';
 
 					?>

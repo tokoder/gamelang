@@ -17,8 +17,6 @@ defined('BASEPATH') OR exit('No direct script access allowed');
 echo form_open(current_url(), 'id="login"'),
 form_nonce('user-login');
 
-do_action('login-form-before');
-
 if (ENVIRONMENT == 'development') :
 echo '<div class="list-group">',
 	html_tag('li', ['class'=>'list-group-item list-group-item-dark'], __('Demo Account'));
@@ -31,8 +29,10 @@ echo '<div class="list-group">',
 	do_action('account_demo');
 echo '</div>
 <!-- Gradient divider -->
-<hr data-content="Test with Demo Account" class="hr-text my-4">';
+<hr data-content="Test with Demo Account" class="hr-text my-4 opacity-100">';
 endif;
+
+do_action('login-form-before', true);
 
 // Username form.
 echo '<div class="form-floating mb-3">',
@@ -54,7 +54,7 @@ echo '<div class="form-floating mb-3">',
 
 echo '<div class="form-group mb-3">';
 	// Show password.
-	echo html_tag('label', 'class="d-inline-flex gap-2 align-items-baseline"',
+	echo html_tag('label', 'class="d-inline-flex gap-2"',
 		form_checkbox(FALSE, FALSE, FALSE, 'id="show_password" class="form-check-input"')
 		.html_tag('span', [], __('lang_show_password'))
 	);
@@ -76,13 +76,13 @@ do_action('login-form-after');
 
 echo '<div class="form-group mb-3">';
 	// Remember field.
-	echo html_tag('label', 'class="d-inline-flex gap-2 align-items-baseline"',
+	echo html_tag('label', 'class="d-inline-flex gap-2"',
 		form_checkbox('remember', 1, FALSE, 'class="form-check-input"')
 		.html_tag('span', [], __('lang_remember'))
 	);
 
 	// Display registration page if enabled.
-	if (false !== get_option('allow_registration', false)) {
+	if (false !== get_option('allow_registration', false) && apply_filters('host_user', false) == false) {
 		echo html_tag('a', array(
 			'href' => site_url('register'),
 			'class' => 'float-end text-decoration-none text-muted'

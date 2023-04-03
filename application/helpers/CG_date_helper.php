@@ -28,8 +28,11 @@ if(!function_exists('diffForHumans'))
 {
     function diffForHumans($date1)
     {
-        //count days
-        return Carbon::parse(strtotime($date1))->locale('id_ID')->diffForHumans();
+        // lang
+        $lang = get_instance()->lang->lang_detail('locale');
+
+        // count days
+        return Carbon::parse(date('Y-m-d H:i', $date1))->locale($lang)->diffForHumans();
     }
 }
 
@@ -40,14 +43,5 @@ if (!function_exists('formatted_date'))
     {
         $date = date("M j, Y", $datetime);
         return $date;
-    }
-}
-
-//print formatted hour
-if (!function_exists('formatted_hour'))
-{
-    function formatted_hour($timestamp)
-    {
-        return date("H:i", strtotime($timestamp));
     }
 }

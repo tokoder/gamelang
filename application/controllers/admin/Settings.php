@@ -183,6 +183,7 @@ class Settings extends CG_Controller_Admin
 		// Prepare empty form validation rules.
 		$rules = array();
 
+
 		foreach ($settings as $option)
 		{
 			$data[$option->name] = array(
@@ -224,7 +225,7 @@ class Settings extends CG_Controller_Admin
 			else
 			{
 				$data[$option->name]['placeholder'] = __('lang_'.$option->name);
-				$data[$option->name]['value'] = get_option($option->value);
+				$data[$option->name]['value'] = $option->value;
 			}
 
 			$data[$option->name] = apply_filters('_options-'.$option->name, $data[$option->name]);
@@ -265,9 +266,19 @@ class Settings extends CG_Controller_Admin
 		$settings = $this->input->post(array_keys($inputs), true);
 		foreach ($settings as $key => $val)
 		{
-			if (to_bool_or_serialize($inputs[$key]['value']) === $val)
+			if ($inputs[$key]['type'] == 'dropdown')
 			{
-				unset($settings[$key]);
+				if (to_bool_or_serialize($inputs[$key]['selected']) === $val)
+				{
+					unset($settings[$key]);
+				}
+			}
+			else
+			{
+				if (to_bool_or_serialize($inputs[$key]['value']) === $val)
+				{
+					unset($settings[$key]);
+				}
 			}
 		}
 

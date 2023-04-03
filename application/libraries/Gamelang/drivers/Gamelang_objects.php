@@ -208,8 +208,8 @@ class Gamelang_objects extends CI_Driver implements Gamelang_crud_interface
 			->join('objects', 'objects.guid = entities.id');
 
 		// Attempt to retrieve objects from database.
-		$db_objects = $this->_parent
-			->where($field, $match, $limit, $offset)
+		$db_objects = $this
+			->_parent->where($field, $match, $limit, $offset)
 			->order_by('entities.id', 'DESC')
 			->get('entities')
 			->result();
@@ -259,8 +259,8 @@ class Gamelang_objects extends CI_Driver implements Gamelang_crud_interface
 		$objects = false;
 
 		// Attempt to find objects.
-		$db_objects = $this->_parent
-			->find($field, $match, $limit, $offset, 'objects')
+		$db_objects = $this
+			->_parent->find($field, $match, $limit, $offset, 'objects')
 			->get('entities')
 			->result();
 
@@ -1122,10 +1122,14 @@ class CG_Object
 		 * We make sure to "htmlspecialchars_decode" the content.
 		 */
 		if (isset($this->data->content) && ! empty($this->data->content)) {
-			$this->data->content_html = htmlspecialchars_decode(
-				$this->data->content,
-				ENT_QUOTES
-			);
+			$this->data->content_html = htmlspecialchars_decode($this->data->content, ENT_QUOTES);
+		}
+
+		/**
+		 * We make sure to "htmlspecialchars_decode" the description.
+		 */
+		if (isset($this->data->description) && ! empty($this->data->description)) {
+			$this->data->description_html = htmlspecialchars_decode($this->data->description, ENT_QUOTES);
 		}
 	}
 
