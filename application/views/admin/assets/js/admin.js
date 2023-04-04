@@ -162,40 +162,6 @@
                 window.attachEvent("on" + event, callback);
             }
         },
-
-        /**
-         * Lazy load images.
-         */
-        lazyLoad: function () {
-            var lazyImages = $("img[data-src]");
-
-            for (var i = 0; i < lazyImages.length; i++) {
-                var img = lazyImages[i];
-                if (cg.ui.inViewport(img)) {
-                    img.src = img.getAttribute("data-src");
-                    img.onload = function () {
-                        this.removeAttribute("data-src");
-                    };
-                }
-            }
-        },
-
-        initSummerNote: function(ids) {
-            $(ids).summernote({
-                placeholder: 'Write Here',
-                tabsize: 2,
-                height: 200,
-                toolbar: [
-                    ['style', ['style']],
-                    ['font', ['bold', 'underline', 'clear']],
-                    ['fontname', ['fontname']],
-                    ['color', ['color']],
-                    ['para', ['ul', 'ol', 'paragraph']],
-                    ['table', ['table']],
-                    ['view', ['fullscreen', 'codeview']],
-                ],
-            });
-        }
     };
 
     /**
@@ -324,16 +290,7 @@
         }
     };
 
-    /**
-     * Register our custom Lazy Load function.
-     */
-    cg.ui.addListener("load", cg.ui.lazyLoad);
-    cg.ui.addListener("scroll", cg.ui.lazyLoad);
-
     $(document).ready(function () {
-
-        cg.ui.initSummerNote('.summernote');
-
         /**
          * Toatr default configuration.
          */
@@ -355,21 +312,6 @@
             }
         }
 
-        /**
-         * Check all feature.
-         */
-        $(document).on("change", ":checkbox[name=check-all]", function () {
-            var that = $(this);
-            that
-                .closest("table")
-                .find("tbody :checkbox")
-                .prop("checked", this.checked)
-                .closest("tr").toggleClass("selected", this.checked);
-        });
-        $(document).on("change", ":checkbox.check-this", function () {
-            $(this).parents("tr").toggleClass("selected", this.checked);
-        });
-
         // Bootstrap tooltip and popover.
         if (typeof $.fn.tooltip !== "undefined") {
             $("body").tooltip({selector: "[data-bs-toggle=tooltip], [rel=tooltip]"});
@@ -379,6 +321,29 @@
         }
 
         /**
+         * Check all feature.
+         */
+        $(document).on("change", ":checkbox[name=check-all]", function () {
+            $('input:checkbox')
+                .not(this)
+                .prop('checked', this.checked)
+                .closest("tr")
+                .toggleClass("selected", this.checked);
+        });
+        $(document).on("change", ":checkbox.check-this", function () {
+            $(this)
+                .parents("tr")
+                .toggleClass("selected", this.checked);
+
+            if ($(this).is(':checked')) {
+                $(".bulk-options").show();
+            } else if ($("input[name='check-this']:checked").length == 0) {
+                $(".bulk-options").hide();
+                $("input[name='check-all']").prop('checked', false);
+            }
+        });
+
+        /**
          * To avoid multiple form submission, we make sure to
          * disable submit buttons once hit.
          */
@@ -386,7 +351,6 @@
             var $form = $(this);
             $form
                 .find("[type=submit]")
-                .prop("disabled", true)
                 .addClass("disabled");
 
             // Disable the submit event.
@@ -557,8 +521,7 @@
 
             /** No target? Nothing to do... */
             if (typeof target === "undefined"
-                || !target.length
-                || typeof gamelang[target] === "undefined") {
+                || !target.length) {
                 return false;
             }
 
@@ -604,6 +567,11 @@
          */
         var link = $(document).find(".active");
         link.closest('ul').closest('li').children().addClass('active');
+
+        $("input[type=hidden]").parent(".form-group").addClass("d-none");
+        $("input[required]").parent(".form-group").addClass("required");
+        $("textarea[required]").parent(".form-group").addClass("required");
+        $("select[required]").parent(".form-group").addClass("required");
     });
 
 })(window.jQuery || window.Zepto, window, document);

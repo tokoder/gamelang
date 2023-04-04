@@ -309,47 +309,46 @@ class Gamelang_auth extends CI_Driver
 	// ------------------------------------------------------------------------
 
 	//check user permission
-	public function user_permission($permission = NULL, $user = null)
+	public function checkUserPermission($permission = NULL, $user = null)
 	{
-		if( $this->is_admin()) {
+        if ( ! $this->online()) {
+			return false;
+        }
+
+		if ($this->is_admin()) {
 			return true;
 		}
 
-        if ($user == null && $this->online()) {
+        if ($user == null) {
 			$user = $this->user();
         }
 
-        if (empty($user)) {
-			return false;
-		}
-
-		$subtype = $user->subtype;
-		$role = $this->_parent->groups->get($subtype);
-		$role_permission = $role ? $role->permissions : [];
+		$userType = $user->subtype;
+		$userRole = $this->_parent->groups->get($userType);
+		$rolePermission = $userRole ? $userRole->permissions : [];
 
 		$permission = ($permission != null)
 			? strtolower($permission)
 			: $this->ci->router->fetch_package();
 
-		if(in_array($permission, force_array($role_permission))) {
-			return true;
+		if(in_array($permission, force_array($rolePermission))) {
+			return apply_filters_ref_array('role_permission', [$permission]);
 		}
 
 		return false;
 	}
 
-	public function check_permission($permission = NULL)
+	public function checkPermission($permission = NULL)
 	{
-		// Make sure the user is logged in.
-		if (true !== $this->online()) {
+        if ( ! $this->online()) {
 			set_alert(__('You must be logged in to access this page'), 'error');
 			redirect('login?next='.rawurlencode(uri_string()),'refresh');
 			exit;
-		}
+        }
 
-		if ( ! user_permission($permission)) {
+		if ( ! checkUserPermission($permission)) {
 			set_alert(__('You do not have permission to access '.$permission.'. Please contact with administrator'), 'error');
-            redirect($this->ci->agent->referrer());
+            redirect('');
             exit();
 		}
 	}
@@ -567,8 +566,8 @@ class Gamelang_auth extends CI_Driver
 		/**
 		 * Filters online token line so plugin can change it.
 		 */
-		$expired = apply_filters('user_cookie_life', MONTH_IN_SECONDS * 2);
-		(is_int($expired) && $expired <= 0) OR $expired = MONTH_IN_SECONDS * 2;
+		$expired = apply_filters('user_cookie_life', HOUR_IN_SECONDS);
+		(is_int($expired) && $expired <= 0) OR $expired = HOUR_IN_SECONDS;
 
 		// Perform a clean up of older tokens.
 		$this->_parent->variables->delete_by(array(
@@ -653,15 +652,29 @@ class Gamelang_auth extends CI_Driver
 
 // ------------------------------------------------------------------------
 
-if ( ! function_exists('user_permission'))
+if ( ! function_exists('checkUserPermission'))
 {
 	/**
-	 * user_permission
+	 * checkUserPermission
 	 * @return 	string
 	 */
-	function user_permission($permission)
+	function checkUserPermission($permission)
 	{
-		return get_instance()->auth->user_permission($permission);
+		return get_instance()->auth->checkUserPermission($permission);
+	}
+}
+
+// ------------------------------------------------------------------------
+
+if ( ! function_exists('checkPermission'))
+{
+	/**
+	 * checkPermission
+	 * @return 	string
+	 */
+	function checkPermission($permission)
+	{
+		return get_instance()->auth->checkPermission($permission);
 	}
 }
 
@@ -669,15 +682,22 @@ if ( ! function_exists('user_permission'))
 
 if ( ! function_exists('user_online'))
 {
-	function user_online($timestamp = null)
+	function user_online($user = null)
 	{
-		$timestamp OR $timestamp = time();
-		$time_ago = strtotime($timestamp);
+		// $timestamp OR $timestamp = time();
+		$timestamp = $user->last_seen;
 		$current_time = time();
-		$time_difference = $current_time - $time_ago;
+		$time_difference = $current_time - $timestamp;
 		$seconds = $time_difference;
 		$minutes = round($seconds / 60);
-		return ($minutes <= 3) ? true : false;
+
+		// Perform a clean up of older tokens.
+		$result = ($minutes <= 3) ? true : false;
+		if ( ! $result) {
+			update_user($user->id, array('online' => 0));
+		}
+
+		return $result;
 	}
 }
 

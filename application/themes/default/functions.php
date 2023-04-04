@@ -36,14 +36,16 @@ class Default_theme {
 		$this->set_views_paths();
 
 		// Add IE8 support.
-		add_filter( 'extra_head', array( $this, 'globals' ), 0 );
-		add_filter( 'extra_head', array( $this, 'extra_head' ), 99 );
+		add_filter( 'extra_head', array( $this, 'extra_head' ), 0 );
 
 		// Register theme menus.
 		add_action( 'theme_menus', array( $this, 'theme_menus' ) );
 
 		// Register theme thumbnails sizes and names.
 		add_action( 'theme_images', array( $this, 'theme_images' ) );
+
+		// after_styles
+		add_action( 'after_styles', array( $this, 'after_styles' ));
 
 		// Enqueue our assets.
 		add_action( 'after_theme_setup', array( $this, 'after_theme_setup' ), 0);
@@ -144,39 +146,14 @@ class Default_theme {
 	{
 		add_styles('assets/vendor/bootstrap/css/bootstrap.css');
 		add_styles('assets/vendor/fontawesome-free/css/all.css');
+		add_styles(get_theme_path('assets/css/custom.css'));
 		add_styles(get_theme_path('style.css'));
 
 		add_script('assets/vendor/jquery/jquery.js');
 		add_script('assets/vendor/bootstrap/js/bootstrap.bundle.js');
+		add_script('assets/vendor/lazysizes/lazysizes.min.js');
 		add_script('assets/vendor/js-cookie/js.cookie.js');
 		add_script(get_theme_path('assets/js/script.js'));
-	}
-
-	/**
-	 * globals
-	 *
-	 * Method for adding JS global before anything else.
-	 *
-	 * @access 	public
-	 * @param 	string 	$output 	StyleSheets output.
-	 * @return 	void
-	 */
-	public function globals($output)
-	{
-		$config = array(
-			'ajaxURL'      => ajax_url(),
-			'site_url'     => site_url(),
-			'token_name'   => config_item('csrf_token_name'),
-			'token_cookie' => config_item('csrf_cookie_name'),
-		);
-
-		$output = '<script>';
-		$output .= 'var cg = window.cg = window.cg || {};';
-		$output .= 'cg.i18n = cg.i18n || {};';
-		$output .= 'cg.config = '.json_encode($config).';';
-		$output .= '</script>';
-
-		return $output;
 	}
 
 	/**
@@ -191,6 +168,29 @@ class Default_theme {
 	public function extra_head($output)
 	{
 		add_ie9_support($output, (ENVIRONMENT !== 'development'));
+
+		$config = array(
+			'ajaxURL'      => ajax_url(),
+			'site_url'     => site_url(),
+			'token_name'   => config_item('csrf_token_name'),
+			'token_cookie' => config_item('csrf_cookie_name'),
+		);
+
+		$output .= '<script>';
+		$output .= 'var cg = window.cg = window.cg || {};';
+		$output .= 'cg.i18n = cg.i18n || {};';
+		$output .= 'cg.config = '.json_encode($config).';';
+		$output .= '</script>';
+		return $output;
+	}
+
+	/**
+	 * after_styles
+	 */
+	public function after_styles($output)
+	{
+		$output .= get_instance()->load->view('assets/_css_header', null, true);
+
 		return $output;
 	}
 
@@ -222,21 +222,28 @@ class Default_theme {
 	 */
 	public function pagination($args)
 	{
-		$args['full_tag_open']   = '<div class="text-center"><ul class="pagination pagination-centered">';
-		$args['full_tag_close']  = '</ul></div>';
+		$args['full_tag_open']   = '<ul class="pagination">';
+		$args['full_tag_close']  = '</ul>';
 		$args['num_links']       = 5;
-		$args['num_tag_open']    = '<li>';
+		$args['num_tag_open']    = '<li class="page-item">';
 		$args['num_tag_close']   = '</li>';
-		$args['prev_tag_open']   = '<li>';
+		$args['prev_tag_open']   = '<li class="page-item">';
 		$args['prev_tag_close']  = '</li>';
-		$args['next_tag_open']   = '<li>';
+		$args['prev_link']  	 = '<i class="fa fa-fw fa-backward"></i>';
+		$args['next_tag_open']   = '<li class="page-item">';
 		$args['next_tag_close']  = '</li>';
-		$args['first_tag_open']  = '<li>';
+		$args['next_link']  	 = '<i class="fa fa-fw fa-forward"></i>';
+		$args['first_tag_open']  = '<li class="page-item">';
 		$args['first_tag_close'] = '</li>';
-		$args['last_tag_open']   = '<li>';
+		$args['first_link'] 	 = '<i class="fa fa-fw fa-fast-backward"></i>';
+		$args['last_tag_open']   = '<li class="page-item">';
 		$args['last_tag_close']  = '</li>';
-		$args['cur_tag_open']    = '<li class="active"><span>';
+		$args['last_link']  	 = '<i class="fa fa-fw fa-fast-forward"></i>';
+		$args['cur_tag_open']    = '<li class="page-item active"><span class="page-link">';
 		$args['cur_tag_close']   = '<span class="sr-only">(current)</span></span></li>';
+		$args['page_query_string'] = true;
+		$args['query_string_segment'] = 'page';
+		$args['attributes']  	 = ['class'=>'page-link'];
 
 		return $args;
 	}
@@ -295,6 +302,7 @@ if ( ! function_exists( 'bs_label' )) {
 		return "<span class=\"label label-{$type}\">{$content}</span>";
 	}
 }
+
 // -----------------------------------------------------------------------------
 
 add_filter('alert_template', function($output) {

@@ -511,6 +511,7 @@ class CG_Router extends CI_Router
 
         // Flag to see if we are in a package.
         $is_package = false;
+		$is_folder = 'admin';
 
         if (isset($this->_packages[$package]))
         {
@@ -529,7 +530,7 @@ class CG_Router extends CI_Router
 
         if (false === $is_package)
         {
-			$package = $this->is_admin() ? config_item('site_admin') : $package;
+			$package = $this->is_admin() ? $is_folder : $package;
 
 			$path = APPPATH.'controllers/';
 			$this->directory = $package.'/';
@@ -593,7 +594,7 @@ class CG_Router extends CI_Router
 		$this->directory = "{$relative}/{$package}/controllers/";
 
 		// Found the controller?
-		$directory = in_array($directory, [config_item('site_admin')]) ? config_item('site_admin') : $directory;
+		$directory = in_array($directory, [config_item('site_admin')]) ? $is_folder : $directory;
 		if ($directory && is_file($source.ucfirst($directory).'.php'))
 		{
 			$this->set_class($directory);
@@ -930,7 +931,7 @@ class CG_Router extends CI_Router
 		if (true !== is_file($manifest_dist)
 			&& true !== copy($manifest_file, $manifest_dist))
 		{
-			return fales;
+			return false;
 		}
 
 		/**

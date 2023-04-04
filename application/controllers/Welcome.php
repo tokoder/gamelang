@@ -52,6 +52,9 @@ class Welcome extends CG_Controller
 	 */
 	public function index()
 	{
+		// fires before render
+		do_action('public_index');
+
 		$this->themes->render();
 	}
 

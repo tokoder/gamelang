@@ -169,7 +169,7 @@ class Gamelang extends CI_Driver_Library
 									$key = str_replace('!', '', $key);
 								}
 
-								$this->ci->db->{$method}($key, $val);
+								$this->ci->db->{$method}($key, $_val);
 							}
 						}
 
@@ -211,7 +211,7 @@ class Gamelang extends CI_Driver_Library
 								}
 
 								$this->ci->db->where('metadata.name', $key);
-								$this->ci->db->{$method}('metadata.value', $val);
+								$this->ci->db->{$method}('metadata.value', $_val);
 							}
 						}
 

@@ -694,11 +694,29 @@ class Gamelang_users extends CI_Driver implements Gamelang_crud_interface
 			return false;
 		}
 
+		// Log the activity.
+		log_activity($guid, 'Registered.');
+
 		$email_activation = ( ! isset($data['enabled']) && false !== $this->_parent->options->item('email_activation'));
 		$manual_activation = (false !== $this->_parent->options->item('manual_activation', false));
 
+		// Requires a email activation?
+		if (false === $email_activation)
+		{
+			// No activation required?
+			if (false === $manual_activation) {
+				$this->update($guid, ['enabled'=> 1]);
+				set_alert(__('Account successfully created. You may now login.'), 'success');
+			}
+			else {
+				set_alert(__('All accounts require approval by a site administrator before being active. You will receive an email once approved.'), 'info');
+			}
+
+			return $guid;
+		}
+
 		// Requires a manual activation?
-		if (true === $email_activation && true === $manual_activation)
+		if (true === $manual_activation)
 		{
 			$send_email = $this->_parent->send_email(
 				$guid,
@@ -706,54 +724,31 @@ class Gamelang_users extends CI_Driver implements Gamelang_crud_interface
 				'view:emails/users/manual_activation'
 			);
 
-			if ($send_email) {
-				set_alert(__('All accounts require approval by a site administrator before being active. You will receive an email once approved.'), 'info');
-			}
-
-			return $guid;
+			$msg = __('All accounts require approval by a site administrator before being active. You will receive an email once approved.');
 		}
-
-		// No activation required?
-		if (true !== $email_activation)
+		else
 		{
-			if (true !== $manual_activation) {
-				$this->update($guid, ['enabled'=> 1]);
-			}
+			// We create the activation code then send it to user.
+			$code = random_string('alnum', 40);
+			$this->_parent->variables->create(array(
+				'guid'   => $guid,
+				'name'   => 'activation_code',
+				'value'  => $code,
+				'params' => $this->ci->input->ip_address(),
+			));
 
 			$send_email = $this->_parent->send_email(
 				$guid,
-				__('lang_email_welcome'),
-				'view:emails/users/welcome'
+				__('lang_email_register'),
+				'view:emails/users/register',
+				array('link' => site_url('activate-account?code='.$code),)
 			);
 
-			if ($send_email) {
-				set_alert(__('Account successfully created. You may now login.'), 'success');
-			}
-
-			return $guid;
+			$msg = __('Account successfully created. The activation link was sent to you.');
 		}
 
-		// We create the activation code then send it to user.
-		$code = random_string('alnum', 40);
-		$this->_parent->variables->create(array(
-			'guid'   => $guid,
-			'name'   => 'activation_code',
-			'value'  => $code,
-			'params' => $this->ci->input->ip_address(),
-		));
-
-		// Log the activity.
-		log_activity($guid, 'Registered.');
-
-		$send_email = $this->_parent->send_email(
-			$guid,
-			__('lang_email_register'),
-			'view:emails/users/register',
-			array('link' => site_url('activate-account?code='.$code),)
-		);
-
 		if ($send_email) {
-			set_alert(__('Account successfully created. The activation link was sent to you.'), 'info');
+			set_alert($msg, 'info');
 		}
 
 		return $guid;
@@ -1726,13 +1721,13 @@ if ( ! function_exists('user_avatar')):
 		// An email is passed?
 		if (filter_var($id, FILTER_VALIDATE_EMAIL) !== false)
 		{
-			$hash = md5($id);
+			$avatar = md5($id);
 		}
 
 		// An md5 hashed string?
 		elseif (is_string($id) && strlen($id) === 32)
 		{
-			$hash = $id;
+			$avatar = $id;
 		}
 
 		// An ID?
@@ -1742,13 +1737,13 @@ if ( ! function_exists('user_avatar')):
 			if ($CI->auth->online() && $CI->auth->user()->id == $id)
 			{
 				$hash = $CI->auth->user()->avatar;
-				$hash = $hash ? $hash : md5($CI->auth->user()->email);
+				$avatar = $hash ? $hash : md5($CI->auth->user()->email);
 			}
 			// If the user exists, generate the hash.
 			elseif (false !== $user = $CI->users->get_by('id', $id))
 			{
 				$hash = $user->avatar;
-				$hash = $hash ? $hash : md5($user->email);
+				$avatar = $hash ? $hash : md5($user->email);
 			}
 			// Otherwise, nothing to return.
 			else
@@ -1758,8 +1753,6 @@ if ( ! function_exists('user_avatar')):
 		}
 
 		// The path where the avatar should be.
-		$array = explode('.', $hash);
-		$avatar = (sizeof($array) == 1) ? $hash.'.jpg' : $hash;
 		$avatar_path = $CI->themes->upload_path("avatars/{$avatar}");
 
 		if (strpos($hash, '://') !== false)
@@ -1785,13 +1778,15 @@ if ( ! function_exists('user_avatar')):
 
 		if (is_array($attrs)) {
 			$attrs['width'] = $attrs['height'] = $size;
+			$attrs['data-src'] = $avatar_url;
 		}
 		else {
 			$attrs .= $size >= 1 ? ' width="'.$size.'" height="'.$size.'"' : '';
+			$attrs .= ' data-src="'.$avatar_url.'"';
 		}
 
 		// Another security layer is to load theme library if the function
-		return img($avatar_url, false, $attrs);
+		return img('data:image/gif;base64,R0lGODlhAQABAIAAAP///wAAACH5BAEAAAAALAAAAAABAAEAAAICRAEAOw==', false, $attrs);
 	}
 endif; // End of: user_avatar.
 

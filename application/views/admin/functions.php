@@ -30,22 +30,6 @@ class Admin_theme
     public function __construct()
     {
 		add_filter('_admin_menu', array($this, '_admin_menu'), 0);
-		add_filter('admin_head', array($this, 'globals'), 0);
-		add_filter('admin_head', array($this, 'admin_head'), 99);
-
-		if ( ! get_instance()->input->is_ajax_request())
-		{
-			// Enqueue our assets.
-			add_action( 'after_theme_setup', array( $this, 'after_theme_setup' ), 0 );
-
-			// Partials enqueue for caching purpose.
-			add_action('enqueue_admin_partials', array( $this, 'enqueue_admin_partials' ) );
-
-			// body_class.
-			add_filter('admin_body_class', function ($args) {
-				return array_clean(array_merge($args, ['d-flex flex-column min-vh-100']));
-			} );
-		}
 
 		// Views files.
 		add_filter( 'admin_views_path', function () {
@@ -60,6 +44,22 @@ class Admin_theme
 		// Views files.
 		add_filter( 'admin_views_path', function () {
 			return get_theme_path( 'templates/' );
+		} );
+
+		if ( get_instance()->input->is_ajax_request()) {
+			return;
+		}
+
+		// Enqueue our assets.
+		add_action('after_theme_setup', array( $this, 'after_theme_setup' ), 0 );
+		add_filter('admin_head', array($this, 'admin_head'), 0);
+
+		// Partials enqueue for caching purpose.
+		add_action('enqueue_admin_partials', array( $this, 'enqueue_admin_partials' ) );
+
+		// body_class.
+		add_filter('admin_body_class', function ($args) {
+			return array_clean(array_merge($args, ['d-flex flex-column min-vh-100']));
 		} );
     }
 
@@ -88,7 +88,7 @@ class Admin_theme
 		// Extensions menu.
 		foreach (['packages', 'themes', 'languages'] as $key => $value) {
 			$admin_menu[] = array(
-				'parent' => '_extensions_menu',
+				'parent' => '_extension_menu',
 				'order'  => 0,
 				'id'     => 'extensions_'.$value,
 				'slug'   => admin_url($value),
@@ -112,7 +112,7 @@ class Admin_theme
 			'name'   => __('lang_documentation'),
 			'attributes' => array(
 				'target' =>'_blank',
-				'class'  => (ENVIRONMENT !== 'production' ? '': ' disabled')
+				'class'  => (ENVIRONMENT == 'development' ? '': ' disabled')
 			),
 		);
 
@@ -127,18 +127,17 @@ class Admin_theme
 	public function after_theme_setup()
 	{
 		add_styles('assets/vendor/bootstrap/css/bootstrap.css');
-		add_styles('assets/vendor/bootnavbar/css/bootnavbar.css');
 		add_styles('assets/vendor/fontawesome-free/css/all.css');
-		add_styles('assets/vendor/summernote/summernote-bs5.css');
 		add_styles('assets/vendor/sweetalert2/sweetalert2.css');
+		add_styles('assets/vendor/bootnavbar/css/bootnavbar.css');
 		add_styles(get_theme_path('style.css'));
 
 		add_script('assets/vendor/jquery/jquery.js');
 		add_script('assets/vendor/bootstrap/js/bootstrap.bundle.js');
-		add_script('assets/vendor/bootnavbar/js/bootnavbar.js');
-		add_script('assets/vendor/summernote/summernote-bs5.js');
+		add_script('assets/vendor/lazysizes/lazysizes.min.js');
 		add_script('assets/vendor/js-cookie/js.cookie.js');
 		add_script('assets/vendor/sweetalert2/sweetalert2.js');
+		add_script('assets/vendor/bootnavbar/js/bootnavbar.js');
 		add_script('assets/vendor/bootbox/bootbox.js');
 		add_script(get_theme_path('assets/js/admin.js'));
 	}
@@ -154,19 +153,21 @@ class Admin_theme
 		add_partial( 'admin_footer' );
 	}
 
-	// ----------------------------------------------------------------------------
+	// ------------------------------------------------------------------------
 
 	/**
-	 * globals
+	 * admin_head
 	 *
-	 * Method for adding JS global before anything else.
+	 * Method for adding extra stuff to admin output before closing </head> tag.
 	 *
 	 * @access 	public
-	 * @param 	string 	$output 	StyleSheets output.
+	 * @param 	string 	$output 	The admin head output.
 	 * @return 	void
 	 */
-	public function globals($output)
+	public function admin_head($output)
 	{
+		add_ie9_support($output, (ENVIRONMENT !== 'development'));
+
 		// Default configuration.
 		$config = array(
 			'baseURL'      => base_url(),
@@ -199,24 +200,6 @@ class Admin_theme
 		$output .= 'cg.i18n = cg.i18n || {};';
 		$output .= 'cg.i18n.default = '.json_encode($lines).';';
 		$output .= '</script>';
-
-		return $output;
-	}
-
-	// ------------------------------------------------------------------------
-
-	/**
-	 * admin_head
-	 *
-	 * Method for adding extra stuff to admin output before closing </head> tag.
-	 *
-	 * @access 	public
-	 * @param 	string 	$output 	The admin head output.
-	 * @return 	void
-	 */
-	public function admin_head($output)
-	{
-		add_ie9_support($output, (ENVIRONMENT !== 'development'));
 		return $output;
 	}
 }

@@ -8,6 +8,11 @@ cache/captcha/*
 #-------------------------
 config/gamelang/encryption_key.php
 
+# Ignore langs file.
+#-------------------------
+language/indonesia/game_lang.php
+language/english/game_lang.php
+
 # Ignore packages files.
 #-------------------------
 packages/*

@@ -142,8 +142,8 @@ class Auth extends CG_Controller
 
 		// Prepare form validation and form helper.
 		$rules = array(
-			array(	'field' => 'first_name',
-					'label' => 'lang:lang_first_name',
+			array(	'field' => 'identity',
+					'label' => 'lang:lang_identity',
 					'rules' => 'trim|required|max_length[32]'),
 			array(	'field' => 'email',
 					'label' => 'lang:lang_email',
@@ -154,9 +154,6 @@ class Auth extends CG_Controller
 			array(	'field' => 'cpassword',
 					'label' => 'lang:confirm_password',
 					'rules' => 'trim|required|min_length[8]|max_length[20]|matches[password]'),
-			array(	'field' => 'gender',
-					'label' => 'lang:lang_gender',
-					'rules' => 'trim|required|in_list[male,female]'),
 		);
 
 		if (get_option('use_captcha', false) === true)
@@ -183,10 +180,9 @@ class Auth extends CG_Controller
 
 			// Attempt to register the user.
 			$this->users->register($this->input->post(array(
-                'first_name',
+                'identity',
                 'email',
                 'password',
-                'gender',
             ), true));
 
             // Redirect back to registration page.
@@ -196,9 +192,8 @@ class Auth extends CG_Controller
 
 		// Prepare form fields.
 		$_defaults = array(
-			'first_name',
+			'identity',
 			'email',
-			'gender',
 			'password',
 			'cpassword',
 		);
