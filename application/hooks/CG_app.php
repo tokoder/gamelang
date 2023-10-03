@@ -17,7 +17,7 @@ defined('BASEPATH') OR exit('No direct script access allowed');
  *
  * @var	string
  */
-const CG_VERSION = '1.0.0-rc.3';
+const CG_VERSION = '1.0.0-beta.5';
 
 /**
  * Bootstrap File.
