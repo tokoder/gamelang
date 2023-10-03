@@ -75,7 +75,7 @@ if ( ! empty($login_src))
         $in_footer[] = array(
             'parent' => NULL,
             'id'     => 'GitHub',
-            'slug'   => prep_url('github.com/tokoder/gamelang'),
+            'slug'   => prep_url('github.com/tokoder/tokoder'),
             'name'   => __('GitHub'),
             'attributes'   => ['target'=>'_blank'],
         );

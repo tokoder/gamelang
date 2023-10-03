@@ -23,11 +23,11 @@ $config['languages'] = array('indonesia');
 | General settings.
 |--------------------------------------------------------------------------
 */
-$config['site_description'] = 'Gamelang dibuat dengan Codeigniter, terintegrasi secara mulus dengan banyak packages untuk mempercepat pengembangan aplikasi berbasis web.';
-$config['site_keywords']    = 'gamelang, codeigniter, tokoder, application, opensource';
+$config['site_description'] = 'An Open-source online ordering and management system for store';
+$config['site_keywords']    = 'codeigniter, tokoder, application, opensource';
 $config['site_author']      = 'Tokoder Team';
-$config['site_admin']   	= 'admin';
-$config['site_name']        = 'CodeIgniter Gamelang';
+$config['site_admin']   	 = 'admin';
+$config['site_name']        = 'tokoder';
 
 /*
 |--------------------------------------------------------------------------

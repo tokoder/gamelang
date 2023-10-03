@@ -1,14 +1,13 @@
 <?php
 /**
- * CodeIgniter Gamelang
+ * tokoder
  *
- * An open source codeigniter management system
+ * An Open-source online ordering and management system for store
  *
- * @package 	CodeIgniter Gamelang
  * @author		Tokoder Team
  * @copyright	Copyright (c) 2022, Tokoder (https://tokoder.com/)
  * @license 	https://opensource.org/licenses/MIT	MIT License
- * @link		https://github.com/tokoder/gamelang
+ * @link			https://github.com/tokoder/tokoder
  * @since		1.0.0
  */
 defined('BASEPATH') OR exit('No direct script access allowed');
@@ -21,7 +20,7 @@ defined('BASEPATH') OR exit('No direct script access allowed');
 		 * Filters the "Thank you" text displayed in the dashboard footer.
 		 * This line can be removed/overridden using the "admin_footer_text".
 		 */
-		$thankyou = sprintf(__('Thank your for creating with <em>%s</em>'), anchor(prep_url('github.com/tokoder/gamelang'), 'Gamelang', 'target="_blank"'));
+		$thankyou = sprintf(__('Thank your for creating with <em>%s</em>'), anchor(prep_url('github.com/tokoder/tokoder'), 'Gamelang', 'target="_blank"'));
 		$thankyou = apply_filters('admin_footer_text', $thankyou);
 		echo html_tag('span', 'class="navbar-text" id="footer-thankyou"', $thankyou);
 
@@ -50,7 +49,7 @@ defined('BASEPATH') OR exit('No direct script access allowed');
 		$in_admin_footer[] = array(
 			'parent' => NULL,
 			'id'     => 'upgrade_menu',
-			'slug'   => prep_url('github.com/tokoder/gamelang/releases'),
+			'slug'   => prep_url('github.com/tokoder/tokoder/releases'),
 			'name'   => sprintf('<abbr title="Version">Version</abbr>: <strong>%s</strong>', CG_VERSION),
 			'attributes' => ['target'=>"_blank"],
 		);

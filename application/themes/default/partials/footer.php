@@ -53,7 +53,7 @@
             $in_footer[] = array(
                 'parent' => NULL,
                 'id'     => 'upgrade_menu',
-                'slug'   => prep_url('github.com/tokoder/gamelang/releases'),
+                'slug'   => prep_url('github.com/tokoder/tokoder/releases'),
                 'name'   => sprintf('<abbr title="Version">Version</abbr>: <strong>%s</strong>', CG_VERSION),
                 'attributes' => ['target'=>"_blank"],
             );

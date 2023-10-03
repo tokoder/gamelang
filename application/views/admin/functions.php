@@ -1,14 +1,13 @@
 <?php
 /**
- * CodeIgniter Gamelang
+ * tokoder
  *
- * An open source codeigniter management system
+ * An Open-source online ordering and management system for store
  *
- * @package 	CodeIgniter Gamelang
  * @author		Tokoder Team
  * @copyright	Copyright (c) 2022, Tokoder (https://tokoder.com/)
  * @license 	https://opensource.org/licenses/MIT	MIT License
- * @link		https://github.com/tokoder/gamelang
+ * @link			https://github.com/tokoder/tokoder
  * @since		1.0.0
  */
 defined( 'BASEPATH' ) OR exit( 'No direct script access allowed' );
@@ -108,7 +107,7 @@ class Admin_theme
 			'parent' => '_help_menu',
 			'order'  => 0,
 			'id'     => '_help_documentation',
-			'slug'   => prep_url('github.com/tokoder/gamelang/wiki'),
+			'slug'   => prep_url('github.com/tokoder/tokoder/wiki'),
 			'name'   => __('lang_documentation'),
 			'attributes' => array(
 				'target' =>'_blank',

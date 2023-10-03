@@ -1,7 +1,6 @@
 {
-	"name": "tokoder/gamelang",
-	"type": "project",
-	"description": "CodeIgniter Gamelang",
+	"name": "tokoder/tokoder",
+	"description": "An Open-source online ordering and management system for store",
 	"homepage": "https://github.com/tokoder",
 	"license": "MIT",
     "require": {

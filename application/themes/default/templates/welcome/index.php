@@ -21,7 +21,7 @@
                     <p class="mb-0">
                     <?=sprintf(
                         __('Read more detailed instructions and documentation on using or contributing to %s'),
-                        anchor(prep_url('github.com/tokoder/gamelang/wiki'), 'Gamelang', 'target="_blank"')
+                        anchor(prep_url('github.com/tokoder/tokoder/wiki'), 'Gamelang', 'target="_blank"')
                     )?>
                     </p>
                 </div>
@@ -37,7 +37,7 @@
                 <div class="p-4">
                     <h4 class="fst-italic"><?php _e('Social')?></h4>
                     <ol class="list-unstyled">
-                        <li><?=anchor(prep_url('github.com/tokoder/gamelang'), 'GitHub', 'target="_blank"')?></li>
+                        <li><?=anchor(prep_url('github.com/tokoder/tokoder'), 'GitHub', 'target="_blank"')?></li>
                         <li><?=anchor(prep_url('facebook.com/tokoder'), 'Facebook', 'target="_blank"')?></li>
                         <li><?=anchor(prep_url('instagram.com/tokodercom'), 'Instragram', 'target="_blank"')?></li>
                         <li><?=anchor(prep_url('tokoder.com'), 'Website', 'target="_blank"')?></li>

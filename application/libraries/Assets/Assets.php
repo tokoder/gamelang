@@ -1,14 +1,13 @@
 <?php
 /**
- * CodeIgniter Gamelang
+ * tokoder
  *
- * An open source codeigniter management system
+ * An Open-source online ordering and management system for store
  *
- * @package 	CodeIgniter Gamelang
  * @author		Tokoder Team
  * @copyright	Copyright (c) 2022, Tokoder (https://tokoder.com/)
  * @license 	https://opensource.org/licenses/MIT	MIT License
- * @link		https://github.com/tokoder/gamelang
+ * @link			https://github.com/tokoder/tokoder
  * @since		1.0.0
  */
 
